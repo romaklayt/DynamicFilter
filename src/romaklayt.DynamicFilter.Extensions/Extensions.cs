@@ -8,7 +8,7 @@ namespace romaklayt.DynamicFilter.Extensions
 {
     public static class Extensions
     {
-        private static Task<PageModel<T>> ToPagedList<T>(this IQueryable<T> source, int pageNumber, int pageSize)
+        public static Task<PageModel<T>> ToPagedList<T>(this IQueryable<T> source, int pageNumber, int pageSize)
         {
             if (pageSize <= decimal.Zero) pageSize = 10;
             if (pageNumber < 1) pageNumber = 1;
@@ -17,7 +17,7 @@ namespace romaklayt.DynamicFilter.Extensions
             return Task.FromResult(new PageModel<T>(items, count, pageNumber, pageSize));
         }
 
-        private static Task<PageModel<T>> ToPagedList<T>(this IEnumerable<T> source, int pageNumber, int pageSize)
+        public static Task<PageModel<T>> ToPagedList<T>(this IEnumerable<T> source, int pageNumber, int pageSize)
         {
             if (pageSize <= decimal.Zero) pageSize = 10;
             if (pageNumber < 1) pageNumber = 1;
@@ -27,7 +27,7 @@ namespace romaklayt.DynamicFilter.Extensions
             return Task.FromResult(new PageModel<T>(items, count, pageNumber, pageSize));
         }
 
-        private static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source, int pageNumber,
+        public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source, int pageNumber,
             int pageSize)
         {
             if (pageSize <= decimal.Zero) pageSize = 10;
@@ -75,24 +75,17 @@ namespace romaklayt.DynamicFilter.Extensions
         public static async Task<IQueryable<T>> UseFilter<T>(this IQueryable<T> source,
             ExpressionDynamicFilter<T> filter)
         {
-            IQueryable<T> result;
-            if (filter.Filter != null)
-                result = source.Where(filter.Filter).AsQueryable();
-            else
-                result = source.AsQueryable();
+            var result = filter.Filter != null ? source.Where(filter.Filter).AsQueryable() : source.AsQueryable();
 
             if (filter.Select != null)
                 result = result.Select(filter.Select);
 
             if (filter.Order != null)
-            {
-                if (filter.OrderType == OrderType.Asc)
-                    result = result.OrderBy(filter.Order).AsQueryable();
-                else
-                    result = result.OrderByDescending(filter.Order).AsQueryable();
-            }
+                result = filter.OrderType == OrderType.Asc
+                    ? result.OrderBy(filter.Order).AsQueryable()
+                    : result.OrderByDescending(filter.Order).AsQueryable();
 
-            return result;
+            return await Task.FromResult(result);
         }
 
         public static async Task<IQueryable<T>> UseFilter<T>(this IQueryable<T> source,
@@ -104,24 +97,17 @@ namespace romaklayt.DynamicFilter.Extensions
         public static async Task<IEnumerable<T>> UseFilter<T>(this IEnumerable<T> source,
             ExpressionDynamicFilter<T> filter)
         {
-            IEnumerable<T> result;
-            if (filter.Filter != null)
-                result = source.Where(filter.Filter.Compile());
-            else
-                result = source;
+            var result = filter.Filter != null ? source.Where(filter.Filter.Compile()) : source;
 
             if (filter.Select != null)
                 result = result.Select(filter.Select.Compile());
 
             if (filter.Order != null)
-            {
-                if (filter.OrderType == OrderType.Asc)
-                    result = result.OrderBy(filter.Order.Compile());
-                else
-                    result = result.OrderByDescending(filter.Order.Compile());
-            }
+                result = filter.OrderType == OrderType.Asc
+                    ? result.OrderBy(filter.Order.Compile())
+                    : result.OrderByDescending(filter.Order.Compile());
 
-            return result;
+            return await Task.FromResult(result);
         }
 
         public static async Task<IEnumerable<T>> UseFilter<T>(this IEnumerable<T> source,
@@ -133,24 +119,19 @@ namespace romaklayt.DynamicFilter.Extensions
         public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
             ExpressionDynamicFilter<T> filter)
         {
-            IAsyncEnumerable<T> result;
-            if (filter.Filter != null)
-                result = source.Where(filter.Filter.Compile()).AsAsyncEnumerable();
-            else
-                result = source.AsAsyncEnumerable();
+            var result = filter.Filter != null
+                ? source.Where(filter.Filter.Compile()).AsAsyncEnumerable()
+                : source.AsAsyncEnumerable();
 
             if (filter.Select != null)
                 result = result.Select(filter.Select.Compile());
 
             if (filter.Order != null)
-            {
-                if (filter.OrderType == OrderType.Asc)
-                    result = result.OrderBy(filter.Order.Compile()).AsAsyncEnumerable();
-                else
-                    result = result.OrderByDescending(filter.Order.Compile()).AsAsyncEnumerable();
-            }
+                result = filter.OrderType == OrderType.Asc
+                    ? result.OrderBy(filter.Order.Compile()).AsAsyncEnumerable()
+                    : result.OrderByDescending(filter.Order.Compile()).AsAsyncEnumerable();
 
-            return result;
+            return await Task.FromResult(result);
         }
 
         public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,

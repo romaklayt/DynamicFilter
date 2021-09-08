@@ -10,7 +10,7 @@ namespace romaklayt.DynamicFilter.Binder
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            if (context.Metadata.ModelType.FullName.Contains("DynamicFilter"))
+            if (context.Metadata.ModelType.FullName != null && context.Metadata.ModelType.FullName.Contains("DynamicFilterModel"))
                 return new BinderTypeModelBinder(typeof(DynamicFilterBinder));
 
             return null;

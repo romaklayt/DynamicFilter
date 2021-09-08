@@ -31,17 +31,17 @@ namespace romaklayt.DynamicFilter.Binder
             var pageSize = bindingContext.ValueProvider.GetValue("pagesize").FirstValue;
 
             if (!string.IsNullOrWhiteSpace(page))
-                model.GetType().GetProperty("Page").SetValue(model, int.Parse(page));
+                model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
 
             if (!string.IsNullOrWhiteSpace(pageSize))
-                model.GetType().GetProperty("PageSize").SetValue(model, int.Parse(pageSize));
+                model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
         }
 
         private static void ExtractSelect(object model, ModelBindingContext bindingContext)
         {
             var select = bindingContext.ValueProvider.GetValue("select").FirstValue;
 
-            if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select").SetValue(model, @select);
+            if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select")?.SetValue(model, @select);
         }
 
 
@@ -49,7 +49,7 @@ namespace romaklayt.DynamicFilter.Binder
         {
             var order = bindingContext.ValueProvider.GetValue("order").FirstValue;
 
-            if (!string.IsNullOrWhiteSpace(order)) model.GetType().GetProperty("Order").SetValue(model, order);
+            if (!string.IsNullOrWhiteSpace(order)) model.GetType().GetProperty("Order")?.SetValue(model, order);
         }
 
         private static void ExtractFilters(object model, ModelBindingContext bindingContext)
@@ -59,7 +59,7 @@ namespace romaklayt.DynamicFilter.Binder
             if (filter == null)
                 filter = bindingContext.ValueProvider.GetValue("query").FirstValue;
 
-            if (!string.IsNullOrWhiteSpace(filter)) model.GetType().GetProperty("Filter").SetValue(model, filter);
+            if (!string.IsNullOrWhiteSpace(filter)) model.GetType().GetProperty("Filter")?.SetValue(model, filter);
         }
     }
 }
