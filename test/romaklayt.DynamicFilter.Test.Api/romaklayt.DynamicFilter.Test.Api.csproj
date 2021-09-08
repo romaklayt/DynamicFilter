@@ -2,6 +2,11 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <Description>Test api for romaklayt.DynamicFilter</Description>
+        <Copyright>romaklayt</Copyright>
+        <Authors>Roman Kolyago</Authors>
+        <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
+        <PackageTags>odata, orm, webapi, filter, dynamic</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
