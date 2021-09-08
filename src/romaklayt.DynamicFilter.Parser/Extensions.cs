@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Parser
@@ -12,10 +10,7 @@ namespace romaklayt.DynamicFilter.Parser
     {
         public static ExpressionDynamicFilter<T> BindFilterExpressions<T>(this BaseDynamicFilter filter)
         {
-            if (filter == null)
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
+            if (filter == null) throw new ArgumentNullException(nameof(filter));
 
             var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<T>));
 
@@ -32,63 +27,11 @@ namespace romaklayt.DynamicFilter.Parser
             ExtractSelect(model, filter, parameter, itemType);
             return model as ExpressionDynamicFilter<T>;
         }
-        
-        public static PageModel<T> ToPagedList<T>(this IQueryable<T> source, int pageNumber, int pageSize)
-        {
-            if (pageSize <= decimal.Zero) pageSize = 10;
-            if (pageNumber < 1) pageNumber = 1;
-            var count = source.Count();
-            var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-            return new PageModel<T>(items, count, pageNumber, pageSize);
-        }
 
-        public static PageModel<T> ToPagedList<T>(this IEnumerable<T> source, int pageNumber, int pageSize)
-        {
-            if (pageSize <= decimal.Zero) pageSize = 10;
-            if (pageNumber < 1) pageNumber = 1;
-            var enumerable = source.ToList();
-            var count = enumerable.Count();
-            var items = enumerable.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-            return new PageModel<T>(items, count, pageNumber, pageSize);
-        }
-
-        public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source, int pageNumber,
-            int pageSize)
-        {
-            if (pageSize <= decimal.Zero) pageSize = 10;
-            if (pageNumber < 1) pageNumber = 1;
-            var enumerable = await source.ToListAsync();
-            var count = enumerable.Count();
-            var items = enumerable.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-            return new PageModel<T>(items, count, pageNumber, pageSize);
-        }
-        
-        private static Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source)
-        {
-            if (source is null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            return ExecuteAsync();
-
-            async Task<List<T>> ExecuteAsync()
-            {
-                var list = new List<T>();
-
-                await foreach (var element in source)
-                {
-                    list.Add(element);
-                }
-
-                return list;
-            }
-        }
-        
         private static void ExtractPagination(object model, object bindingContext)
         {
-            var page = bindingContext.GetType().GetProperty("Page").GetValue(bindingContext,null) as string;
-            var pageSize = bindingContext.GetType().GetProperty("PageSize").GetValue(bindingContext,null) as string;
+            var page = bindingContext.GetType().GetProperty("Page").GetValue(bindingContext, null) as string;
+            var pageSize = bindingContext.GetType().GetProperty("PageSize").GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(page))
                 model.GetType().GetProperty("Page").SetValue(model, int.Parse(page));
@@ -97,9 +40,10 @@ namespace romaklayt.DynamicFilter.Parser
                 model.GetType().GetProperty("PageSize").SetValue(model, int.Parse(pageSize));
         }
 
-        private static void ExtractSelect(object model, object bindingContext, ParameterExpression parameter, Type itemType)
+        private static void ExtractSelect(object model, object bindingContext, ParameterExpression parameter,
+            Type itemType)
         {
-            var select = bindingContext.GetType().GetProperty("Select").GetValue(bindingContext,null) as string;
+            var select = bindingContext.GetType().GetProperty("Select").GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(select))
             {
@@ -113,9 +57,10 @@ namespace romaklayt.DynamicFilter.Parser
                 var bindings = selectFields.Select(o => o.Trim())
                     .Select(o =>
                         {
-
                             // property "Field1"
-                            var mi = itemType.GetProperty(o, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.Instance);
+                            var mi = itemType.GetProperty(o,
+                                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic |
+                                BindingFlags.GetProperty | BindingFlags.Instance);
 
                             // original value "o.Field1"
                             var xOriginal = Expression.PropertyOrField(parameter, o);
@@ -138,30 +83,34 @@ namespace romaklayt.DynamicFilter.Parser
 
         private static void ExtractOrder(object model, object bindingContext, ParameterExpression parameter)
         {
-            var order = bindingContext.GetType().GetProperty("Order").GetValue(bindingContext,null) as string;
+            var order = bindingContext.GetType().GetProperty("Order").GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(order))
             {
                 var orderItems = order.Split('=');
                 if (orderItems.Count() > 1)
                 {
-                    model.GetType().GetProperty("OrderType").SetValue(model, Enum.Parse(typeof(OrderType), orderItems[1], true));
+                    model.GetType().GetProperty("OrderType")
+                        .SetValue(model, Enum.Parse(typeof(OrderType), orderItems[1], true));
                     order = orderItems[0];
                 }
                 else
+                {
                     model.GetType().GetProperty("OrderType").SetValue(model, OrderType.Desc);
+                }
 
                 var property = Expression.PropertyOrField(parameter, order);
 
-                var orderExp = Expression.Lambda(Expression.Convert(property, typeof(Object)).Reduce(), parameter);
+                var orderExp = Expression.Lambda(Expression.Convert(property, typeof(object)).Reduce(), parameter);
 
                 model.GetType().GetProperty("Order").SetValue(model, orderExp);
             }
         }
 
-        private static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter, Type itemType)
+        private static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
+            Type itemType)
         {
-            var filter = bindingContext.GetType().GetProperty("Filter").GetValue(bindingContext,null) as string;
+            var filter = bindingContext.GetType().GetProperty("Filter").GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
@@ -171,17 +120,17 @@ namespace romaklayt.DynamicFilter.Parser
                 Expression currentExpression = null;
                 var item = Activator.CreateInstance(itemType, true);
 
-                for (int i = 0; i < filterAndValues.Count(); i++)
-                {
+                for (var i = 0; i < filterAndValues.Count(); i++)
                     if (filterAndValues[i].Contains('|'))
                     {
                         var orExpression = new ExpressionParser();
                         var filterAndValue = orExpression.DefineOperation(filterAndValues[i], itemType);
                         var options = filterAndValue[1].Split('|');
 
-                        for (int j = 0; j < options.Count(); j++)
+                        for (var j = 0; j < options.Count(); j++)
                         {
-                            var expression = GetExpression(parameter, itemType, $"{filterAndValue[0]}{orExpression.GetOperation()}{options[j]}");
+                            var expression = GetExpression(parameter, itemType,
+                                $"{filterAndValue[0]}{orExpression.GetOperation()}{options[j]}");
 
                             if (j == 0)
                             {
@@ -194,23 +143,17 @@ namespace romaklayt.DynamicFilter.Parser
                             {
                                 currentExpression = Expression.Or(currentExpression, expression);
                             }
-
                         }
                     }
                     else
                     {
-                        Expression expression = GetExpression(parameter, itemType, filterAndValues[i]);
+                        var expression = GetExpression(parameter, itemType, filterAndValues[i]);
 
                         if (currentExpression == null)
-                        {
                             currentExpression = expression;
-                        }
                         else
-                        {
                             currentExpression = Expression.And(currentExpression, expression);
-                        }
                     }
-                }
 
                 finalExpression = Expression.Lambda(currentExpression, parameter);
 

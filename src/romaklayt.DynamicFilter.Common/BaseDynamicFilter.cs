@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace romaklayt.DynamicFilter.Common
+﻿namespace romaklayt.DynamicFilter.Common
 {
     public class BaseDynamicFilter
     {

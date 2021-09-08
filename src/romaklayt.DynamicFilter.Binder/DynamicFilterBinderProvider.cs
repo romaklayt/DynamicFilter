@@ -8,15 +8,10 @@ namespace romaklayt.DynamicFilter.Binder
     {
         public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
             if (context.Metadata.ModelType.FullName.Contains("DynamicFilter"))
-            {
                 return new BinderTypeModelBinder(typeof(DynamicFilterBinder));
-            }
 
             return null;
         }

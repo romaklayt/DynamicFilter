@@ -4,7 +4,7 @@ using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Parser
 {
-    public class ExpressionDynamicFilter<T>:BaseDynamicFilter
+    public class ExpressionDynamicFilter<T> : BaseDynamicFilter
     {
         public Expression<Func<T, bool>> Filter { get; set; }
         public Expression<Func<T, object>> Order { get; set; }

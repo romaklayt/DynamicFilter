@@ -1,4 +1,4 @@
-namespace romaklayt.DynamicFilter
+namespace romaklayt.DynamicFilter.Parser
 {
     public enum OrderType
     {

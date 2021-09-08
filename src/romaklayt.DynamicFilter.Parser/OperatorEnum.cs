@@ -10,6 +10,5 @@
         GreaterOrEqual = 6,
         LessOrEqual = 7,
         NotEquals = 8
-
     }
 }
