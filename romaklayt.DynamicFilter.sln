@@ -17,11 +17,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Com
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Extensions", "src\romaklayt.DynamicFilter.Extensions\romaklayt.DynamicFilter.Extensions.csproj", "{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Binder.NetFramework", "src\romaklayt.DynamicFilter.Binder.NetFramework\romaklayt.DynamicFilter.Binder.NetFramework.csproj", "{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Binder.NetFramework.WebApi", "src\romaklayt.DynamicFilter.Binder.NetFramework.WebApi\romaklayt.DynamicFilter.Binder.NetFramework.WebApi.csproj", "{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Test.Api.NetFramework", "romaklayt.DynamicFilter.Test.Api.NetFramework\romaklayt.DynamicFilter.Test.Api.NetFramework.csproj", "{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Extensions.NetFramework", "src\romaklayt.DynamicFilter.Extensions.NetFramework\romaklayt.DynamicFilter.Extensions.NetFramework.csproj", "{CAAED3BE-AB26-4845-AF19-88AFF01EE9E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Extensions.NetFramework.WebApi", "src\romaklayt.DynamicFilter.Extensions.NetFramework.WebApi\romaklayt.DynamicFilter.Extensions.NetFramework.WebApi.csproj", "{CAAED3BE-AB26-4845-AF19-88AFF01EE9E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Binder.NetFramework.Mvc", "src\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj", "{7498A23A-6527-40C4-8A58-96FA1952013A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Extensions.NetFramework.Mvc", "src\romaklayt.DynamicFilter.Extensions.NetFramework.Mvc\romaklayt.DynamicFilter.Extensions.NetFramework.Mvc.csproj", "{E32B9E12-1B3A-4788-A17C-6BF0BAD0F355}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +65,14 @@ Global
 		{CAAED3BE-AB26-4845-AF19-88AFF01EE9E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAAED3BE-AB26-4845-AF19-88AFF01EE9E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAAED3BE-AB26-4845-AF19-88AFF01EE9E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7498A23A-6527-40C4-8A58-96FA1952013A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7498A23A-6527-40C4-8A58-96FA1952013A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7498A23A-6527-40C4-8A58-96FA1952013A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7498A23A-6527-40C4-8A58-96FA1952013A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E32B9E12-1B3A-4788-A17C-6BF0BAD0F355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E32B9E12-1B3A-4788-A17C-6BF0BAD0F355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E32B9E12-1B3A-4788-A17C-6BF0BAD0F355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E32B9E12-1B3A-4788-A17C-6BF0BAD0F355}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +86,8 @@ Global
 		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8} = {C17C8C7D-1760-4156-BB69-3730E7839518}
 		{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F} = {B5583F9D-43F7-499A-ACA1-FE8E912710BB}
 		{CAAED3BE-AB26-4845-AF19-88AFF01EE9E0} = {C17C8C7D-1760-4156-BB69-3730E7839518}
+		{7498A23A-6527-40C4-8A58-96FA1952013A} = {C17C8C7D-1760-4156-BB69-3730E7839518}
+		{E32B9E12-1B3A-4788-A17C-6BF0BAD0F355} = {C17C8C7D-1760-4156-BB69-3730E7839518}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3D576CAD-205F-4F8F-BC61-0D1C253467E5}

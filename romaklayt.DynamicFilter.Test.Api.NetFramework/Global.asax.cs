@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
+using romaklayt.DynamicFilter.Binder.NetFramework;
 
 namespace romaklayt.DynamicFilter.Test.Api.NetFramework
 {

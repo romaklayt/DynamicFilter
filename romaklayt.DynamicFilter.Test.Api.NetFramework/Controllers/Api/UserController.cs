@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using romaklayt.DynamicFilter.Binder.NetFramework.Mvc;
+using System.Web.Http;
+using System.Web.Http.ModelBinding;
+using romaklayt.DynamicFilter.Binder.NetFramework.WebApi;
 using romaklayt.DynamicFilter.Common;
-using romaklayt.DynamicFilter.Extensions.NetFramework.Mvc;
+using romaklayt.DynamicFilter.Extensions.NetFramework;
+using romaklayt.DynamicFilter.Extensions.NetFramework.WebApi;
 using romaklayt.DynamicFilter.Test.Api.NetFramework.Models;
 
-namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers
+namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers.Api
 {
-    public class UserController : Controller
+    public class UserController : ApiController
     {
         private readonly List<User> users = new List<User>()
         {
@@ -36,24 +38,24 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers
 
         [HttpGet]
         [ActionName("List")]
-        public JsonResult GetList([ModelBinder(typeof(DynamicFilterBinder))] DynamicFilterModel filterModelModel)
+        public IEnumerable<User> GetList([ModelBinder(typeof(DynamicFilterBinder))] DynamicFilterModel filterModelModel)
         {
-            return Json(users.UseFilter(filterModelModel).Result, JsonRequestBehavior.AllowGet);
+            return users.UseFilter(filterModelModel).Result;
         }
         
         [HttpPost]
         [ActionName("List")]
-        public async Task<JsonResult> GetPostList(DynamicFilterModel filterModelModel)
+        public async Task<IEnumerable<User>> GetPostList(DynamicFilterModel filterModelModel)
         {
-            return Json(await users.UseFilter(filterModelModel));
+            return await users.UseFilter(filterModelModel);
         }
 
         [HttpGet]
         [ActionName("Page")]
-        public async Task<JsonResult> GetPage(DynamicFilterModel filterModel)
+        public async Task<PageModel<User>> GetPage(DynamicFilterModel filterModel)
         {
             var filteredUsers = await users.UseFilter(filterModel);
-            return Json(await filteredUsers.ToPagedList(filterModel), JsonRequestBehavior.AllowGet);
+            return await filteredUsers.ToPagedList(filterModel);
         }
     }
 }

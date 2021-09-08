@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using romaklayt.DynamicFilter.Binder.NetFramework;
+using romaklayt.DynamicFilter.Binder.NetFramework.WebApi;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Parser;
 
-namespace romaklayt.DynamicFilter.Extensions.NetFramework
+namespace romaklayt.DynamicFilter.Extensions.NetFramework.WebApi
 {
     public static class Extensions
     {

@@ -1,20 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net461;net471;net472;net48</TargetFrameworks>
         <LangVersion>default</LangVersion>
         <Description>Simple binding that enables dynamic filtering, select, paging, order on your webapi for .Net Framework</Description>
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
         <PackageTags>odata, orm, webapi, filter, dynamic</PackageTags>
+        <RootNamespace>romaklayt.DynamicFilter.Binder.NetFramework.WebApi</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
+      <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj" />
       <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
     </ItemGroup>
 

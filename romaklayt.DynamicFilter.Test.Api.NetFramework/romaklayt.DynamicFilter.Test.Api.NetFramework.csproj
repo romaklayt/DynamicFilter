@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -45,7 +44,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=3.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -64,9 +72,6 @@
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
     </Reference>
@@ -107,14 +112,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
-      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\Api\UserController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -136,31 +137,28 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\romaklayt.DynamicFilter.Binder.NetFramework\romaklayt.DynamicFilter.Binder.NetFramework.csproj">
-      <Project>{1c4b3664-e4aa-4dae-a06a-74cb6dd289e8}</Project>
-      <Name>romaklayt.DynamicFilter.Binder.NetFramework</Name>
+    <ProjectReference Include="..\src\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj">
+      <Project>{7498a23a-6527-40c4-8a58-96fa1952013a}</Project>
+      <Name>romaklayt.DynamicFilter.Binder.NetFramework.Mvc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\romaklayt.DynamicFilter.Binder\romaklayt.DynamicFilter.Binder.csproj">
-      <Project>{45b4dc10-2338-450f-8eea-617a8918e616}</Project>
-      <Name>romaklayt.DynamicFilter.Binder</Name>
+    <ProjectReference Include="..\src\romaklayt.DynamicFilter.Binder.NetFramework.WebApi\romaklayt.DynamicFilter.Binder.NetFramework.WebApi.csproj">
+      <Project>{1c4b3664-e4aa-4dae-a06a-74cb6dd289e8}</Project>
+      <Name>romaklayt.DynamicFilter.Binder.NetFramework.WebApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\src\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj">
       <Project>{1cb836b8-0e37-498c-9184-14b6524e98ed}</Project>
       <Name>romaklayt.DynamicFilter.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\romaklayt.DynamicFilter.Extensions.NetFramework\romaklayt.DynamicFilter.Extensions.NetFramework.csproj">
-      <Project>{caaed3be-ab26-4845-af19-88aff01ee9e0}</Project>
-      <Name>romaklayt.DynamicFilter.Extensions.NetFramework</Name>
+    <ProjectReference Include="..\src\romaklayt.DynamicFilter.Extensions.NetFramework.Mvc\romaklayt.DynamicFilter.Extensions.NetFramework.Mvc.csproj">
+      <Project>{e32b9e12-1b3a-4788-a17c-6bf0bad0f355}</Project>
+      <Name>romaklayt.DynamicFilter.Extensions.NetFramework.Mvc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\romaklayt.DynamicFilter.Extensions\romaklayt.DynamicFilter.Extensions.csproj">
-      <Project>{7c90a9fb-cd1e-44fe-9eab-a1e92a949881}</Project>
-      <Name>romaklayt.DynamicFilter.Extensions</Name>
+    <ProjectReference Include="..\src\romaklayt.DynamicFilter.Extensions.NetFramework.WebApi\romaklayt.DynamicFilter.Extensions.NetFramework.WebApi.csproj">
+      <Project>{caaed3be-ab26-4845-af19-88aff01ee9e0}</Project>
+      <Name>romaklayt.DynamicFilter.Extensions.NetFramework.WebApi</Name>
     </ProjectReference>
     <ProjectReference Include="..\src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj">
       <Project>{a9c9c1f5-3691-4de7-9fb7-5dfcf23f44ae}</Project>
@@ -195,11 +193,12 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
