@@ -1,14 +1,21 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using romaklayt.DynamicFilter.Binder;
 
 namespace romaklayt.DynamicFilter.Test.Api
 {
     public class Startup
     {
+        private readonly string _appVersion = typeof(DynamicFilterBinder).Assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+            ?.InformationalVersion.Split('+').First();
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -18,7 +25,7 @@ namespace romaklayt.DynamicFilter.Test.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Version = "v1",
+                    Version = _appVersion,
                     Title = "Test Manager",
                     Contact = new OpenApiContact
                     {

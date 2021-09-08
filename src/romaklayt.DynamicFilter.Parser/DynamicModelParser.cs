@@ -6,7 +6,7 @@ using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Parser
 {
-    public static class Extensions
+    public static class DynamicModelParser
     {
         public static ExpressionDynamicFilter<T> BindFilterExpressions<T>(this BaseDynamicFilter filter)
         {
@@ -30,24 +30,24 @@ namespace romaklayt.DynamicFilter.Parser
 
         private static void ExtractPagination(object model, object bindingContext)
         {
-            var page = bindingContext.GetType().GetProperty("Page").GetValue(bindingContext, null) as string;
-            var pageSize = bindingContext.GetType().GetProperty("PageSize").GetValue(bindingContext, null) as string;
+            var page = bindingContext.GetType().GetProperty("Page")?.GetValue(bindingContext, null) as string;
+            var pageSize = bindingContext.GetType().GetProperty("PageSize")?.GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(page))
-                model.GetType().GetProperty("Page").SetValue(model, int.Parse(page));
+                model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
 
             if (!string.IsNullOrWhiteSpace(pageSize))
-                model.GetType().GetProperty("PageSize").SetValue(model, int.Parse(pageSize));
+                model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
         }
 
         private static void ExtractSelect(object model, object bindingContext, ParameterExpression parameter,
             Type itemType)
         {
-            var select = bindingContext.GetType().GetProperty("Select").GetValue(bindingContext, null) as string;
+            var select = bindingContext.GetType().GetProperty("Select")?.GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(select))
             {
-                model.GetType().GetProperty("SelectText").SetValue(model, select);
+                model.GetType().GetProperty("SelectText")?.SetValue(model, select);
                 var selectFields = select.Split(',');
 
                 // new statement "new Data()"
@@ -76,14 +76,14 @@ namespace romaklayt.DynamicFilter.Parser
                 // expression "o => new Data { Field1 = o.Field1, Field2 = o.Field2 }"
                 var lambda = Expression.Lambda(xInit, parameter);
 
-                model.GetType().GetProperty("Select").SetValue(model, lambda);
+                model.GetType().GetProperty("Select")?.SetValue(model, lambda);
             }
         }
 
 
         private static void ExtractOrder(object model, object bindingContext, ParameterExpression parameter)
         {
-            var order = bindingContext.GetType().GetProperty("Order").GetValue(bindingContext, null) as string;
+            var order = bindingContext.GetType().GetProperty("Order")?.GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(order))
             {
@@ -91,26 +91,26 @@ namespace romaklayt.DynamicFilter.Parser
                 if (orderItems.Count() > 1)
                 {
                     model.GetType().GetProperty("OrderType")
-                        .SetValue(model, Enum.Parse(typeof(OrderType), orderItems[1], true));
+                        ?.SetValue(model, Enum.Parse(typeof(OrderType), orderItems[1], true));
                     order = orderItems[0];
                 }
                 else
                 {
-                    model.GetType().GetProperty("OrderType").SetValue(model, OrderType.Desc);
+                    model.GetType().GetProperty("OrderType")?.SetValue(model, OrderType.Desc);
                 }
 
                 var property = Expression.PropertyOrField(parameter, order);
 
                 var orderExp = Expression.Lambda(Expression.Convert(property, typeof(object)).Reduce(), parameter);
 
-                model.GetType().GetProperty("Order").SetValue(model, orderExp);
+                model.GetType().GetProperty("Order")?.SetValue(model, orderExp);
             }
         }
 
         private static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
             Type itemType)
         {
-            var filter = bindingContext.GetType().GetProperty("Filter").GetValue(bindingContext, null) as string;
+            var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
@@ -118,7 +118,6 @@ namespace romaklayt.DynamicFilter.Parser
 
                 LambdaExpression finalExpression = null;
                 Expression currentExpression = null;
-                var item = Activator.CreateInstance(itemType, true);
 
                 for (var i = 0; i < filterAndValues.Count(); i++)
                     if (filterAndValues[i].Contains('|'))
@@ -134,14 +133,14 @@ namespace romaklayt.DynamicFilter.Parser
 
                             if (j == 0)
                             {
-                                if (currentExpression == null)
-                                    currentExpression = expression;
-                                else
-                                    currentExpression = Expression.And(currentExpression, expression);
+                                currentExpression = currentExpression == null
+                                    ? expression
+                                    : Expression.And(currentExpression, expression);
                             }
                             else
                             {
-                                currentExpression = Expression.Or(currentExpression, expression);
+                                if (currentExpression != null)
+                                    currentExpression = Expression.Or(currentExpression, expression);
                             }
                         }
                     }
@@ -155,9 +154,9 @@ namespace romaklayt.DynamicFilter.Parser
                             currentExpression = Expression.And(currentExpression, expression);
                     }
 
-                finalExpression = Expression.Lambda(currentExpression, parameter);
+                if (currentExpression != null) finalExpression = Expression.Lambda(currentExpression, parameter);
 
-                model.GetType().GetProperty("Filter").SetValue(model, finalExpression);
+                model.GetType().GetProperty("Filter")?.SetValue(model, finalExpression);
             }
         }
 
