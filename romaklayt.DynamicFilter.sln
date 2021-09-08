@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C17C8C7D-1760-4156-BB69-3730E7839518}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Parser", "src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj", "{A9C9C1F5-3691-4DE7-9FB7-5DFCF23F44AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Binder", "src\romaklayt.DynamicFilter.Binder\romaklayt.DynamicFilter.Binder.csproj", "{45B4DC10-2338-450F-8EEA-617A8918E616}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Test.Api", "test\romaklayt.DynamicFilter.Test.Api\romaklayt.DynamicFilter.Test.Api.csproj", "{71D59FEA-EC8A-4F27-9641-C3ECE863318C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B5583F9D-43F7-499A-ACA1-FE8E912710BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Common", "src\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj", "{1CB836B8-0E37-498C-9184-14B6524E98ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9C9C1F5-3691-4DE7-9FB7-5DFCF23F44AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9C9C1F5-3691-4DE7-9FB7-5DFCF23F44AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9C9C1F5-3691-4DE7-9FB7-5DFCF23F44AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9C9C1F5-3691-4DE7-9FB7-5DFCF23F44AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45B4DC10-2338-450F-8EEA-617A8918E616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45B4DC10-2338-450F-8EEA-617A8918E616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45B4DC10-2338-450F-8EEA-617A8918E616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45B4DC10-2338-450F-8EEA-617A8918E616}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71D59FEA-EC8A-4F27-9641-C3ECE863318C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71D59FEA-EC8A-4F27-9641-C3ECE863318C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71D59FEA-EC8A-4F27-9641-C3ECE863318C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71D59FEA-EC8A-4F27-9641-C3ECE863318C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CB836B8-0E37-498C-9184-14B6524E98ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CB836B8-0E37-498C-9184-14B6524E98ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CB836B8-0E37-498C-9184-14B6524E98ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CB836B8-0E37-498C-9184-14B6524E98ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A9C9C1F5-3691-4DE7-9FB7-5DFCF23F44AE} = {C17C8C7D-1760-4156-BB69-3730E7839518}
+		{45B4DC10-2338-450F-8EEA-617A8918E616} = {C17C8C7D-1760-4156-BB69-3730E7839518}
+		{71D59FEA-EC8A-4F27-9641-C3ECE863318C} = {B5583F9D-43F7-499A-ACA1-FE8E912710BB}
+		{1CB836B8-0E37-498C-9184-14B6524E98ED} = {C17C8C7D-1760-4156-BB69-3730E7839518}
+	EndGlobalSection
+EndGlobal

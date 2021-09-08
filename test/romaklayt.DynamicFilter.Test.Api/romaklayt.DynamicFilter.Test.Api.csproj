@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Binder\romaklayt.DynamicFilter.Binder.csproj" />
+      <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
+    </ItemGroup>
+
+</Project>
