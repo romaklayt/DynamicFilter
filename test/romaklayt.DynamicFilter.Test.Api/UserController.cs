@@ -40,6 +40,12 @@ namespace romaklayt.DynamicFilter.Test.Api
         {
             return await users.UseFilter(filterModelModel);
         }
+        
+        [HttpPost]
+        public async Task<IEnumerable<User>> GetPostList(DynamicFilterModel filterModelModel)
+        {
+            return await users.UseFilter(filterModelModel);
+        }
 
         [HttpGet("page")]
         public async Task<PageModel<User>> GetPage(DynamicFilterModel filterModel)
