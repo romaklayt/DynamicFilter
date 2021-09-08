@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\romaklayt.DynamicFilter.Binder.NetFramework\romaklayt.DynamicFilter.Binder.NetFramework.csproj" />
+      <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Linq.Async" Version="5.0.0" />
+    </ItemGroup>
+
+</Project>

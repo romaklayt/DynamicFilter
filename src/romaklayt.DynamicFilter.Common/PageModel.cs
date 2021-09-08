@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace romaklayt.DynamicFilter.Extensions
+namespace romaklayt.DynamicFilter.Common
 {
     public class PageModel<T>
     {
