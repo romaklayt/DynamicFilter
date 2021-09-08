@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Com
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Extensions", "src\romaklayt.DynamicFilter.Extensions\romaklayt.DynamicFilter.Extensions.csproj", "{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Binder.NetFramework", "src\romaklayt.DynamicFilter.Binder.NetFramework\romaklayt.DynamicFilter.Binder.NetFramework.csproj", "{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A9C9C1F5-3691-4DE7-9FB7-5DFCF23F44AE} = {C17C8C7D-1760-4156-BB69-3730E7839518}
@@ -47,5 +53,6 @@ Global
 		{71D59FEA-EC8A-4F27-9641-C3ECE863318C} = {B5583F9D-43F7-499A-ACA1-FE8E912710BB}
 		{1CB836B8-0E37-498C-9184-14B6524E98ED} = {C17C8C7D-1760-4156-BB69-3730E7839518}
 		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881} = {C17C8C7D-1760-4156-BB69-3730E7839518}
+		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8} = {C17C8C7D-1760-4156-BB69-3730E7839518}
 	EndGlobalSection
 EndGlobal
