@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using romaklayt.DynamicFilter.Binder.Net;
+using romaklayt.DynamicFilter.Binder.Net.Factories;
 
 namespace romaklayt.DynamicFilter.Test.Api
 {
@@ -35,7 +36,7 @@ namespace romaklayt.DynamicFilter.Test.Api
                     }
                 });
             });
-            services.AddControllers();
+            services.AddControllers(options => options.ValueProviderFactories.Add(new JsonBodyValueProviderFactory()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +48,7 @@ namespace romaklayt.DynamicFilter.Test.Api
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = "swagger";
+                c.RoutePrefix = "";
             });
             app.UseRouting();
 

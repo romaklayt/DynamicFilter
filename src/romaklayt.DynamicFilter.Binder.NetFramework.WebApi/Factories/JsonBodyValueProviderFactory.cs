@@ -4,11 +4,11 @@ using romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Providers;
 
 namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Factories
 {
-    public class HttpRequestMessageValueProviderFactory : ValueProviderFactory
+    public class JsonBodyValueProviderFactory : ValueProviderFactory
     {
         public override IValueProvider GetValueProvider(HttpActionContext actionContext)
         {
-            return new HttpRequestMessageValueProvider(actionContext);
+            return new JsonBodyValueProvider(actionContext);
         }
     }
 }

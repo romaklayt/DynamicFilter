@@ -10,7 +10,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
         {
             config.Services.Add(typeof(ValueProviderFactory), new FormValueProviderFactory());
             config.Services.Add(typeof(ValueProviderFactory), new MultipartValueProviderFactory());
-            config.Services.Add(typeof(ValueProviderFactory), new HttpRequestMessageValueProviderFactory());
+            config.Services.Add(typeof(ValueProviderFactory), new JsonBodyValueProviderFactory());
         }
     }
 }

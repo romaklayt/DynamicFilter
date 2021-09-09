@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Web.Http.Controllers;
 using System.Web.Http.ValueProviders;
@@ -11,25 +10,22 @@ using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Providers
 {
-    public class HttpRequestMessageValueProvider : IValueProvider
+    public class JsonBodyValueProvider : IValueProvider
     {
         private readonly Dictionary<string, string> _dictionary;
-        private readonly object _model;
-        private readonly HttpRequestMessage _values;
 
-        public HttpRequestMessageValueProvider(HttpActionContext actionContext)
+        public JsonBodyValueProvider(HttpActionContext actionContext)
         {
             if (actionContext == null) throw new ArgumentNullException(nameof(actionContext));
             var json = ExtractRequestJson(actionContext);
             _dictionary = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            _values = new HttpRequestMessage();
             if (!string.IsNullOrWhiteSpace(json))
             {
-                _model = DeserializeObjectFromJson<DynamicFilterModel>(json);
-                if (_model != null)
-                    _dictionary = _model.GetType()
+                var model = DeserializeObjectFromJson<DynamicFilterModel>(json);
+                if (model != null)
+                    _dictionary = model.GetType()
                         .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                        .ToDictionary(prop => prop.Name.ToLower(), prop => prop.GetValue(_model, null) as string);
+                        .ToDictionary(prop => prop.Name.ToLower(), prop => prop.GetValue(model, null) as string);
             }
         }
 

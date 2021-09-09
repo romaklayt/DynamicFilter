@@ -6,6 +6,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="5.7.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="System.Linq.Async" Version="5.0.0"/>
         <PackageReference Include="System.Linq.Async.Queryable" Version="5.0.0"/>
     </ItemGroup>
@@ -13,5 +17,11 @@
     <ItemGroup>
         <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
     </ItemGroup>
-
+    <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0"/>
+    </ItemGroup>
+    
+    <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0"/>
+    </ItemGroup>
 </Project>
