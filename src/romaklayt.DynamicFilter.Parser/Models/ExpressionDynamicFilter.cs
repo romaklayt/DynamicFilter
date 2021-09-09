@@ -1,6 +1,5 @@
 using System;
 using System.Linq.Expressions;
-using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Parser.Models
 {

@@ -3,12 +3,12 @@
     <PropertyGroup>
         <TargetFrameworks>net461;netstandard2.0;netstandard2.1</TargetFrameworks>
         <LangVersion>default</LangVersion>
-        <Description>A collection of extensions for use with a dynamic filter</Description>
-        <Copyright>romaklayt</Copyright>
-        <Authors>Roman Kolyago</Authors>
-        <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
-        <PackageTags>odata, orm, webapi, filter, dynamic</PackageTags>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Linq.Async" Version="5.0.0"/>
+        <PackageReference Include="System.Linq.Async.Queryable" Version="5.0.0"/>
+    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>

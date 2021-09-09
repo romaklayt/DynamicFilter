@@ -5,7 +5,7 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework
 {
     public class Data
     {
-        public static readonly List<User> Users = new List<User>()
+        public static readonly List<User> Users = new List<User>
         {
             new User("Bruno", 27, new Address("street 1", 23, new Zip(123456, "USA")))
             {

@@ -346,7 +346,8 @@ namespace romaklayt.DynamicFilter.Parser
                 if (obj != null)
                 {
                     var info = obj.GetProperty(part,
-                        BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty |
+                        BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic |
+                        BindingFlags.GetProperty |
                         BindingFlags.Instance);
                     if (info == null) return infos;
 

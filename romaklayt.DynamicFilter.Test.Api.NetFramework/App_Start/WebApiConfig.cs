@@ -1,7 +1,5 @@
 ﻿using System.Web.Http;
-using System.Web.Http.ValueProviders;
 using romaklayt.DynamicFilter.Binder.NetFramework.WebApi;
-using romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Factories;
 
 namespace romaklayt.DynamicFilter.Test.Api.NetFramework
 {

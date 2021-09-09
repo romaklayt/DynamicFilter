@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using romaklayt.DynamicFilter.Binder.NetFramework.Mvc;
 using romaklayt.DynamicFilter.Extensions;

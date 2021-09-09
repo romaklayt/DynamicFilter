@@ -12,7 +12,7 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework
         {
             // Add value providers for mvc
             DynamicFilterProviders.AddProviders();
-            
+
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
