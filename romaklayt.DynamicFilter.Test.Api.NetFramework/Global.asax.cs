@@ -2,6 +2,7 @@
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
+using romaklayt.DynamicFilter.Binder.NetFramework.Mvc;
 
 namespace romaklayt.DynamicFilter.Test.Api.NetFramework
 {
@@ -9,12 +10,9 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework
     {
         protected void Application_Start()
         {
-            ValueProviderFactories.Factories.Add(new FormValueProviderFactory());
-            ValueProviderFactories.Factories.Add(new JsonValueProviderFactory());
-            ValueProviderFactories.Factories.Add(new RouteDataValueProviderFactory());
-            ValueProviderFactories.Factories.Add(new QueryStringValueProviderFactory());
-            ValueProviderFactories.Factories.Add(new JQueryFormValueProviderFactory());
-
+            // Add value providers for mvc
+            DynamicFilterProviders.AddProviders();
+            
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

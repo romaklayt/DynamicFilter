@@ -161,6 +161,10 @@
             <Project>{caaed3be-ab26-4845-af19-88aff01ee9e0}</Project>
             <Name>romaklayt.DynamicFilter.Extensions.NetFramework.WebApi</Name>
         </ProjectReference>
+        <ProjectReference Include="..\src\romaklayt.DynamicFilter.Extensions\romaklayt.DynamicFilter.Extensions.csproj">
+          <Project>{7c90a9fb-cd1e-44fe-9eab-a1e92a949881}</Project>
+          <Name>romaklayt.DynamicFilter.Extensions</Name>
+        </ProjectReference>
         <ProjectReference Include="..\src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj">
             <Project>{a9c9c1f5-3691-4de7-9fb7-5dfcf23f44ae}</Project>
             <Name>romaklayt.DynamicFilter.Parser</Name>

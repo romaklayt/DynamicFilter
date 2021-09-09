@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using romaklayt.DynamicFilter.Binder.NetFramework.WebApi;
 using romaklayt.DynamicFilter.Common;
-using romaklayt.DynamicFilter.Extensions.NetFramework.WebApi;
+using romaklayt.DynamicFilter.Extensions;
 using romaklayt.DynamicFilter.Test.Api.NetFramework.Models;
 
 namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers.Api

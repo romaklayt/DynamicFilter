@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using romaklayt.DynamicFilter.Binder.NetFramework.Mvc;
-using romaklayt.DynamicFilter.Extensions.NetFramework.Mvc;
-using romaklayt.DynamicFilter.Test.Api.NetFramework.Models;
+using romaklayt.DynamicFilter.Extensions;
 
 namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers
 {
