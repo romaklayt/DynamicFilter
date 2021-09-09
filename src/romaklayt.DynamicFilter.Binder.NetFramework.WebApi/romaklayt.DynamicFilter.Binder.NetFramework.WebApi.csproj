@@ -12,6 +12,7 @@
         <RepositoryUrl>https://github.com/romaklayt/DynamicFilter</RepositoryUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageOutputPath>bin\debug\</PackageOutputPath>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
