@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Bin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Test.Api", "test\romaklayt.DynamicFilter.Test.Api\romaklayt.DynamicFilter.Test.Api.csproj", "{71D59FEA-EC8A-4F27-9641-C3ECE863318C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Test.Api.NetFramework", "test\romaklayt.DynamicFilter.Test.Api.NetFramework\romaklayt.DynamicFilter.Test.Api.NetFramework.csproj", "{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B5583F9D-43F7-499A-ACA1-FE8E912710BB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Common", "src\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj", "{1CB836B8-0E37-498C-9184-14B6524E98ED}"
@@ -18,8 +20,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Extensions", "src\romaklayt.DynamicFilter.Extensions\romaklayt.DynamicFilter.Extensions.csproj", "{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Binder.NetFramework.WebApi", "src\romaklayt.DynamicFilter.Binder.NetFramework.WebApi\romaklayt.DynamicFilter.Binder.NetFramework.WebApi.csproj", "{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Test.Api.NetFramework", "romaklayt.DynamicFilter.Test.Api.NetFramework\romaklayt.DynamicFilter.Test.Api.NetFramework.csproj", "{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Binder.NetFramework.Mvc", "src\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj", "{7498A23A-6527-40C4-8A58-96FA1952013A}"
 EndProject

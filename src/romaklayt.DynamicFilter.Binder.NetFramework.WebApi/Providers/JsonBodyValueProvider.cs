@@ -44,14 +44,11 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Providers
 
         private static object DeserializeObjectFromJson<T>(string json)
         {
-            var binder = new TypeNameSerializationBinder("");
-
             try
             {
                 var obj = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings
                 {
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    Binder = binder
+                    TypeNameHandling = TypeNameHandling.Auto
                 });
                 return obj;
             }
