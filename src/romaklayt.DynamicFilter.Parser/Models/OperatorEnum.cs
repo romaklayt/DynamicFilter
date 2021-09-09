@@ -1,4 +1,4 @@
-﻿namespace romaklayt.DynamicFilter.Parser
+﻿namespace romaklayt.DynamicFilter.Parser.Models
 {
     public enum OperatorEnum
     {

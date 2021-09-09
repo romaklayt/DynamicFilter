@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using romaklayt.DynamicFilter.Binder;
+using romaklayt.DynamicFilter.Binder.Net;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Extensions;
 using romaklayt.DynamicFilter.Test.Api.Models;

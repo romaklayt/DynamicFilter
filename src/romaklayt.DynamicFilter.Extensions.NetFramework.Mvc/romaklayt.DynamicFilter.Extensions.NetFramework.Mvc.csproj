@@ -6,11 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj"/>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj" />
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Linq.Async" Version="5.0.0"/>
+        <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     </ItemGroup>
 </Project>

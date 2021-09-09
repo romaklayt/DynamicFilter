@@ -1,6 +1,6 @@
 using System;
 
-namespace romaklayt.DynamicFilter.Parser
+namespace romaklayt.DynamicFilter.Parser.Models
 {
     [Serializable]
     public class PropertyNotFoundException : Exception

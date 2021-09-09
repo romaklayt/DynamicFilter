@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using romaklayt.DynamicFilter.Binder;
+using romaklayt.DynamicFilter.Binder.Net;
 
 namespace romaklayt.DynamicFilter.Test.Api
 {

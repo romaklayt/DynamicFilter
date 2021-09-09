@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace romaklayt.DynamicFilter.Binder
+namespace romaklayt.DynamicFilter.Binder.Net
 {
     public class DynamicFilterBinder : IModelBinder
     {

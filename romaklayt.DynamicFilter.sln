@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C17C8C7D-176
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Parser", "src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj", "{A9C9C1F5-3691-4DE7-9FB7-5DFCF23F44AE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Binder", "src\romaklayt.DynamicFilter.Binder\romaklayt.DynamicFilter.Binder.csproj", "{45B4DC10-2338-450F-8EEA-617A8918E616}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Binder.Net", "src\romaklayt.DynamicFilter.Binder.Net\romaklayt.DynamicFilter.Binder.Net.csproj", "{45B4DC10-2338-450F-8EEA-617A8918E616}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Test.Api", "test\romaklayt.DynamicFilter.Test.Api\romaklayt.DynamicFilter.Test.Api.csproj", "{71D59FEA-EC8A-4F27-9641-C3ECE863318C}"
 EndProject

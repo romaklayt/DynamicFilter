@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using romaklayt.DynamicFilter.Common;
+using romaklayt.DynamicFilter.Parser.Models;
 
 namespace romaklayt.DynamicFilter.Parser
 {
