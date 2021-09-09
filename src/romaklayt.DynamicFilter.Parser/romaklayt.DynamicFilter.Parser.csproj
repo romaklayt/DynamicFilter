@@ -2,16 +2,16 @@
 
     <PropertyGroup>
         <LangVersion>default</LangVersion>
-        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net461;netstandard2.0;netstandard2.1</TargetFrameworks>
         <Description>Library for using a dynamic filter with Linq</Description>
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
-        <PackageTags>odata, orm, webapi, filter, dynamic</PackageTags>
+        <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj"/>
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>

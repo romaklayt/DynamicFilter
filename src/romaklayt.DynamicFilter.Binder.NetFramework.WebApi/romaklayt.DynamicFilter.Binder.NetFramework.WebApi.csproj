@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net461;net471;net472;net48</TargetFrameworks>
         <LangVersion>default</LangVersion>
-        <Description>Simple binding that enables dynamic filtering, select, paging, order on your webapi for .Net Framework</Description>
+        <Description>Simple binding that enables dynamic filtering, select, paging, order on your webapi for .Net Framework Web Api</Description>
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
-        <PackageTags>odata, orm, webapi, filter, dynamic</PackageTags>
+        <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
         <RootNamespace>romaklayt.DynamicFilter.Binder.NetFramework.WebApi</RootNamespace>
+        <TargetFramework>net461</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,13 +16,13 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj"/>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj"/>
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj" />
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
     </ItemGroup>
 
 </Project>

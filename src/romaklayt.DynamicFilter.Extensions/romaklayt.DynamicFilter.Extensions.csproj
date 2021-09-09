@@ -7,7 +7,7 @@
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
-        <PackageTags>odata, orm, webapi, filter, dynamic</PackageTags>
+        <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>

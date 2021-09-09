@@ -3,6 +3,11 @@
     <PropertyGroup>
         <TargetFrameworks>net461;netstandard2.0;netstandard2.1</TargetFrameworks>
         <LangVersion>default</LangVersion>
+        <Description>A collection of async linq extensions for use with a dynamic filter</Description>
+        <Copyright>romaklayt</Copyright>
+        <Authors>Roman Kolyago</Authors>
+        <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
+        <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>

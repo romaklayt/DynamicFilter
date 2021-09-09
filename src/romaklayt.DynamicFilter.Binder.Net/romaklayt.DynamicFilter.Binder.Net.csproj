@@ -2,12 +2,12 @@
 
     <PropertyGroup>
         <LangVersion>default</LangVersion>
-        <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <Description>Simple binding that enables dynamic filtering, select, paging, order on your webapi for .Net and .Net Core</Description>
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
-        <PackageTags>odata, orm, webapi, filter, dynamic</PackageTags>
+        <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
+        <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
