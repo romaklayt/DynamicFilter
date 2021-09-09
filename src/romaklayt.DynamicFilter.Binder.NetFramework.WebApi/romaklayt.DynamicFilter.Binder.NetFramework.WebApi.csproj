@@ -25,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj" />
         <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
     </ItemGroup>
 
