@@ -8,8 +8,6 @@
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
         <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
-        <RepositoryUrl>https://github.com/romaklayt/DynamicFilter</RepositoryUrl>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
