@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
+using Newtonsoft.Json;
+using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
 {
@@ -11,7 +17,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
             if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
 
             var model = Activator.CreateInstance(bindingContext.ModelType);
-
+            
             ExtractFilters(model, bindingContext);
 
             ExtractOrder(model, bindingContext);
@@ -23,6 +29,23 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
             bindingContext.Model = model;
             
             return true;
+        }
+        private static T DeserializeObjectFromJson<T>(string json)
+        {
+            var binder = new TypeNameSerializationBinder("");
+
+            var obj = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Binder = binder
+            });
+            return obj;
+        }
+        private static string ExtractRequestJson(HttpActionContext actionContext)
+        {
+            var content = actionContext.Request.Content;
+            string json = content.ReadAsStringAsync().Result;
+            return json;
         }
 
         private static void ExtractPagination(object model, ModelBindingContext bindingContext)

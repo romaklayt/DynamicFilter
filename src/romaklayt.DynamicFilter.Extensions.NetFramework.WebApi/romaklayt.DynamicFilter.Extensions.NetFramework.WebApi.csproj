@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>romaklayt.DynamicFilter.Extensions.NetFramework.WebApi</RootNamespace>
+        <TargetFrameworks>net461;net471;net472;net48</TargetFrameworks>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

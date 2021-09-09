@@ -36,7 +36,7 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers
 
         [HttpGet]
         [ActionName("List")]
-        public JsonResult GetList([ModelBinder(typeof(DynamicFilterBinder))] DynamicFilterModel filterModelModel)
+        public JsonResult GetList(DynamicFilterModel filterModelModel)
         {
             return Json(users.UseFilter(filterModelModel).Result, JsonRequestBehavior.AllowGet);
         }
