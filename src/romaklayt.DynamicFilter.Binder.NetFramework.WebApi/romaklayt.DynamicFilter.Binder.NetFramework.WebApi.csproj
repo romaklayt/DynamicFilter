@@ -2,24 +2,28 @@
 
     <PropertyGroup>
         <LangVersion>default</LangVersion>
-        <TargetFrameworks>net461;netstandard2.0;netstandard2.1</TargetFrameworks>
-        <Description>Library for using a dynamic filter with Linq</Description>
+        <Description>Simple binding that enables dynamic filtering, select, paging, order on your webapi for .Net Framework Web Api</Description>
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
         <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
+        <RootNamespace>romaklayt.DynamicFilter.Binder.NetFramework.WebApi</RootNamespace>
+        <TargetFramework>net461</TargetFramework>
         <RepositoryUrl>https://github.com/romaklayt/DynamicFilter</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="GitVersion.MsBuild" Version="5.7.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
+    </ItemGroup>
+
 </Project>

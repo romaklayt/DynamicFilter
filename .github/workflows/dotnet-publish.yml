@@ -1,0 +1,48 @@
+name: .Net Package Publish
+  
+on: 
+  push:
+    tags:
+    - '*'
+  
+jobs:
+  build:
+  
+    runs-on: windows-latest
+      
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch all history for all tags and branches
+      run: git fetch --prune --unshallow
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9
+      with:
+          versionSpec: '5.7.x'
+    - name: Use GitVersion
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@v0.9
+    - run: |
+        echo "NuGetVersionV2: ${{ steps.gitversion.outputs.nuGetVersionV2 }}"
+        echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }}"
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Build with dotnet
+      run: dotnet build --configuration Release
+    - name: Pack romaklayt.DynamicFilter.Binder.Net
+      run: dotnet pack src/romaklayt.DynamicFilter.Binder.Net/romaklayt.DynamicFilter.Binder.Net.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} 
+    - name: Pack romaklayt.DynamicFilter.Common
+      run: dotnet pack src/romaklayt.DynamicFilter.Common/romaklayt.DynamicFilter.Common.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} 
+    - name: Pack romaklayt.DynamicFilter.Extensions
+      run: dotnet pack src/romaklayt.DynamicFilter.Extensions/romaklayt.DynamicFilter.Extensions.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} 
+    - name: Pack romaklayt.DynamicFilter.Extensions.Async
+      run: dotnet pack src/romaklayt.DynamicFilter.Extensions.Async/romaklayt.DynamicFilter.Extensions.Async.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} 
+    - name: Pack romaklayt.DynamicFilter.Parser
+      run: dotnet pack src/romaklayt.DynamicFilter.Parser/romaklayt.DynamicFilter.Parser.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} 
+    - name: Pack romaklayt.DynamicFilter.Binder.NetFramework.Mvc
+      run: dotnet pack src/romaklayt.DynamicFilter.Binder.NetFramework.Mvc/romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} 
+    - name: Pack romaklayt.DynamicFilter.Binder.NetFramework.WebApi
+      run: dotnet pack src/romaklayt.DynamicFilter.Binder.NetFramework.WebApi/romaklayt.DynamicFilter.Binder.NetFramework.WebApi.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}-${{ steps.gitversion.outputs.CommitsSinceVersionSourcePadded }} 
+    - name: Push to nuget
+      run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

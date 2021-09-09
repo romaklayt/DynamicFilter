@@ -1,7 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>default</LangVersion>
+        <TargetFrameworks>net461;netstandard2.0;netstandard2.1</TargetFrameworks>
+        <Description>Shared resources for romaklayt.DynamicFilter</Description>
+        <Copyright>romaklayt</Copyright>
+        <Authors>Roman Kolyago</Authors>
+        <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
+        <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
+        <RepositoryUrl>https://github.com/romaklayt/DynamicFilter</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="5.7.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
 </Project>
