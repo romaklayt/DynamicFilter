@@ -1,31 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Http;
-using romaklayt.DynamicFilter.Binder.NetFramework.WebApi;
+using Microsoft.AspNetCore.Mvc;
+using romaklayt.DynamicFilter.Binder;
 using romaklayt.DynamicFilter.Common;
-using romaklayt.DynamicFilter.Extensions.NetFramework.WebApi;
-using romaklayt.DynamicFilter.Test.Api.NetFramework.Models;
+using romaklayt.DynamicFilter.Extensions;
+using romaklayt.DynamicFilter.Test.Api.Models;
 
-namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers.Api
+namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
 {
-    public class UserController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserController : ControllerBase
     {
         [HttpGet]
-        [ActionName("List")]
-        public IEnumerable<User> GetList(DynamicFilterModel filterModelModel)
+        public async Task<IEnumerable<User>> GetList(DynamicFilterModel filterModelModel)
         {
-            return Data.Users.UseFilter(filterModelModel).Result;
+            return await Data.Users.UseFilter(filterModelModel);
         }
 
         [HttpPost]
-        [ActionName("List")]
         public async Task<IEnumerable<User>> GetPostList(DynamicFilterModel filterModelModel)
         {
             return await Data.Users.UseFilter(filterModelModel);
         }
 
-        [HttpGet]
-        [ActionName("Page")]
+        [HttpGet("page")]
         public async Task<PageModel<User>> GetPage(DynamicFilterModel filterModel)
         {
             var filteredUsers = await Data.Users.UseFilter(filterModel);

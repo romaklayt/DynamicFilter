@@ -9,31 +9,28 @@ using System.Web.Http.ValueProviders;
 using Newtonsoft.Json;
 using romaklayt.DynamicFilter.Common;
 
-namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
+namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Providers
 {
     public class HttpRequestMessageValueProvider : IValueProvider
     {
-        private readonly HttpRequestMessage _values;
-        private readonly object _model;
         private readonly Dictionary<string, string> _dictionary;
+        private readonly object _model;
+        private readonly HttpRequestMessage _values;
 
         public HttpRequestMessageValueProvider(HttpActionContext actionContext)
         {
             if (actionContext == null) throw new ArgumentNullException(nameof(actionContext));
             var json = ExtractRequestJson(actionContext);
             _dictionary = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            _values = new ();
+            _values = new HttpRequestMessage();
             if (!string.IsNullOrWhiteSpace(json))
             {
                 _model = DeserializeObjectFromJson<DynamicFilterModel>(json);
                 if (_model != null)
-                {
                     _dictionary = _model.GetType()
                         .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                         .ToDictionary(prop => prop.Name.ToLower(), prop => prop.GetValue(_model, null) as string);
-                }
             }
-                
         }
 
         public bool ContainsPrefix(string prefix)
@@ -44,12 +41,11 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
         public ValueProviderResult GetValue(string key)
         {
             if (_dictionary.TryGetValue(key.ToLower(), out var value))
-            {
                 if (!string.IsNullOrEmpty(value))
                     return new ValueProviderResult(value, value, CultureInfo.InvariantCulture);
-            }
             return null;
         }
+
         private static object DeserializeObjectFromJson<T>(string json)
         {
             var binder = new TypeNameSerializationBinder("");
@@ -68,10 +64,11 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
                 return null;
             }
         }
+
         private static string ExtractRequestJson(HttpActionContext actionContext)
         {
             var content = actionContext.Request.Content;
-            string json = content.ReadAsStringAsync().Result;
+            var json = content.ReadAsStringAsync().Result;
             return json;
         }
     }

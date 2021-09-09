@@ -1,18 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using romaklayt.DynamicFilter.Binder;
-using romaklayt.DynamicFilter.Common;
-using romaklayt.DynamicFilter.Extensions;
 using romaklayt.DynamicFilter.Test.Api.Models;
 
 namespace romaklayt.DynamicFilter.Test.Api
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class Data
     {
-        private readonly List<User> users = new()
+        public static readonly List<User> Users = new()
         {
             new User("Bruno", 27, new Address("street 1", 23, new Zip(123456, "USA")))
             {
@@ -35,24 +28,5 @@ namespace romaklayt.DynamicFilter.Test.Api
                 Roles = new List<Role> { new(6, "Read"), new(7, "Write") }
             }
         };
-
-        [HttpGet]
-        public async Task<IEnumerable<User>> GetList(DynamicFilterModel filterModelModel)
-        {
-            return await users.UseFilter(filterModelModel);
-        }
-        
-        [HttpPost]
-        public async Task<IEnumerable<User>> GetPostList(DynamicFilterModel filterModelModel)
-        {
-            return await users.UseFilter(filterModelModel);
-        }
-
-        [HttpGet("page")]
-        public async Task<PageModel<User>> GetPage(DynamicFilterModel filterModel)
-        {
-            var filteredUsers = await users.UseFilter(filterModel);
-            return await filteredUsers.ToPagedList(filterModel);
-        }
     }
 }

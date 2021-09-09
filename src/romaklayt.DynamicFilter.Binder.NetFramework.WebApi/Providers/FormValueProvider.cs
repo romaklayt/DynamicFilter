@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.ValueProviders;
 
-namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
+namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Providers
 {
     public class FormValueProvider : IValueProvider
     {

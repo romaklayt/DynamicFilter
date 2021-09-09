@@ -18,7 +18,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
             ExtractPagination(model, bindingContext);
 
             ExtractSelect(model, bindingContext);
-            
+
             return model;
         }
 
@@ -38,7 +38,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
         {
             var select = bindingContext.ValueProvider.GetValue("select")?.AttemptedValue;
 
-            if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select")?.SetValue(model, @select);
+            if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select")?.SetValue(model, select);
         }
 
 

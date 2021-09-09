@@ -54,7 +54,7 @@ namespace romaklayt.DynamicFilter.Parser
         public Expression GetExpression(ParameterExpression parameter)
         {
             var constantExpression = Expression.Constant(Value);
-            Expression returnExpression;
+            Expression returnExpression = null;
             ParameterExpression subParam = null;
             Expression baseExp = null;
             Type genericType = null;
@@ -110,11 +110,15 @@ namespace romaklayt.DynamicFilter.Parser
 
                     var toLowerMethod = typeof(string).GetMethod("ToLowerInvariant");
 
-                    var expression1 = Expression.Call(body, toLowerMethod);
+                    if (toLowerMethod is not null)
+                    {
+                        var expression1 = Expression.Call(body, toLowerMethod);
 
-                    var method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                        var method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
 
-                    returnExpression = Expression.Call(expression1, method, constantExpression);
+                        if (method is not null)
+                            returnExpression = Expression.Call(expression1, method, constantExpression);
+                    }
 
                     break;
                 }
@@ -122,7 +126,7 @@ namespace romaklayt.DynamicFilter.Parser
                 {
                     var method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
 
-                    returnExpression = Expression.Call(body, method, constantExpression);
+                    if (method is not null) returnExpression = Expression.Call(body, method, constantExpression);
 
                     break;
                 }
@@ -159,11 +163,14 @@ namespace romaklayt.DynamicFilter.Parser
                 var listType = typeof(List<>).MakeGenericType(genericType.GetGenericArguments().FirstOrDefault());
                 var listInstance = Activator.CreateInstance(listType, true);
 
-                var anyMethod = typeof(Enumerable).GetMethods()
-                    .Where(m => m.Name == "Any" && m.GetParameters().Count() == 2)
-                    .FirstOrDefault().MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
+                var anyMethod = typeof(Enumerable)
+                    .GetMethods()
+                    .FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Count() == 2)
+                    ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
 
-                returnExpression = Expression.Call(anyMethod, baseExp, Expression.Lambda(returnExpression, subParam));
+                if (anyMethod is not null && returnExpression is not null)
+                    returnExpression =
+                        Expression.Call(anyMethod, baseExp, Expression.Lambda(returnExpression, subParam));
             }
 
             return returnExpression;
@@ -335,14 +342,16 @@ namespace romaklayt.DynamicFilter.Parser
                 if (obj.IsGenericType && obj.GetGenericTypeDefinition().GetInterfaces()
                     .Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))))
                     obj = obj.GetGenericArguments().FirstOrDefault();
-                //Type type = obj.GetType();
-                var info = obj.GetProperty(part,
-                    BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty |
-                    BindingFlags.Instance);
-                if (info == null) return infos;
+                if (obj != null)
+                {
+                    var info = obj.GetProperty(part,
+                        BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty |
+                        BindingFlags.Instance);
+                    if (info == null) return infos;
 
-                obj = info.PropertyType;
-                infos.Add(info);
+                    obj = info.PropertyType;
+                    infos.Add(info);
+                }
             }
 
             return infos;

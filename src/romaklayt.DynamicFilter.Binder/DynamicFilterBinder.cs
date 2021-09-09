@@ -41,7 +41,7 @@ namespace romaklayt.DynamicFilter.Binder
         {
             var select = bindingContext.ValueProvider.GetValue("select").FirstValue;
 
-            if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select")?.SetValue(model, @select);
+            if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select")?.SetValue(model, select);
         }
 
 
