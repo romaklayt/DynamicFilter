@@ -59,7 +59,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Providers
                 });
                 return obj;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
