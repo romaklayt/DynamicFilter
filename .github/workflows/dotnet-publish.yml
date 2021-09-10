@@ -42,8 +42,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
 
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
+    - name: Restore dependencies
+      run: dotnet restore romaklayt.DynamicFilter.sln
 
     - name: Pack romaklayt.DynamicFilter.Binder.Net
       run: dotnet pack src/romaklayt.DynamicFilter.Binder.Net/romaklayt.DynamicFilter.Binder.Net.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
@@ -67,7 +67,8 @@ jobs:
       run: dotnet pack src/romaklayt.DynamicFilter.Binder.NetFramework.WebApi/romaklayt.DynamicFilter.Binder.NetFramework.WebApi.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
     
     - name: Push to nuget
-      run: dotnet nuget push nuget-packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      working-directory: nuget-packages
 
     - name: Release
       uses: softprops/action-gh-release@v1
