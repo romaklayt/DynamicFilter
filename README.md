@@ -10,6 +10,10 @@ First, download the packages into your project from nuget
 nuget install romaklayt.DynamicFilter.Extensions
 nuget install romaklayt.DynamicFilter.Binder.Net
 ```
+and, if you need, add to your *ConfigureServices* **Startup.cs** class for register value provider (JSON) for body JSON POST request support (providers for form-data, x-www-form-urlencoded work  them by default)
+```C#
+services.AddControllers(options => options.ValueProviderFactories.Add(new JsonBodyValueProviderFactory()));
+```
 
 # .Net Framework (>=4.6.1)
 
@@ -23,7 +27,7 @@ If you need to add a filter to the **web api** controller use the package
 nuget install romaklayt.DynamicFilter.Binder.NetFramework.WebApi
 ```
 
-and add to your **WebApiConfig** class for register value providers (form-data, x-www-form-urlencoded and JSON) for body POST request
+and, if you need, add to your **WebApiConfig** class for register value providers (form-data, x-www-form-urlencoded and JSON) for body POST request
 ```C#
 config.AddDynamicFilterProviders();
 ```
@@ -33,7 +37,7 @@ If you need to add a filter to the **MVC** controller use the package
 nuget install romaklayt.DynamicFilter.Binder.NetFramework.Mvc
 ```
 
-and add to your *Application_Start* **Global.asax.cs** class for register value providers (form-data, x-www-form-urlencoded and JSON) for body POST request
+and, if you need, add to your *Application_Start* **Global.asax.cs** class for register value providers (form-data, x-www-form-urlencoded and JSON) for body POST request
 ```C#
 DynamicFilterProviders.AddProviders();
 ```
