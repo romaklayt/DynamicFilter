@@ -1,4 +1,4 @@
-name: .Net Build
+name: Build Projects
   
 on:
   push:
@@ -17,9 +17,14 @@ on:
       - release/*
   
 jobs:
-  build-libraries:
+  build_libraries:
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [macOS-latest, ubuntu-latest, windows-latest]
   
-    runs-on: windows-latest
+    name: build packages on ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.runs-on }}
       
     steps:
     - name: Checkout
@@ -69,9 +74,15 @@ jobs:
     - name: Build romaklayt.DynamicFilter.Parser
       run: dotnet build src/romaklayt.DynamicFilter.Parser/romaklayt.DynamicFilter.Parser.csproj --configuration Release --no-restore
 
-  build-net-api:
+  build-test-dotnet-api:
   
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [macOS-latest, ubuntu-latest, windows-latest]
+  
+    name: build test dotnet api on ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.runs-on }}
       
     steps:
     - name: Checkout
@@ -103,12 +114,11 @@ jobs:
     - name: Build romaklayt.DynamicFilter.Test.Api
       run: dotnet build test/romaklayt.DynamicFilter.Test.Api/romaklayt.DynamicFilter.Test.Api.csproj --configuration Release --no-restore
 
-  build-netframework-api:
+  build-test-netframework-api:
  
     runs-on: windows-latest
  
     steps:
-      
     - name: Checkout
       uses: actions/checkout@v2
       with:
