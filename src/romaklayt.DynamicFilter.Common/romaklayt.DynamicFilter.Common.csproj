@@ -10,6 +10,7 @@
         <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
         <RepositoryUrl>https://github.com/romaklayt/DynamicFilter</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>package-icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,4 +20,7 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath="" />
+    </ItemGroup>
 </Project>

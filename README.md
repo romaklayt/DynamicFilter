@@ -50,7 +50,7 @@ After downloaded, go to your webapi and create an *get* or *post* endpoint recei
 public Task<List<User>> Get(DynamicFilter filter)
 ```
 
-Now you can query your endpoint with the TClass on DynamicFilter properties. Check *"tests"* folder on the project for examples.
+Now you can query your endpoint with the DynamicFilter properties. Check *"tests"* folder on the Api projects for examples.
 
 ```C#
 [HttpGet]

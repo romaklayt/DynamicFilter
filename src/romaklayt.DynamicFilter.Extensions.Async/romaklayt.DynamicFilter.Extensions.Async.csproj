@@ -9,6 +9,7 @@
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
         <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>package-icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,5 +30,9 @@
     
     <ItemGroup Condition="'$(TargetFramework)'=='net461'">
         <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath="" />
     </ItemGroup>
 </Project>
