@@ -10,6 +10,7 @@
         <TargetFramework>net461</TargetFramework>
         <RepositoryUrl>https://github.com/romaklayt/DynamicFilter</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>package-icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,7 +20,11 @@
         </PackageReference>
         <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath="" />
+    </ItemGroup>
+    
     <ItemGroup>
         <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
     </ItemGroup>
