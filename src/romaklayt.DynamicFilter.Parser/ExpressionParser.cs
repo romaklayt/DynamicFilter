@@ -109,7 +109,7 @@ namespace romaklayt.DynamicFilter.Parser
                 {
                     constantExpression = Expression.Constant(Value.ToString().ToLower());
 
-                    var toLowerMethod = typeof(string).GetMethod("ToLowerInvariant");
+                    var toLowerMethod = typeof(string).GetMethod("ToLower");
 
                     if (toLowerMethod is not null)
                     {
