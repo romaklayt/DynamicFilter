@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using romaklayt.DynamicFilter.Binder.Net;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Extensions;
-using romaklayt.DynamicFilter.Extensions.EntityFrameworkCore;
 using romaklayt.DynamicFilter.Test.Api.Models;
 
 namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
