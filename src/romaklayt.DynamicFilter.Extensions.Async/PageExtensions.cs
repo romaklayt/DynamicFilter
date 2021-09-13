@@ -11,9 +11,9 @@ namespace romaklayt.DynamicFilter.Extensions.Async
     public static class PageExtensions
     {
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source, int pageNumber,
-            int pageSize)
+            int pageSize) where T : class
         {
-            if (pageSize <= decimal.Zero) pageSize = 10;
+            if (pageSize < 1) pageSize = 10;
             if (pageNumber < 1) pageNumber = 1;
             var enumerable = await source.ToListAsync();
             var count = enumerable.Count();
@@ -22,36 +22,35 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         }
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source,
-            ExpressionDynamicFilter<T> filter)
+            ExpressionDynamicFilter<T> filter) where T : class
         {
             return await source.ToPagedList(filter.Page, filter.PageSize);
         }
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source,
-            BaseDynamicFilter filter)
+            BaseDynamicFilter filter) where T : class
         {
             return await source.ToPagedList(filter.Page, filter.PageSize);
         }
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncQueryable<T> source, int pageNumber,
-            int pageSize)
+            int pageSize) where T : class
         {
-            if (pageSize <= decimal.Zero) pageSize = 10;
+            if (pageSize < 1) pageSize = 10;
             if (pageNumber < 1) pageNumber = 1;
-            var enumerable = await source.ToListAsync();
-            var count = enumerable.Count();
-            var items = enumerable.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            var count = await source.CountAsync();
+            var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             return new PageModel<T>(items, count, pageNumber, pageSize);
         }
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncQueryable<T> source,
-            ExpressionDynamicFilter<T> filter)
+            ExpressionDynamicFilter<T> filter) where T : class
         {
             return await source.ToPagedList(filter.Page, filter.PageSize);
         }
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncQueryable<T> source,
-            BaseDynamicFilter filter)
+            BaseDynamicFilter filter) where T : class
         {
             return await source.ToPagedList(filter.Page, filter.PageSize);
         }

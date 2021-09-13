@@ -11,11 +11,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Binder.Net\romaklayt.DynamicFilter.Binder.Net.csproj"/>
+        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Extensions.EntityFrameworkCore\romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj"/>
         <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Extensions\romaklayt.DynamicFilter.Extensions.csproj"/>
         <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.9"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1"/>
     </ItemGroup>
 

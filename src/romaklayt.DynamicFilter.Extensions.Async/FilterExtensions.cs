@@ -12,7 +12,7 @@ namespace romaklayt.DynamicFilter.Extensions.Async
     public static class FilterExtensions
     {
         public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
-            ExpressionDynamicFilter<T> filter)
+            ExpressionDynamicFilter<T> filter) where T : class
         {
             var result = filter.Filter != null
                 ? source.Where(filter.Filter.Compile()).AsAsyncEnumerable()
@@ -30,13 +30,13 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         }
 
         public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
-            BaseDynamicFilter filter)
+            BaseDynamicFilter filter) where T : class
         {
             return await source.UseFilter(filter.BindFilterExpressions<T>());
         }
 
         public static async Task<IAsyncQueryable<T>> UseFilter<T>(this IAsyncQueryable<T> source,
-            ExpressionDynamicFilter<T> filter)
+            ExpressionDynamicFilter<T> filter) where T : class
         {
             var result = filter.Filter != null
                 ? source.Where(filter.Filter).AsAsyncQueryable()
@@ -54,7 +54,7 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         }
 
         public static async Task<IAsyncQueryable<T>> UseFilter<T>(this IAsyncQueryable<T> source,
-            BaseDynamicFilter filter)
+            BaseDynamicFilter filter) where T : class
         {
             return await source.UseFilter(filter.BindFilterExpressions<T>());
         }

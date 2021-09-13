@@ -7,7 +7,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
     {
         private DateTime _birthDate;
 
-        private User()
+        public User()
         {
         }
 
@@ -19,6 +19,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
             Date = DateTime.Now;
         }
 
+        public Guid Id { get; set; } = new();
         public string Name { get; set; }
         public int Age { get; set; }
         public Address Address { get; set; }

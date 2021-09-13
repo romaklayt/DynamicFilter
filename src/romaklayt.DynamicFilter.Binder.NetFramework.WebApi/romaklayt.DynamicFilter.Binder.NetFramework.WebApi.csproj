@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <LangVersion>default</LangVersion>
-        <Description>Simple binding that enables dynamic filtering, select, paging, order on your webapi for .Net Framework Web Api</Description>
+        <Description>Simple binding that enables dynamic filtering, select, paging, order on your .Net Framework Web Api controller</Description>
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
@@ -19,16 +19,16 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath=""/>
     </ItemGroup>
-    
+
     <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj"/>
     </ItemGroup>
 
 </Project>
