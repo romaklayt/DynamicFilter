@@ -42,9 +42,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
 
-    - name: Restore dependencies
-      run: dotnet restore romaklayt.DynamicFilter.sln
-
     - name: Pack romaklayt.DynamicFilter.Binder.Net
       run: dotnet pack src/romaklayt.DynamicFilter.Binder.Net/romaklayt.DynamicFilter.Binder.Net.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
     
