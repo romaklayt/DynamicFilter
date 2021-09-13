@@ -12,7 +12,7 @@ namespace romaklayt.DynamicFilter.Extensions
     {
         public static Task<PageModel<T>> ToPagedList<T>(this IQueryable<T> source, int pageNumber, int pageSize)
         {
-            if (pageSize <= decimal.Zero) pageSize = 10;
+            if (pageSize < 1) pageSize = 10;
             if (pageNumber < 1) pageNumber = 1;
             var count = source.Count();
             var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
@@ -21,7 +21,7 @@ namespace romaklayt.DynamicFilter.Extensions
 
         public static Task<PageModel<T>> ToPagedList<T>(this IEnumerable<T> source, int pageNumber, int pageSize)
         {
-            if (pageSize <= decimal.Zero) pageSize = 10;
+            if (pageSize < 1) pageSize = 10;
             if (pageNumber < 1) pageNumber = 1;
             var enumerable = source.ToList();
             var count = enumerable.Count();

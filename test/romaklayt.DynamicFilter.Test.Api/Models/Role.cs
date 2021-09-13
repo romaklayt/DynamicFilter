@@ -1,14 +1,19 @@
+using System;
+
 namespace romaklayt.DynamicFilter.Test.Api.Models
 {
     public class Role
     {
-        public Role(int? id, string name)
+        public Role()
         {
-            Id = id;
+            
+        }
+        public Role(string name)
+        {
             Name = name;
         }
 
-        public int? Id { get; set; }
+        public Guid Id { get; set; } = new Guid();
         public string Name { get; set; }
     }
 }

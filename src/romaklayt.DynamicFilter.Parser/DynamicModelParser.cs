@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Parser.Models;
 
@@ -25,8 +25,19 @@ namespace romaklayt.DynamicFilter.Parser
 
             ExtractPagination(model, filter);
 
-            ExtractSelect(model, filter, parameter, itemType);
+            ExtractAsNoTracking(model, filter);
+
+            ExtractSelect<T>(model, filter, parameter, itemType);
             return model as ExpressionDynamicFilter<T>;
+        }
+
+        private static void ExtractAsNoTracking(object model, object bindingContext)
+        {
+            var asNoTracking =
+                bindingContext.GetType().GetProperty("AsNoTracking")?.GetValue(bindingContext, null) as string;
+
+            if (!string.IsNullOrWhiteSpace(asNoTracking))
+                model.GetType().GetProperty("AsNoTracking")?.SetValue(model, bool.Parse(asNoTracking));
         }
 
         private static void ExtractPagination(object model, object bindingContext)
@@ -41,36 +52,13 @@ namespace romaklayt.DynamicFilter.Parser
                 model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
         }
 
-        private static void ExtractSelect(object model, object bindingContext, ParameterExpression parameter,
+        private static void ExtractSelect<T>(object model, object bindingContext, ParameterExpression parameter,
             Type itemType)
         {
             var select = bindingContext.GetType().GetProperty("Select")?.GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(select))
-            {
-                var selectFields = select.Split(',');
-
-                var xNew = Expression.New(itemType);
-
-                var bindings = selectFields.Select(o => o.Trim())
-                    .Select(o =>
-                        {
-                            var mi = itemType.GetProperty(o,
-                                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic |
-                                BindingFlags.GetProperty | BindingFlags.Instance);
-
-                            var xOriginal = Expression.PropertyOrField(parameter, o);
-
-                            return Expression.Bind(mi, xOriginal);
-                        }
-                    );
-
-                var xInit = Expression.MemberInit(xNew, bindings);
-
-                var lambda = Expression.Lambda(xInit, parameter);
-
-                model.GetType().GetProperty("Select")?.SetValue(model, lambda);
-            }
+                model.GetType().GetProperty("Select")?.SetValue(model, BuildSelector<T, T>(@select));
         }
 
 
@@ -160,6 +148,98 @@ namespace romaklayt.DynamicFilter.Parser
 
             var expression = expressionType.GetExpression(parameter);
             return expression;
+        }
+
+        public static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members)
+        {
+            return BuildSelector<TSource, TTarget>(members.Split(',').Select(m => m.Trim()));
+        }
+
+        public static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(IEnumerable<string> members)
+        {
+            var parameter = Expression.Parameter(typeof(TSource), "e");
+            var body = NewObject(typeof(TTarget), parameter, members.Select(m => m.Split('.')));
+            return Expression.Lambda<Func<TSource, TTarget>>(body, parameter);
+        }
+
+        private static Expression NewObject(Type targetType, Expression source, IEnumerable<string[]> memberPaths,
+            int depth = 0)
+        {
+            var bindings = new List<MemberBinding>();
+            var target = Expression.Constant(null, targetType);
+            foreach (var memberGroup in memberPaths.GroupBy(path => path[depth]))
+            {
+                var memberName = memberGroup.Key;
+                var targetMember = Expression.PropertyOrField(target, memberName);
+                var sourceMember = Expression.PropertyOrField(source, memberName);
+                var childMembers = memberGroup.Where(path => depth + 1 < path.Length).ToList();
+
+                Expression targetValue = null;
+                if (!childMembers.Any())
+                {
+                    targetValue = sourceMember;
+                }
+                else
+                {
+                    if (IsEnumerableType(targetMember.Type, out var sourceElementType) &&
+                        IsEnumerableType(targetMember.Type, out var targetElementType))
+                    {
+                        var sourceElementParam = Expression.Parameter(sourceElementType, "e");
+                        targetValue = NewObject(targetElementType, sourceElementParam, childMembers, depth + 1);
+                        targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
+                            new[] { sourceElementType, targetElementType }, sourceMember,
+                            Expression.Lambda(targetValue, sourceElementParam));
+
+                        targetValue = CorrectEnumerableResult(targetValue, targetElementType, targetMember.Type);
+                    }
+                    else
+                    {
+                        targetValue = NewObject(targetMember.Type, sourceMember, childMembers, depth + 1);
+                    }
+                }
+
+                bindings.Add(Expression.Bind(targetMember.Member, targetValue));
+            }
+
+            return Expression.MemberInit(Expression.New(targetType), bindings);
+        }
+
+        private static bool IsEnumerableType(Type type, out Type elementType)
+        {
+            foreach (var intf in type.GetInterfaces())
+                if (intf.IsGenericType && intf.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    elementType = intf.GetGenericArguments()[0];
+                    return true;
+                }
+
+            elementType = null;
+            return false;
+        }
+
+        private static bool IsSameCollectionType(Type type, Type genericType, Type elementType)
+        {
+            var result = genericType.MakeGenericType(elementType).IsAssignableFrom(type);
+            return result;
+        }
+
+        private static Expression CorrectEnumerableResult(Expression enumerable, Type elementType, Type memberType)
+        {
+            if (memberType == enumerable.Type)
+                return enumerable;
+
+            if (memberType.IsArray)
+                return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] { elementType },
+                    enumerable);
+
+            if (IsSameCollectionType(memberType, typeof(List<>), elementType)
+                || IsSameCollectionType(memberType, typeof(ICollection<>), elementType)
+                || IsSameCollectionType(memberType, typeof(IReadOnlyList<>), elementType)
+                || IsSameCollectionType(memberType, typeof(IReadOnlyCollection<>), elementType))
+                return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] { elementType },
+                    enumerable);
+
+            throw new NotImplementedException($"Not implemented transformation for type '{memberType.Name}'");
         }
     }
 }

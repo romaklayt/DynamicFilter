@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <LangVersion>default</LangVersion>
-        <Description>Simple binding that enables dynamic filtering, select, paging, order on your webapi for .Net Framework Mvc</Description>
+        <Description>Simple binding that enables dynamic filtering, select, paging, order on your .Net Framework Mvc controller</Description>
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>

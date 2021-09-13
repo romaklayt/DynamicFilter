@@ -60,7 +60,6 @@ namespace romaklayt.DynamicFilter.Parser
             Expression baseExp = null;
             Type genericType = null;
 
-            //making constant nullable
             if (Nullable.GetUnderlyingType(Properties.LastOrDefault().PropertyType) != null)
             {
                 var type = typeof(Nullable<>).MakeGenericType(
@@ -83,13 +82,6 @@ namespace romaklayt.DynamicFilter.Parser
                     {
                         subParam = Expression.Parameter(genericType.GetGenericArguments().FirstOrDefault(), "y");
                         body = Expression.Property(subParam, member);
-
-                        //body = expression1;
-
-                        //return body;
-
-                        //body = Expression.Call(anyMethod,
-                        //    Expression.Constant(listInstance, listType), Expression.Property(body, member));
                     }
                     else
                     {

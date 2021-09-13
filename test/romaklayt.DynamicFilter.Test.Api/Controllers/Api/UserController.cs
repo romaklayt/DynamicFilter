@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using romaklayt.DynamicFilter.Binder.Net;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Extensions;
+using romaklayt.DynamicFilter.Extensions.EntityFrameworkCore;
 using romaklayt.DynamicFilter.Test.Api.Models;
 
 namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
@@ -12,6 +14,12 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly MyContext _myContext;
+
+        public UserController(MyContext myContext)
+        {
+            _myContext = myContext;
+        }
         [HttpGet]
         public async Task<IEnumerable<User>> GetList(DynamicFilterModel filterModelModel)
         {
@@ -29,6 +37,11 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         {
             var filteredUsers = await Data.Users.UseFilter(filterModel);
             return await filteredUsers.ToPagedList(filterModel);
+        }
+        [HttpGet("context")]
+        public async Task<object> GetContextList(DynamicFilterModel filterModelModel)
+        {
+            return await _myContext.Users.UseFilter(filterModelModel);
         }
     }
 }

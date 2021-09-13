@@ -11,5 +11,8 @@ namespace romaklayt.DynamicFilter.Parser.Models
         public OrderType OrderType { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }
+        
+        public bool AsNoTracking { get; set; } = true;
+        public string Include { get; set; }
     }
 }
