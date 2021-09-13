@@ -18,12 +18,10 @@ namespace romaklayt.DynamicFilter.Extensions.EntityFrameworkCore
             var result = filter.Filter != null ? source.Where(filter.Filter).AsQueryable() : source.AsQueryable();
 
             if (filter.Include != null)
-                foreach (var s in filter.Include.Split(new []{','}, StringSplitOptions.RemoveEmptyEntries))
-                {
+                foreach (var s in filter.Include.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                     result = result.Include(s);
-                }
             if (filter.AsNoTracking) result = result.AsNoTracking();
-            
+
             if (filter.Select != null)
                 result = result.Select(filter.Select);
 
@@ -31,7 +29,7 @@ namespace romaklayt.DynamicFilter.Extensions.EntityFrameworkCore
                 result = filter.OrderType == OrderType.Asc
                     ? result.OrderBy(filter.Order).AsQueryable()
                     : result.OrderByDescending(filter.Order).AsQueryable();
-            
+
             return await Task.FromResult(result);
         }
 

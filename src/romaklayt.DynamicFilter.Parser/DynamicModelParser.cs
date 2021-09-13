@@ -58,7 +58,7 @@ namespace romaklayt.DynamicFilter.Parser
             var select = bindingContext.GetType().GetProperty("Select")?.GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(select))
-                model.GetType().GetProperty("Select")?.SetValue(model, BuildSelector<T, T>(@select));
+                model.GetType().GetProperty("Select")?.SetValue(model, BuildSelector<T, T>(select));
         }
 
 

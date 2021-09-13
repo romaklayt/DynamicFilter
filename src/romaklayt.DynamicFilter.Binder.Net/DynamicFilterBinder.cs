@@ -19,9 +19,9 @@ namespace romaklayt.DynamicFilter.Binder.Net
             ExtractPagination(model, bindingContext);
 
             ExtractSelect(model, bindingContext);
-            
+
             ExtractInclude(model, bindingContext);
-            
+
             ExtractAsNoTracking(model, bindingContext);
 
             bindingContext.Result = ModelBindingResult.Success(model);
@@ -35,12 +35,13 @@ namespace romaklayt.DynamicFilter.Binder.Net
 
             if (!string.IsNullOrWhiteSpace(include)) model.GetType().GetProperty("Include")?.SetValue(model, include);
         }
-        
+
         private static void ExtractAsNoTracking(object model, ModelBindingContext bindingContext)
         {
             var asnotracking = bindingContext.ValueProvider.GetValue("asnotracking").FirstValue;
 
-            if (!string.IsNullOrWhiteSpace(asnotracking)) model.GetType().GetProperty("Include")?.SetValue(model, asnotracking);
+            if (!string.IsNullOrWhiteSpace(asnotracking))
+                model.GetType().GetProperty("Include")?.SetValue(model, asnotracking);
         }
 
         private static void ExtractPagination(object model, ModelBindingContext bindingContext)

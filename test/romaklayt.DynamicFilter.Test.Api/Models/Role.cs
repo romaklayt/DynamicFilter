@@ -6,14 +6,14 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
     {
         public Role()
         {
-            
         }
+
         public Role(string name)
         {
             Name = name;
         }
 
-        public Guid Id { get; set; } = new Guid();
+        public Guid Id { get; set; } = new();
         public string Name { get; set; }
     }
 }

@@ -6,8 +6,8 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
     {
         public Address()
         {
-            
         }
+
         public Address(string street, int? number, Zip zip)
         {
             Street = street;
@@ -15,7 +15,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
             Zip = zip;
         }
 
-        public Guid Id { get; set; } = new Guid();
+        public Guid Id { get; set; } = new();
         public string Street { get; set; }
         public int? Number { get; set; }
         public Zip Zip { get; set; }

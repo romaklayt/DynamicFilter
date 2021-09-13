@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using romaklayt.DynamicFilter.Test.Api.Models;
 
 namespace romaklayt.DynamicFilter.Test.Api
@@ -14,30 +13,29 @@ namespace romaklayt.DynamicFilter.Test.Api
             new Address("street 4", 53, new Zip(76878979, "PT")),
             new Address("street 5", 63, new Zip(65756443, "PT"))
         };
+
         public static readonly List<User> Users = new()
         {
             new User("Bruno", 27, Addresses[0])
             {
-                Roles = new List<Role> { new( "Admin") }
+                Roles = new List<Role> { new("Admin") }
             },
             new User("Fred", 33, Addresses[1])
             {
-                Roles = new List<Role> { new( "Admin") }
+                Roles = new List<Role> { new("Admin") }
             },
             new User("Albert", 37, Addresses[2])
             {
-                Roles = new List<Role> { new( "Read"), new("Write") }
+                Roles = new List<Role> { new("Read"), new("Write") }
             },
             new User("Lucao", 23, Addresses[3])
             {
-                Roles = new List<Role> { new( "Read"), new("Write") }
+                Roles = new List<Role> { new("Read"), new("Write") }
             },
             new User("Luide", 28, Addresses[4])
             {
-                Roles = new List<Role> { new( "Read"), new("Write") }
+                Roles = new List<Role> { new("Read"), new("Write") }
             }
         };
-
-        
     }
 }

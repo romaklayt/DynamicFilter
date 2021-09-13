@@ -6,11 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="EntityFramework" Version="6.4.4" />
+        <PackageReference Include="EntityFramework" Version="6.4.4"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj" />
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
     </ItemGroup>
 
 </Project>

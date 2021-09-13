@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Web.Http.Controllers;
 using System.Web.Http.ValueProviders;
 using Newtonsoft.Json;
-using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Providers
 {

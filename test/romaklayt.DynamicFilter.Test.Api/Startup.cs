@@ -23,7 +23,7 @@ namespace romaklayt.DynamicFilter.Test.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MyContext>(opt => opt.UseInMemoryDatabase("Test"));
-            services.AddScoped<MyContext>();  
+            services.AddScoped<MyContext>();
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {

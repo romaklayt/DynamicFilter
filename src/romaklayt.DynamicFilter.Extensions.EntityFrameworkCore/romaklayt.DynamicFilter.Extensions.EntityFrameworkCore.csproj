@@ -6,15 +6,15 @@
     </PropertyGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.18" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.18"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj" />
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
     </ItemGroup>
 
 </Project>
