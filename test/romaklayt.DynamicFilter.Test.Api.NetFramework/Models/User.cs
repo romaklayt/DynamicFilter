@@ -5,8 +5,6 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Models
 {
     public class User
     {
-        private DateTime _birthDate;
-
         private User()
         {
         }
@@ -16,19 +14,13 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Models
             Name = name;
             Age = age;
             Address = address;
-            Date = DateTime.Now;
         }
 
         public string Name { get; set; }
         public int Age { get; set; }
         public Address Address { get; set; }
         public List<Role> Roles { get; set; }
-        private DateTimeOffset Date { get; }
 
-        public DateTime BirthDate
-        {
-            get => DateTime.Now.AddYears(-Age);
-            set => _birthDate = value;
-        }
+        public DateTime BirthDate { get; set; } = DateTime.Now.AddMonths(-new Random().Next(0, 20));
     }
 }

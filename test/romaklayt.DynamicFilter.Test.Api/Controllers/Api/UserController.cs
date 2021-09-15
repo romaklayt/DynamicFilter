@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using romaklayt.DynamicFilter.Binder.Net;
 using romaklayt.DynamicFilter.Common;
@@ -12,11 +13,13 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly MyContext _myContext;
 
-        public UserController(MyContext myContext)
+        public UserController(MyContext myContext, IMapper mapper)
         {
             _myContext = myContext;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -39,6 +42,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         }
 
         [HttpGet("context")]
+        [ProducesResponseType(typeof(UserViewModel), 200)]
         public async Task<object> GetContextList(DynamicFilterModel filterModelModel)
         {
             return await _myContext.Users.UseFilter(filterModelModel);

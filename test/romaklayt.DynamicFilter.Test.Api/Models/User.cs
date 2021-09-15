@@ -5,8 +5,6 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
 {
     public class User
     {
-        private DateTime _birthDate;
-
         public User()
         {
         }
@@ -16,7 +14,6 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
             Name = name;
             Age = age;
             Address = address;
-            Date = DateTime.Now;
         }
 
         public Guid Id { get; set; } = new();
@@ -24,12 +21,19 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
         public int Age { get; set; }
         public Address Address { get; set; }
         public List<Role> Roles { get; set; }
-        private DateTimeOffset Date { get; }
 
-        public DateTime BirthDate
-        {
-            get => DateTime.Now.AddYears(-Age);
-            set => _birthDate = value;
-        }
+        public DateTime BirthDate { get; set; } = DateTime.Now.AddMonths(-new Random().Next(0, 20));
+    }
+
+    public class UserViewModel
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public Address Address { get; set; }
+        public List<Role> Roles { get; set; }
+
+        public DateTime BirthDate { get; set; }
+        public string Address_Zip_Country { get; set; }
     }
 }
