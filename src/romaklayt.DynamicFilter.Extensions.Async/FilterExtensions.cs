@@ -11,52 +11,67 @@ namespace romaklayt.DynamicFilter.Extensions.Async
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class FilterExtensions
     {
-        public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
-            ExpressionDynamicFilter<T> filter) where T : class
+        public static async Task<IAsyncEnumerable<TTarget>> UseFilter<TSource, TTarget>(
+            this IAsyncEnumerable<TSource> source,
+            ExpressionDynamicFilter<TSource, TTarget> filter) where TSource : class
+            where TTarget : class
         {
-            var result = filter.Filter != null
-                ? source.Where(filter.Filter.Compile()).AsAsyncEnumerable()
-                : source.AsAsyncEnumerable();
-
-            if (filter.Select != null)
-                result = result.Select(filter.Select.Compile());
-
-            if (filter.Order != null)
-                result = filter.OrderType == OrderType.Asc
-                    ? result.OrderBy(filter.Order.Compile()).AsAsyncEnumerable()
-                    : result.OrderByDescending(filter.Order.Compile()).AsAsyncEnumerable();
-
-            return await Task.FromResult(result);
-        }
-
-        public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
-            BaseDynamicFilter filter) where T : class
-        {
-            return await source.UseFilter(filter.BindFilterExpressions<T>());
-        }
-
-        public static async Task<IAsyncQueryable<T>> UseFilter<T>(this IAsyncQueryable<T> source,
-            ExpressionDynamicFilter<T> filter) where T : class
-        {
-            var result = filter.Filter != null
-                ? source.Where(filter.Filter).AsAsyncQueryable()
+            var queryable = filter.Filter != null
+                ? source.Where(filter.Filter.Compile())
                 : source.AsAsyncQueryable();
 
-            if (filter.Select != null)
-                result = result.Select(filter.Select);
-
             if (filter.Order != null)
-                result = filter.OrderType == OrderType.Asc
-                    ? result.OrderBy(filter.Order.Compile()).AsAsyncQueryable()
-                    : result.OrderByDescending(filter.Order.Compile()).AsAsyncQueryable();
+                queryable = filter.OrderType == OrderType.Asc
+                    ? queryable.OrderBy(filter.Order.Compile())
+                    : queryable.OrderByDescending(filter.Order.Compile());
+
+            var result = filter.Select != null ? queryable.Select(filter.Select.Compile()) : queryable.Cast<TTarget>();
 
             return await Task.FromResult(result);
+        }
+
+        public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
+            BaseDynamicFilter filter) where T : class
+        {
+            return await source.UseFilter(filter.BindFilterExpressions<T, T>());
+        }
+
+        public static async Task<IAsyncEnumerable<TTarget>> UseFilter<TSource, TTarget>(
+            this IAsyncEnumerable<TSource> source,
+            BaseDynamicFilter filter) where TSource : class where TTarget : class
+        {
+            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>());
+        }
+
+        public static async Task<IAsyncQueryable<TTarget>> UseFilter<TSource, TTarget>(
+            this IAsyncQueryable<TSource> source,
+            ExpressionDynamicFilter<TSource, TTarget> filter) where TSource : class where TTarget : class
+        {
+            var queryable = filter.Filter != null
+                ? source.Where(filter.Filter)
+                : source.AsAsyncQueryable();
+
+            if (filter.Order != null)
+                queryable = filter.OrderType == OrderType.Asc
+                    ? queryable.OrderBy(filter.Order)
+                    : queryable.OrderByDescending(filter.Order);
+
+            var result = filter.Select != null ? queryable.Select(filter.Select) : queryable.Cast<TTarget>();
+
+            return await Task.FromResult(result);
+        }
+
+        public static async Task<IAsyncQueryable<TTarget>> UseFilter<TSource, TTarget>(
+            this IAsyncQueryable<TSource> source,
+            BaseDynamicFilter filter) where TSource : class where TTarget : class
+        {
+            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>());
         }
 
         public static async Task<IAsyncQueryable<T>> UseFilter<T>(this IAsyncQueryable<T> source,
             BaseDynamicFilter filter) where T : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<T>());
+            return await source.UseFilter(filter.BindFilterExpressions<T, T>());
         }
     }
 }

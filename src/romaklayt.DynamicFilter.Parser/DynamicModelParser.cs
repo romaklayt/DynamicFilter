@@ -11,13 +11,31 @@ namespace romaklayt.DynamicFilter.Parser
     {
         public static ExpressionDynamicFilter<T> BindFilterExpressions<T>(this BaseDynamicFilter filter)
         {
+            var model = Model<T, T>(filter, out var itemType, out var parameter);
+
+            ExtractSelect<T, T>(model, filter, parameter, itemType);
+            return model as ExpressionDynamicFilter<T>;
+        }
+
+        public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
+            this BaseDynamicFilter filter)
+        {
+            var model = Model<TSource, TTarget>(filter, out var itemType, out var parameter);
+
+            ExtractSelect<TSource, TTarget>(model, filter, parameter, itemType);
+            return model as ExpressionDynamicFilter<TSource, TTarget>;
+        }
+
+        private static object Model<TSource, TTarget>(BaseDynamicFilter filter, out Type itemType,
+            out ParameterExpression parameter)
+        {
             if (filter == null) throw new ArgumentNullException(nameof(filter));
 
-            var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<T>));
+            var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
 
-            var itemType = typeof(ExpressionDynamicFilter<T>).GenericTypeArguments[0];
+            itemType = typeof(ExpressionDynamicFilter<TSource>).GenericTypeArguments[0];
 
-            var parameter = Expression.Parameter(itemType, "x");
+            parameter = Expression.Parameter(itemType, "x");
 
             ExtractFilters(model, filter, parameter, itemType);
 
@@ -26,9 +44,7 @@ namespace romaklayt.DynamicFilter.Parser
             ExtractPagination(model, filter);
 
             ExtractAsNoTracking(model, filter);
-
-            ExtractSelect<T>(model, filter, parameter, itemType);
-            return model as ExpressionDynamicFilter<T>;
+            return model;
         }
 
         private static void ExtractAsNoTracking(object model, object bindingContext)
@@ -52,13 +68,15 @@ namespace romaklayt.DynamicFilter.Parser
                 model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
         }
 
-        private static void ExtractSelect<T>(object model, object bindingContext, ParameterExpression parameter,
+        private static void ExtractSelect<TSource, TTarget>(object model, object bindingContext,
+            ParameterExpression parameter,
             Type itemType)
         {
             var select = bindingContext.GetType().GetProperty("Select")?.GetValue(bindingContext, null) as string;
 
             if (!string.IsNullOrWhiteSpace(select))
-                model.GetType().GetProperty("Select")?.SetValue(model, BuildSelector<T, T>(select));
+                model.GetType().GetProperty("Select")
+                    ?.SetValue(model, BuildSelector<TSource, TTarget>(select.Replace("_", ".")));
         }
 
 
@@ -68,7 +86,7 @@ namespace romaklayt.DynamicFilter.Parser
 
             if (!string.IsNullOrWhiteSpace(order))
             {
-                var orderItems = order.Split('=');
+                var orderItems = order.Replace("_", ".").Split('=');
                 if (orderItems.Count() > 1)
                 {
                     model.GetType().GetProperty("OrderType")
@@ -95,7 +113,7 @@ namespace romaklayt.DynamicFilter.Parser
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                var filterAndValues = filter.Split(',').ToArray();
+                var filterAndValues = filter.Replace("_", ".").Split(',').ToArray();
 
                 LambdaExpression finalExpression = null;
                 Expression currentExpression = null;
@@ -158,11 +176,12 @@ namespace romaklayt.DynamicFilter.Parser
         public static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(IEnumerable<string> members)
         {
             var parameter = Expression.Parameter(typeof(TSource), "e");
-            var body = NewObject(typeof(TTarget), parameter, members.Select(m => m.Split('.')));
+            var body = BuildSelectorExpression(typeof(TTarget), parameter, members.Select(m => m.Split('.')));
             return Expression.Lambda<Func<TSource, TTarget>>(body, parameter);
         }
 
-        private static Expression NewObject(Type targetType, Expression source, IEnumerable<string[]> memberPaths,
+        private static Expression BuildSelectorExpression(Type targetType, Expression source,
+            IEnumerable<string[]> memberPaths,
             int depth = 0)
         {
             var bindings = new List<MemberBinding>();
@@ -185,7 +204,8 @@ namespace romaklayt.DynamicFilter.Parser
                         IsEnumerableType(targetMember.Type, out var targetElementType))
                     {
                         var sourceElementParam = Expression.Parameter(sourceElementType, "e");
-                        targetValue = NewObject(targetElementType, sourceElementParam, childMembers, depth + 1);
+                        targetValue = BuildSelectorExpression(targetElementType, sourceElementParam, childMembers,
+                            depth + 1);
                         targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
                             new[] { sourceElementType, targetElementType }, sourceMember,
                             Expression.Lambda(targetValue, sourceElementParam));
@@ -194,7 +214,7 @@ namespace romaklayt.DynamicFilter.Parser
                     }
                     else
                     {
-                        targetValue = NewObject(targetMember.Type, sourceMember, childMembers, depth + 1);
+                        targetValue = BuildSelectorExpression(targetMember.Type, sourceMember, childMembers, depth + 1);
                     }
                 }
 
