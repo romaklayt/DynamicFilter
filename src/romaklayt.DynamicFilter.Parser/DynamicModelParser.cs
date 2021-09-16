@@ -9,33 +9,16 @@ namespace romaklayt.DynamicFilter.Parser
 {
     public static class DynamicModelParser
     {
-        public static ExpressionDynamicFilter<T> BindFilterExpressions<T>(this BaseDynamicFilter filter)
-        {
-            var model = Model<T, T>(filter, out var itemType, out var parameter);
-
-            ExtractSelect<T, T>(model, filter, parameter, itemType);
-            return model as ExpressionDynamicFilter<T>;
-        }
-
         public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
             this BaseDynamicFilter filter)
-        {
-            var model = Model<TSource, TTarget>(filter, out var itemType, out var parameter);
-
-            ExtractSelect<TSource, TTarget>(model, filter, parameter, itemType);
-            return model as ExpressionDynamicFilter<TSource, TTarget>;
-        }
-
-        private static object Model<TSource, TTarget>(BaseDynamicFilter filter, out Type itemType,
-            out ParameterExpression parameter)
         {
             if (filter == null) throw new ArgumentNullException(nameof(filter));
 
             var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
 
-            itemType = typeof(ExpressionDynamicFilter<TSource>).GenericTypeArguments[0];
+            var itemType = typeof(ExpressionDynamicFilter<TSource>).GenericTypeArguments[0];
 
-            parameter = Expression.Parameter(itemType, "x");
+            var parameter = Expression.Parameter(itemType, "x");
 
             ExtractFilters(model, filter, parameter, itemType);
 
@@ -43,7 +26,8 @@ namespace romaklayt.DynamicFilter.Parser
 
             ExtractPagination(model, filter);
 
-            return model;
+            ExtractSelect<TSource, TTarget>(model, filter, parameter, itemType);
+            return model as ExpressionDynamicFilter<TSource, TTarget>;
         }
 
         private static void ExtractPagination(object model, object bindingContext)

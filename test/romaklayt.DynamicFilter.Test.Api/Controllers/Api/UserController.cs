@@ -45,7 +45,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         [ProducesResponseType(typeof(UserViewModel), 200)]
         public async Task<object> GetContextList(DynamicFilterModel filterModelModel)
         {
-            return await _myContext.Users.UseFilter(filterModelModel);
+            return await _myContext.Users.UseFilter<User, UserViewModel>(filterModelModel);
         }
     }
 }
