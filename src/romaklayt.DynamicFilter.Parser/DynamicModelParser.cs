@@ -43,17 +43,7 @@ namespace romaklayt.DynamicFilter.Parser
 
             ExtractPagination(model, filter);
 
-            ExtractAsNoTracking(model, filter);
             return model;
-        }
-
-        private static void ExtractAsNoTracking(object model, object bindingContext)
-        {
-            var asNoTracking =
-                bindingContext.GetType().GetProperty("AsNoTracking")?.GetValue(bindingContext, null) as string;
-
-            if (!string.IsNullOrWhiteSpace(asNoTracking))
-                model.GetType().GetProperty("AsNoTracking")?.SetValue(model, bool.Parse(asNoTracking));
         }
 
         private static void ExtractPagination(object model, object bindingContext)
@@ -76,7 +66,7 @@ namespace romaklayt.DynamicFilter.Parser
 
             if (!string.IsNullOrWhiteSpace(select))
                 model.GetType().GetProperty("Select")
-                    ?.SetValue(model, BuildSelector<TSource, TTarget>(select.Replace("_", ".")));
+                    ?.SetValue(model, BuildSelector<TSource, TTarget>(select));
         }
 
 
@@ -176,7 +166,7 @@ namespace romaklayt.DynamicFilter.Parser
         public static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(IEnumerable<string> members)
         {
             var parameter = Expression.Parameter(typeof(TSource), "e");
-            var body = BuildSelectorExpression(typeof(TTarget), parameter, members.Select(m => m.Split('.')));
+            var body = BuildSelectorExpression(typeof(TTarget), parameter, members.Select(m => m.Split('.','_')));
             return Expression.Lambda<Func<TSource, TTarget>>(body, parameter);
         }
 

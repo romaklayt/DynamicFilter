@@ -16,23 +16,23 @@ namespace romaklayt.DynamicFilter.Test.Api
 
         public static readonly List<User> Users = new()
         {
-            new User("Bruno", 27, Addresses[0])
+            new User("Bruno","Mars", 27, Addresses[0])
             {
                 Roles = new List<Role> { new("Admin") }
             },
-            new User("Fred", 33, Addresses[1])
+            new User("Fred","Loy", 33, Addresses[1])
             {
                 Roles = new List<Role> { new("Admin") }
             },
-            new User("Albert", 37, Addresses[2])
+            new User("Albert","Ai", 37, Addresses[2])
             {
                 Roles = new List<Role> { new("Read"), new("Write") }
             },
-            new User("Lucao", 23, Addresses[3])
+            new User("Lucao","Ya", 23, Addresses[3])
             {
                 Roles = new List<Role> { new("Read"), new("Write") }
             },
-            new User("Luide", 28, Addresses[4])
+            new User("Luide","Op", 28, Addresses[4])
             {
                 Roles = new List<Role> { new("Read"), new("Write") }
             }

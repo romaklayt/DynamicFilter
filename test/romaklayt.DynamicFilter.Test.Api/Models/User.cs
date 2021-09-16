@@ -9,15 +9,17 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
         {
         }
 
-        public User(string name, int age, Address address)
+        public User(string name,string lastname, int age, Address address)
         {
             Name = name;
             Age = age;
             Address = address;
+            Lastname = lastname;
         }
 
         public Guid Id { get; set; } = new();
         public string Name { get; set; }
+        public string Lastname { get; set; }
         public int Age { get; set; }
         public Address Address { get; set; }
         public List<Role> Roles { get; set; }
@@ -29,6 +31,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public string Lastname { get; set; }
         public int Age { get; set; }
         public Address Address { get; set; }
         public List<Role> Roles { get; set; }
