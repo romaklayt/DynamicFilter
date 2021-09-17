@@ -9,20 +9,20 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
         {
         }
 
-        public User(string name,string lastname, int age, Address address)
+        public User(string name,string lastName, int age, Address address)
         {
             Name = name;
             Age = age;
             Address = address;
-            Lastname = lastname;
+            LastName = lastName;
         }
 
         public Guid Id { get; set; } = new();
         public string Name { get; set; }
-        public string Lastname { get; set; }
+        public string LastName { get; set; }
         public int Age { get; set; }
         public Address Address { get; set; }
-        public List<Role> Roles { get; set; }
+        public List<Role> Roles { get; set; } = new();
 
         public DateTime BirthDate { get; set; } = DateTime.Now.AddMonths(-new Random().Next(0, 20));
     }

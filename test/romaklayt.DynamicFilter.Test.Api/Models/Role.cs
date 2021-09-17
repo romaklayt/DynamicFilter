@@ -8,12 +8,14 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
         {
         }
 
-        public Role(string name)
+        public Role(string name, Address address)
         {
             Name = name;
+            Address = address;
         }
 
         public Guid Id { get; set; } = new();
         public string Name { get; set; }
+        public Address Address { get; set; }
     }
 }

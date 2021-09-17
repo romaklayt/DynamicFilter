@@ -60,7 +60,7 @@ namespace romaklayt.DynamicFilter.Parser
 
             if (!string.IsNullOrWhiteSpace(order))
             {
-                var orderItems = order.Replace("_", ".").Split('=');
+                var orderItems = order.Split('=');
                 if (orderItems.Count() > 1)
                 {
                     model.GetType().GetProperty("OrderType")
@@ -87,7 +87,7 @@ namespace romaklayt.DynamicFilter.Parser
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                var filterAndValues = filter.Replace("_", ".").Split(',').ToArray();
+                var filterAndValues = filter.Split(',').ToArray();
 
                 LambdaExpression finalExpression = null;
                 Expression currentExpression = null;

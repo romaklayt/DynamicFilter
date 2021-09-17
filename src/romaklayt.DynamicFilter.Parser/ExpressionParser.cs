@@ -78,9 +78,10 @@ namespace romaklayt.DynamicFilter.Parser
                 }
                 else
                 {
-                    if (genericType != null)
+                    if (genericType?.GetGenericArguments().FirstOrDefault()?.FullName == member.DeclaringType?.FullName)
                     {
-                        subParam = Expression.Parameter(genericType.GetGenericArguments().FirstOrDefault(), "y");
+                        subParam = Expression.Parameter(genericType?.GetGenericArguments().FirstOrDefault() ?? 
+                                                        throw new InvalidOperationException("Generic type not found"), "y");
                         body = Expression.Property(subParam, member);
                     }
                     else
