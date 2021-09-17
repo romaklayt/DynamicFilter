@@ -150,22 +150,28 @@ namespace romaklayt.DynamicFilter.Parser
         public static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(IEnumerable<string> members)
         {
             var parameter = Expression.Parameter(typeof(TSource), "e");
-            var body = BuildSelectorExpression(typeof(TTarget), parameter, members.Select(m => m.Split('.','_')));
-            return Expression.Lambda<Func<TSource, TTarget>>(body, parameter);
+            List<MemberBinding> body = new List<MemberBinding>();
+            foreach (var member in members.OrderByDescending(s => s.Split(new []{'.'}, StringSplitOptions.RemoveEmptyEntries).Count()))
+            {
+                BuildSelectorExpression(typeof(TTarget), parameter, member, out var list);
+                body.AddRange(list);
+            }
+            return Expression.Lambda<Func<TSource, TTarget>>(Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
         }
 
         private static Expression BuildSelectorExpression(Type targetType, Expression source,
-            IEnumerable<string[]> memberPaths,
+            string memberPaths,out  List<MemberBinding> bindings,
             int depth = 0)
         {
-            var bindings = new List<MemberBinding>();
+            var members = memberPaths.Trim().Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            bindings = new List<MemberBinding>();
             var target = Expression.Constant(null, targetType);
-            foreach (var memberGroup in memberPaths.GroupBy(path => path[depth]))
+            foreach (var memberGroup in members)
             {
-                var memberName = memberGroup.Key;
+                var memberName = members[depth];
                 var targetMember = Expression.PropertyOrField(target, memberName);
                 var sourceMember = Expression.PropertyOrField(source, memberName);
-                var childMembers = memberGroup.Where(path => depth + 1 < path.Length).ToList();
+                var childMembers = members.Where(path => depth + 1 < members.Count()).ToList();
 
                 Expression targetValue = null;
                 if (!childMembers.Any())
@@ -178,8 +184,8 @@ namespace romaklayt.DynamicFilter.Parser
                         IsEnumerableType(targetMember.Type, out var targetElementType))
                     {
                         var sourceElementParam = Expression.Parameter(sourceElementType, "e");
-                        targetValue = BuildSelectorExpression(targetElementType, sourceElementParam, childMembers,
-                            depth + 1);
+                        targetValue = BuildSelectorExpression(targetElementType, sourceElementParam, string.Join(".",childMembers),
+                            out _,depth + 1);
                         targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
                             new[] { sourceElementType, targetElementType }, sourceMember,
                             Expression.Lambda(targetValue, sourceElementParam));
@@ -188,7 +194,7 @@ namespace romaklayt.DynamicFilter.Parser
                     }
                     else
                     {
-                        targetValue = BuildSelectorExpression(targetMember.Type, sourceMember, childMembers, depth + 1);
+                        targetValue = BuildSelectorExpression(targetMember.Type, sourceMember, string.Join(".",childMembers), out _,depth + 1);
                     }
                 }
 
