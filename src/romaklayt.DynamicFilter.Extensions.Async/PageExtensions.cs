@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using romaklayt.DynamicFilter.Common;
+using romaklayt.DynamicFilter.Parser;
 using romaklayt.DynamicFilter.Parser.Models;
 
 namespace romaklayt.DynamicFilter.Extensions.Async
@@ -10,49 +11,55 @@ namespace romaklayt.DynamicFilter.Extensions.Async
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class PageExtensions
     {
-        public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source, int pageNumber,
-            int pageSize) where T : class
+        public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(
+            this IAsyncEnumerable<TSource> source, ExpressionDynamicFilter<TSource, TTarget> filter)
+            where TSource : class where TTarget : class
         {
-            if (pageSize < 1) pageSize = 10;
-            if (pageNumber < 1) pageNumber = 1;
-            var enumerable = await source.ToListAsync();
+            if (filter.PageSize < 1) filter.PageSize = 10;
+            if (filter.Page < 1) filter.Page = 1;
+            var filteredEntities = await source.UseFilter(filter, false);
+            var enumerable = await filteredEntities.ToListAsync();
             var count = enumerable.Count();
-            var items = enumerable.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
-            return new PageModel<T>(items, count, pageNumber, pageSize);
+            var items = enumerable.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize).ToList();
+            return new PageModel<TTarget>(items, count, filter.Page, filter.PageSize);
         }
 
-        public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source,
-            ExpressionDynamicFilter<T> filter) where T : class
-        {
-            return await source.ToPagedList(filter.Page, filter.PageSize);
-        }
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source,
             BaseDynamicFilter filter) where T : class
         {
-            return await source.ToPagedList(filter.Page, filter.PageSize);
+            return await source.ToPagedList(filter.BindFilterExpressions<T, T>());
         }
 
-        public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncQueryable<T> source, int pageNumber,
-            int pageSize) where T : class
+        public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(
+            this IAsyncEnumerable<TSource> source,
+            BaseDynamicFilter filter) where TSource : class where TTarget : class
         {
-            if (pageSize < 1) pageSize = 10;
-            if (pageNumber < 1) pageNumber = 1;
-            var count = await source.CountAsync();
-            var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
-            return new PageModel<T>(items, count, pageNumber, pageSize);
+            return await source.ToPagedList(filter.BindFilterExpressions<TSource, TTarget>());
         }
 
-        public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncQueryable<T> source,
-            ExpressionDynamicFilter<T> filter) where T : class
+        public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(this IAsyncQueryable<TSource> source,
+            ExpressionDynamicFilter<TSource, TTarget> filter) where TSource : class where TTarget : class
         {
-            return await source.ToPagedList(filter.Page, filter.PageSize);
+            if (filter.PageSize < 1) filter.PageSize = 10;
+            if (filter.Page < 1) filter.Page = 1;
+            var filteredEntities = await source.UseFilter(filter, false);
+            var count = await filteredEntities.CountAsync();
+            var items = await filteredEntities.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize)
+                .ToListAsync();
+            return new PageModel<TTarget>(items, count, filter.Page, filter.PageSize);
         }
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncQueryable<T> source,
             BaseDynamicFilter filter) where T : class
         {
-            return await source.ToPagedList(filter.Page, filter.PageSize);
+            return await source.ToPagedList(filter.BindFilterExpressions<T, T>());
+        }
+
+        public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(this IAsyncQueryable<TSource> source,
+            BaseDynamicFilter filter) where TSource : class where TTarget : class
+        {
+            return await source.ToPagedList(filter.BindFilterExpressions<TSource, TTarget>());
         }
     }
 }

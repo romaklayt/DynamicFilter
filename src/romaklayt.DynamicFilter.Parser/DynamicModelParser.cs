@@ -33,8 +33,8 @@ namespace romaklayt.DynamicFilter.Parser
 
         private static void ExtractPagination(object model, object bindingContext)
         {
-            var page = bindingContext.GetType().GetProperty("Page")?.GetValue(bindingContext, null) as string;
-            var pageSize = bindingContext.GetType().GetProperty("PageSize")?.GetValue(bindingContext, null) as string;
+            var page = bindingContext.GetType().GetProperty("Page")?.GetValue(bindingContext, null).ToString();
+            var pageSize = bindingContext.GetType().GetProperty("PageSize")?.GetValue(bindingContext, null).ToString();
 
             if (!string.IsNullOrWhiteSpace(page))
                 model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
