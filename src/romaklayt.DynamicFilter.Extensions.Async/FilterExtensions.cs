@@ -13,7 +13,7 @@ namespace romaklayt.DynamicFilter.Extensions.Async
     {
         public static async Task<IAsyncEnumerable<TTarget>> UseFilter<TSource, TTarget>(
             this IAsyncEnumerable<TSource> source,
-            ExpressionDynamicFilter<TSource, TTarget> filter) where TSource : class
+            ExpressionDynamicFilter<TSource, TTarget> filter, bool pagination = true) where TSource : class
             where TTarget : class
         {
             var queryable = filter.Filter != null
@@ -26,26 +26,31 @@ namespace romaklayt.DynamicFilter.Extensions.Async
                     : queryable.OrderByDescending(filter.Order.Compile());
 
             var result = filter.Select != null ? queryable.Select(filter.Select.Compile()) : queryable.Cast<TTarget>();
+            if (filter.PageSize == default && filter.Page == default || !pagination)
+                return await Task.FromResult(result);
 
-            return await Task.FromResult(result);
+            if (filter.PageSize < 1) filter.PageSize = 10;
+            if (filter.Page < 1) filter.Page = 1;
+            return await Task.FromResult(result.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize));
         }
 
         public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
-            BaseDynamicFilter filter) where T : class
+            BaseDynamicFilter filter, bool pagination = true) where T : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<T, T>());
+            return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
         }
 
         public static async Task<IAsyncEnumerable<TTarget>> UseFilter<TSource, TTarget>(
             this IAsyncEnumerable<TSource> source,
-            BaseDynamicFilter filter) where TSource : class where TTarget : class
+            BaseDynamicFilter filter, bool pagination = true) where TSource : class where TTarget : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>());
+            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>(), pagination);
         }
 
         public static async Task<IAsyncQueryable<TTarget>> UseFilter<TSource, TTarget>(
             this IAsyncQueryable<TSource> source,
-            ExpressionDynamicFilter<TSource, TTarget> filter) where TSource : class where TTarget : class
+            ExpressionDynamicFilter<TSource, TTarget> filter, bool pagination = true)
+            where TSource : class where TTarget : class
         {
             var queryable = filter.Filter != null
                 ? source.Where(filter.Filter)
@@ -58,20 +63,25 @@ namespace romaklayt.DynamicFilter.Extensions.Async
 
             var result = filter.Select != null ? queryable.Select(filter.Select) : queryable.Cast<TTarget>();
 
-            return await Task.FromResult(result);
+            if (filter.PageSize == default && filter.Page == default || !pagination)
+                return await Task.FromResult(result);
+
+            if (filter.PageSize < 1) filter.PageSize = 10;
+            if (filter.Page < 1) filter.Page = 1;
+            return await Task.FromResult(result.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize));
         }
 
         public static async Task<IAsyncQueryable<TTarget>> UseFilter<TSource, TTarget>(
             this IAsyncQueryable<TSource> source,
-            BaseDynamicFilter filter) where TSource : class where TTarget : class
+            BaseDynamicFilter filter, bool pagination = true) where TSource : class where TTarget : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>());
+            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>(), pagination);
         }
 
         public static async Task<IAsyncQueryable<T>> UseFilter<T>(this IAsyncQueryable<T> source,
-            BaseDynamicFilter filter) where T : class
+            BaseDynamicFilter filter, bool pagination = true) where T : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<T, T>());
+            return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
         }
     }
 }

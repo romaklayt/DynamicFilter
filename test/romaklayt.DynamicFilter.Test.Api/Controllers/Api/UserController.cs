@@ -37,8 +37,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         [HttpGet("page")]
         public async Task<PageModel<User>> GetPage(DynamicFilterModel filterModel)
         {
-            var filteredUsers = await Data.Users.UseFilter(filterModel);
-            return await filteredUsers.ToPagedList(filterModel);
+            return await Data.Users.ToPagedList(filterModel);
         }
 
         [HttpGet("context")]

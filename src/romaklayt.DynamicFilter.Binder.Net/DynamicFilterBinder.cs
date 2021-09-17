@@ -22,8 +22,6 @@ namespace romaklayt.DynamicFilter.Binder.Net
 
             ExtractInclude(model, bindingContext);
 
-            ExtractAsNoTracking(model, bindingContext);
-
             bindingContext.Result = ModelBindingResult.Success(model);
 
             return Task.CompletedTask;
@@ -34,14 +32,6 @@ namespace romaklayt.DynamicFilter.Binder.Net
             var include = bindingContext.ValueProvider.GetValue("include").FirstValue;
 
             if (!string.IsNullOrWhiteSpace(include)) model.GetType().GetProperty("Include")?.SetValue(model, include);
-        }
-
-        private static void ExtractAsNoTracking(object model, ModelBindingContext bindingContext)
-        {
-            var asnotracking = bindingContext.ValueProvider.GetValue("asnotracking").FirstValue;
-
-            if (!string.IsNullOrWhiteSpace(asnotracking))
-                model.GetType().GetProperty("Include")?.SetValue(model, asnotracking);
         }
 
         private static void ExtractPagination(object model, ModelBindingContext bindingContext)
@@ -58,7 +48,7 @@ namespace romaklayt.DynamicFilter.Binder.Net
 
         private static void ExtractSelect(object model, ModelBindingContext bindingContext)
         {
-            var select = bindingContext.ValueProvider.GetValue("select").FirstValue;
+            var select = bindingContext.ValueProvider.GetValue("select").FirstValue ?? "root";
 
             if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select")?.SetValue(model, select);
         }
@@ -73,10 +63,8 @@ namespace romaklayt.DynamicFilter.Binder.Net
 
         private static void ExtractFilters(object model, ModelBindingContext bindingContext)
         {
-            var filter = bindingContext.ValueProvider.GetValue("filter").FirstValue;
-
-            if (filter == null)
-                filter = bindingContext.ValueProvider.GetValue("query").FirstValue;
+            var filter = bindingContext.ValueProvider.GetValue("filter").FirstValue ??
+                         bindingContext.ValueProvider.GetValue("query").FirstValue;
 
             if (!string.IsNullOrWhiteSpace(filter)) model.GetType().GetProperty("Filter")?.SetValue(model, filter);
         }
