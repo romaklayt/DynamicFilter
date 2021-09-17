@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using romaklayt.DynamicFilter.Common;
@@ -153,7 +154,8 @@ namespace romaklayt.DynamicFilter.Parser
             var body = new List<MemberBinding>();
             if (members.Any(s => s.Equals("root")))
             {
-                var rootProps = typeof(TTarget).GetProperties().Select(info => info.Name.ToLower())
+                var rootProps = typeof(TTarget).GetProperties().Where(info =>
+                        IsSimple(info.PropertyType)).Select(info => info.Name.ToLower())
                     .Intersect(typeof(TSource).GetProperties().Select(info => info.Name.ToLower()));
                 members.AddRange(rootProps);
                 members.Remove("root");
@@ -168,6 +170,11 @@ namespace romaklayt.DynamicFilter.Parser
 
             return Expression.Lambda<Func<TSource, TTarget>>(
                 Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
+        }
+
+        private static bool IsSimple(Type type)
+        {
+            return TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
         }
 
         private static Expression BuildSelectorExpression(Type targetType, Expression source,
