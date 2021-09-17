@@ -7,8 +7,7 @@ namespace romaklayt.DynamicFilter.Test.Api
     {
         public UserMap()
         {
-            CreateMap<User, UserViewModel>().ForMember(model => model.Address_Zip_Country,
-                expression => expression.MapFrom(user => user.Address.Zip.Country));
+            CreateMap<User, UserViewModel>();
         }
     }
 }

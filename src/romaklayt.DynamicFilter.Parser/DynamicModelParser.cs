@@ -144,62 +144,74 @@ namespace romaklayt.DynamicFilter.Parser
 
         public static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members)
         {
-            return BuildSelector<TSource, TTarget>(members.Split(',').Select(m => m.Trim()));
+            return BuildSelector<TSource, TTarget>(members.Split(',').Select(m => m.Trim()).ToList());
         }
 
-        public static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(IEnumerable<string> members)
+        public static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(List<string> members)
         {
             var parameter = Expression.Parameter(typeof(TSource), "e");
-            List<MemberBinding> body = new List<MemberBinding>();
-            foreach (var member in members.OrderByDescending(s => s.Split(new []{'.'}, StringSplitOptions.RemoveEmptyEntries).Count()))
+            var body = new List<MemberBinding>();
+            if (members.Any(s => s.Equals("root")))
+            {
+                var rootProps = typeof(TTarget).GetProperties().Select(info => info.Name.ToLower())
+                    .Intersect(typeof(TSource).GetProperties().Select(info => info.Name.ToLower()));
+                members.AddRange(rootProps);
+                members.Remove("root");
+            }
+
+            foreach (var member in members.OrderByDescending(s =>
+                s.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Count()))
             {
                 BuildSelectorExpression(typeof(TTarget), parameter, member, out var list);
                 body.AddRange(list);
             }
-            return Expression.Lambda<Func<TSource, TTarget>>(Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
+
+            return Expression.Lambda<Func<TSource, TTarget>>(
+                Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
         }
 
         private static Expression BuildSelectorExpression(Type targetType, Expression source,
-            string memberPaths,out  List<MemberBinding> bindings,
+            string memberPaths, out List<MemberBinding> bindings,
             int depth = 0)
         {
             var members = memberPaths.Trim().Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             bindings = new List<MemberBinding>();
             var target = Expression.Constant(null, targetType);
-            foreach (var memberGroup in members)
-            {
-                var memberName = members[depth];
-                var targetMember = Expression.PropertyOrField(target, memberName);
-                var sourceMember = Expression.PropertyOrField(source, memberName);
-                var childMembers = members.Where(path => depth + 1 < members.Count()).ToList();
 
-                Expression targetValue = null;
-                if (!childMembers.Any())
+            var memberName = members[depth];
+            var targetMember = Expression.PropertyOrField(target, memberName);
+            var sourceMember = Expression.PropertyOrField(source, memberName);
+            var childMembers = members.Where(path => depth + 1 < members.Count()).ToList();
+
+            Expression targetValue = null;
+            if (!childMembers.Any())
+            {
+                targetValue = sourceMember;
+            }
+            else
+            {
+                if (IsEnumerableType(targetMember.Type, out var sourceElementType) &&
+                    IsEnumerableType(targetMember.Type, out var targetElementType))
                 {
-                    targetValue = sourceMember;
+                    var sourceElementParam = Expression.Parameter(sourceElementType, "e");
+                    targetValue = BuildSelectorExpression(targetElementType, sourceElementParam,
+                        string.Join(".", childMembers),
+                        out _, depth + 1);
+                    targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
+                        new[] { sourceElementType, targetElementType }, sourceMember,
+                        Expression.Lambda(targetValue, sourceElementParam));
+
+                    targetValue = CorrectEnumerableResult(targetValue, targetElementType, targetMember.Type);
                 }
                 else
                 {
-                    if (IsEnumerableType(targetMember.Type, out var sourceElementType) &&
-                        IsEnumerableType(targetMember.Type, out var targetElementType))
-                    {
-                        var sourceElementParam = Expression.Parameter(sourceElementType, "e");
-                        targetValue = BuildSelectorExpression(targetElementType, sourceElementParam, string.Join(".",childMembers),
-                            out _,depth + 1);
-                        targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
-                            new[] { sourceElementType, targetElementType }, sourceMember,
-                            Expression.Lambda(targetValue, sourceElementParam));
-
-                        targetValue = CorrectEnumerableResult(targetValue, targetElementType, targetMember.Type);
-                    }
-                    else
-                    {
-                        targetValue = BuildSelectorExpression(targetMember.Type, sourceMember, string.Join(".",childMembers), out _,depth + 1);
-                    }
+                    targetValue = BuildSelectorExpression(targetMember.Type, sourceMember,
+                        string.Join(".", childMembers), out _, depth + 1);
                 }
-
-                bindings.Add(Expression.Bind(targetMember.Member, targetValue));
             }
+
+            bindings.Add(Expression.Bind(targetMember.Member, targetValue));
+
 
             return Expression.MemberInit(Expression.New(targetType), bindings);
         }

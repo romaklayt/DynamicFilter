@@ -55,7 +55,7 @@ namespace romaklayt.DynamicFilter.Extensions
         public static async Task<IEnumerable<T>> UseFilter<T>(this IEnumerable<T> source,
             BaseDynamicFilter filter) where T : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<T,T>());
+            return await source.UseFilter(filter.BindFilterExpressions<T, T>());
         }
 
         public static async Task<IEnumerable<TTarget>> UseFilter<TSource, TTarget>(this IEnumerable<TSource> source,

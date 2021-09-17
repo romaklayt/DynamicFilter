@@ -9,7 +9,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
         {
         }
 
-        public User(string name,string lastName, int age, Address address)
+        public User(string name, string lastName, int age, Address address)
         {
             Name = name;
             Age = age;
@@ -37,6 +37,5 @@ namespace romaklayt.DynamicFilter.Test.Api.Models
         public List<Role> Roles { get; set; }
 
         public DateTime BirthDate { get; set; }
-        public string Address_Zip_Country { get; set; }
     }
 }
