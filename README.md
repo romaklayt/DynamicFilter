@@ -158,20 +158,19 @@ GET http://url?query=name%b&order=name&page=1&pagesize=10
 In romaklayt.DynamicFilter.Extensions and romaklayt.DynamicFilter.Extensions.Async there is a method of expanding the **ToPagedList** which returns *PageModel* with *info about page* and your *filtered data*. 
 
 ```C#
-var page = users.ToPagedList(filterModel); #only paging
-```
-
-or
-
-```C#
-var filteredUsers = await users.UseFilter(filterModel); #apply filter
-return await filteredUsers.ToPagedList(filterModel); #return page model
+var page = users.ToPagedList(filterModel);
 ```
 
 If you no need page info, you simply needs to add the parameters page and pagesize on your get request.
 
 ```C#
-result = result.Skip(filter.Page).Take(filter.PageSize);
+result = result.UseFilter(filter); #page mode without info
+```
+
+If you specify the page number and size in the filter model, pagination is disabled when using **UseFilter**. 
+You can also disable pagination by forcibly calling:
+```C#
+result = result.UseFilter(filter, false); #only filtering without pagination
 ```
 
 Example:
