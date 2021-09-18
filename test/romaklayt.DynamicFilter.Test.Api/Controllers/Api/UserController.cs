@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -42,9 +43,9 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
 
         [HttpGet("context")]
         [ProducesResponseType(typeof(UserViewModel), 200)]
-        public async Task<object> GetContextList(DynamicFilterModel filterModelModel)
+        public object GetContextList(DynamicFilterModel filterModelModel)
         {
-            return await _myContext.Users.UseFilter<User, UserViewModel>(filterModelModel);
+            return Data.Users.ToList().UseFilter(filterModelModel).Result.GetOnlySelectedProperties(filterModelModel);
         }
     }
 }

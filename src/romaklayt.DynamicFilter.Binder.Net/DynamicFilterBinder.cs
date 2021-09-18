@@ -20,18 +20,9 @@ namespace romaklayt.DynamicFilter.Binder.Net
 
             ExtractSelect(model, bindingContext);
 
-            ExtractInclude(model, bindingContext);
-
             bindingContext.Result = ModelBindingResult.Success(model);
 
             return Task.CompletedTask;
-        }
-
-        private static void ExtractInclude(object model, ModelBindingContext bindingContext)
-        {
-            var include = bindingContext.ValueProvider.GetValue("include").FirstValue;
-
-            if (!string.IsNullOrWhiteSpace(include)) model.GetType().GetProperty("Include")?.SetValue(model, include);
         }
 
         private static void ExtractPagination(object model, ModelBindingContext bindingContext)

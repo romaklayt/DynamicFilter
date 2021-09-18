@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Parser.Models;
+using Convert = romaklayt.DynamicFilter.Common.Convert;
 
 namespace romaklayt.DynamicFilter.Parser
 {
@@ -17,7 +17,7 @@ namespace romaklayt.DynamicFilter.Parser
 
             var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
 
-            var itemType = typeof(ExpressionDynamicFilter<TSource>).GenericTypeArguments[0];
+            var itemType = typeof(ExpressionDynamicFilter<TSource, TTarget>).GenericTypeArguments[0];
 
             var parameter = Expression.Parameter(itemType, "x");
 
@@ -53,7 +53,6 @@ namespace romaklayt.DynamicFilter.Parser
                 model.GetType().GetProperty("Select")
                     ?.SetValue(model, BuildSelector<TSource, TTarget>(select));
         }
-
 
         private static void ExtractOrder(object model, object bindingContext, ParameterExpression parameter)
         {
@@ -155,7 +154,7 @@ namespace romaklayt.DynamicFilter.Parser
             if (members.Any(s => s.Equals("root")))
             {
                 var rootProps = typeof(TTarget).GetProperties().Where(info =>
-                        IsSimple(info.PropertyType)).Select(info => info.Name.ToLower())
+                        Convert.IsSimple(info.PropertyType)).Select(info => info.Name.ToLower())
                     .Intersect(typeof(TSource).GetProperties().Select(info => info.Name.ToLower()));
                 members.AddRange(rootProps);
                 members.Remove("root");
@@ -170,11 +169,6 @@ namespace romaklayt.DynamicFilter.Parser
 
             return Expression.Lambda<Func<TSource, TTarget>>(
                 Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
-        }
-
-        private static bool IsSimple(Type type)
-        {
-            return TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
         }
 
         private static Expression BuildSelectorExpression(Type targetType, Expression source,
