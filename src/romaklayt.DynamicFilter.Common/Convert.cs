@@ -10,6 +10,13 @@ namespace romaklayt.DynamicFilter.Common
 {
     public static class Convert
     {
+        /// <summary>
+        /// Return json string with only selected properties
+        /// </summary>
+        /// <param name="source">IEnumerable source</param>
+        /// <param name="filter">Dynamic filter</param>
+        /// <typeparam name="T">IEnumerable type</typeparam>
+        /// <returns>Json string</returns>
         public static string GetOnlySelectedProperties<T>(this T source, BaseDynamicFilter filter)
             where T : IEnumerable<object>
         {
