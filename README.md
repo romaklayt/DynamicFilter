@@ -197,6 +197,11 @@ If you select a nested property, from default, the properties from the root mode
 GET http://url?select=address.zip,root #select Address.Zip and all root properties
 ```
 
+If you don't want to send model properties that are not included in your **Select** request, you can use the *GetOnlySelectedProperties* extension method, which will render you only the selected properties. Example:
+```C#
+result = items.UseFilter(filter).Result.GetOnlySelectedProperties(filterModelModel);
+```
+
 # Filter operator support
 
 - Equals (=)

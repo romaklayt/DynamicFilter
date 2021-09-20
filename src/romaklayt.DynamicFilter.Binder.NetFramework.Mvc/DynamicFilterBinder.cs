@@ -51,10 +51,9 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
 
         private static void ExtractFilters(object model, ModelBindingContext bindingContext)
         {
-            var filter = bindingContext.ValueProvider.GetValue("filter")?.AttemptedValue;
+            var filter = bindingContext.ValueProvider.GetValue("filter")?.AttemptedValue ??
+                         bindingContext.ValueProvider.GetValue("query")?.AttemptedValue;
 
-            if (filter == null)
-                filter = bindingContext.ValueProvider.GetValue("query")?.AttemptedValue;
 
             if (!string.IsNullOrWhiteSpace(filter)) model.GetType().GetProperty("Filter")?.SetValue(model, filter);
         }
