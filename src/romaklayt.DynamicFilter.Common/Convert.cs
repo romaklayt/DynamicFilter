@@ -60,7 +60,7 @@ namespace romaklayt.DynamicFilter.Common
             if (propertyName != null)
             {
                 var propertyInfo = objectConvertInfo.ConvertObject.GetType().GetProperties().FirstOrDefault(info =>
-                    info.Name.ToLowerInvariant().Contains(propertyName.ToLowerInvariant()));
+                    info.Name.ToLowerInvariant() == propertyName.ToLowerInvariant());
                 if (propertyInfo != null)
                 {
                     var key = propertyInfo.Name;
