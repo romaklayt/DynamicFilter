@@ -69,7 +69,7 @@ namespace romaklayt.DynamicFilter.Parser
                 }
                 else
                 {
-                    model.GetType().GetProperty("OrderType")?.SetValue(model, OrderType.Desc);
+                    model.GetType().GetProperty("OrderType")?.SetValue(model, OrderType.Asc);
                 }
 
                 var property = Expression.PropertyOrField(parameter, order);
