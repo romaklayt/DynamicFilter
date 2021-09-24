@@ -155,15 +155,13 @@ namespace romaklayt.DynamicFilter.Parser
 
             if (genericType != null)
             {
-                var listType = typeof(List<>).MakeGenericType(genericType.GetGenericArguments().FirstOrDefault());
-                var listInstance = Activator.CreateInstance(listType, true);
-
                 var anyMethod = typeof(Enumerable)
                     .GetMethods()
                     .FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Count() == 2)
                     ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
 
-                if (anyMethod is not null && returnExpression is not null)
+
+                if (constantExpression.Value != null && anyMethod is not null && returnExpression is not null)
                     returnExpression =
                         Expression.Call(anyMethod, baseExp, Expression.Lambda(returnExpression, subParam));
             }
