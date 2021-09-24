@@ -20,7 +20,8 @@ namespace romaklayt.DynamicFilter.Parser
         /// <param name="formatting">Json string format</param>
         /// <typeparam name="T">IEnumerable type</typeparam>
         /// <returns>Json string</returns>
-        public static string RenderOnlySelectedProperties<T>(this T source, BaseDynamicFilter filter, Formatting formatting = Formatting.Indented)
+        public static string RenderOnlySelectedProperties<T>(this T source, BaseDynamicFilter filter,
+            Formatting formatting = Formatting.Indented)
             where T : IEnumerable<object>
         {
             if (filter.Select != null)
@@ -52,7 +53,8 @@ namespace romaklayt.DynamicFilter.Parser
             bool isroot = false)
         {
             props = new List<string>();
-            foreach (var includeProperty in includePropertiesString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var includeProperty in includePropertiesString.Split(new[] { ',' },
+                StringSplitOptions.RemoveEmptyEntries))
             {
                 var prop = includeProperty.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
                 if (prop.Length > 1)
@@ -70,11 +72,14 @@ namespace romaklayt.DynamicFilter.Parser
                             else props.Add(includeProperty);
                         }
                         else
+                        {
                             props.AddRange(list);
-                        
+                        }
                     }
                     else
+                    {
                         props.Add(includeProperty);
+                    }
                 }
                 else
                 {
@@ -88,13 +93,17 @@ namespace romaklayt.DynamicFilter.Parser
                     if (subtype.IsGenericList())
                     {
                         props.AddRange(subtype.GenericTypeArguments.First().GetProperties()
-                            .Where(info => IsSimple(info.PropertyType)).Select(info => $"{prop[0]}.{FirstCharToLowerCase(info.Name)}")
+                            .Where(info => IsSimple(info.PropertyType))
+                            .Select(info => $"{prop[0]}.{FirstCharToLowerCase(info.Name)}")
                             .ToList());
                         continue;
                     }
 
                     props.AddRange(subtype.GetProperties().Where(info => IsSimple(info.PropertyType))
-                        .Select(info => isroot ? $"{includeProperty}.{FirstCharToLowerCase(info.Name)}" : FirstCharToLowerCase(info.Name)).ToList());
+                        .Select(info =>
+                            isroot
+                                ? $"{includeProperty}.{FirstCharToLowerCase(info.Name)}"
+                                : FirstCharToLowerCase(info.Name)).ToList());
                 }
             }
         }
@@ -127,7 +136,8 @@ namespace romaklayt.DynamicFilter.Parser
         private static JObject MapToDictionary(object source, List<string> members)
         {
             var dictionary = new JObject();
-            var parsedMembersList = members.Select(s => s.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)).ToList();
+            var parsedMembersList = members.Select(s => s.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries))
+                .ToList();
             foreach (var parsedMembers in parsedMembersList) MapToDictionaryInternal(dictionary, source, parsedMembers);
             return dictionary;
         }
@@ -158,9 +168,7 @@ namespace romaklayt.DynamicFilter.Parser
                     var tempArray = jObject.GetValue(members.ElementAt(deep)) as JArray;
                     if (tempArray != null)
                         for (var index = 0; index < tempArray.Count; index++)
-                        {
                             (tempArray[index] as JObject)?.Merge(newArrayValues[index]);
-                        }
 
                     jObject.Remove(members.ElementAt(deep));
                     jObject.Add(members.ElementAt(deep), tempArray);

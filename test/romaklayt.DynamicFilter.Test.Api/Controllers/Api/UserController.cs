@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +45,21 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         [ProducesResponseType(typeof(UserViewModel), 200)]
         public object GetContextList(DynamicFilterModel filterModelModel)
         {
+            return _myContext.Users.UseFilter(filterModelModel).Result;
+        }
+        
+        [HttpGet("contextrender")]
+        [ProducesResponseType(typeof(UserViewModel), 200)]
+        public object GetContextListRender(DynamicFilterModel filterModelModel)
+        {
             return _myContext.Users.UseFilter(filterModelModel).Result.RenderOnlySelectedProperties(filterModelModel);
+        }
+
+        [HttpGet("count")]
+        [ProducesResponseType(typeof(int), 200)]
+        public object Count(DynamicCountFilterModel filterModelModel)
+        {
+            return _myContext.Users.UseFilter(filterModelModel).Result;
         }
     }
 }

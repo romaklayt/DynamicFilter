@@ -36,6 +36,13 @@ namespace romaklayt.DynamicFilter.Extensions
             return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
         }
 
+        public static async Task<int> UseFilter<T>(this IQueryable<T> source,
+            BaseCountDynamicFilter filter) where T : class
+        {
+            var filteredData = await source.UseFilter(filter.BindFilterExpressions<T, T>(), false);
+            return filteredData.Count();
+        }
+
         public static async Task<IQueryable<TTarget>> UseFilter<TSource, TTarget>(this IQueryable<TSource> source,
             BaseDynamicFilter filter, bool pagination = true) where TSource : class where TTarget : class
         {
@@ -67,6 +74,13 @@ namespace romaklayt.DynamicFilter.Extensions
             BaseDynamicFilter filter, bool pagination = true) where T : class
         {
             return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
+        }
+
+        public static async Task<int> UseCountFilter<T>(this IEnumerable<T> source,
+            BaseCountDynamicFilter filter) where T : class
+        {
+            var filteredData = await source.UseFilter(filter.BindFilterExpressions<T, T>(), false);
+            return filteredData.Count();
         }
 
         public static async Task<IEnumerable<TTarget>> UseFilter<TSource, TTarget>(this IEnumerable<TSource> source,

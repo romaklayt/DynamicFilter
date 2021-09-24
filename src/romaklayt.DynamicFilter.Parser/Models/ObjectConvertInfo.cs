@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace romaklayt.DynamicFilter.Parser.Models
+﻿namespace romaklayt.DynamicFilter.Parser.Models
 {
     public class ObjectConvertInfo
     {

@@ -6,7 +6,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
 {
     public class DynamicFilterBinder : IModelBinder
     {
-        public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
+        public virtual bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
         {
             if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
 
@@ -52,7 +52,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
             if (!string.IsNullOrWhiteSpace(order)) model.GetType().GetProperty("Order")?.SetValue(model, order);
         }
 
-        private static void ExtractFilters(object model, ModelBindingContext bindingContext)
+        private protected static void ExtractFilters(object model, ModelBindingContext bindingContext)
         {
             var filter = bindingContext.ValueProvider.GetValue("filter")?.AttemptedValue ??
                          bindingContext.ValueProvider.GetValue("query")?.AttemptedValue;

@@ -79,7 +79,7 @@ namespace romaklayt.DynamicFilter.Parser
             }
         }
 
-        private static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
+        internal static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
             Type itemType)
         {
             var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;

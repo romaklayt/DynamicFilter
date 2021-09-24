@@ -5,7 +5,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
 {
     public class DynamicFilterBinder : IModelBinder
     {
-        public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+        public virtual object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
             if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
 
@@ -49,7 +49,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
             if (!string.IsNullOrWhiteSpace(order)) model.GetType().GetProperty("Order")?.SetValue(model, order);
         }
 
-        private static void ExtractFilters(object model, ModelBindingContext bindingContext)
+        private protected static void ExtractFilters(object model, ModelBindingContext bindingContext)
         {
             var filter = bindingContext.ValueProvider.GetValue("filter")?.AttemptedValue ??
                          bindingContext.ValueProvider.GetValue("query")?.AttemptedValue;

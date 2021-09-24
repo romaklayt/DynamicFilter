@@ -83,5 +83,19 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         {
             return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
         }
+
+        public static async Task<int> UseCountFilter<T>(this IAsyncEnumerable<T> source,
+            BaseCountDynamicFilter filter) where T : class
+        {
+            var filteredData = await source.UseFilter(filter.BindFilterExpressions<T, T>(), false);
+            return await filteredData.CountAsync();
+        }
+
+        public static async Task<int> UseCountFilter<T>(this IAsyncQueryable<T> source,
+            BaseCountDynamicFilter filter) where T : class
+        {
+            var filteredData = await source.UseFilter(filter.BindFilterExpressions<T, T>(), false);
+            return await filteredData.CountAsync();
+        }
     }
 }
