@@ -8,4 +8,8 @@
         public int Page { get; set; }
         public int PageSize { get; set; }
     }
+    public class BaseCountDynamicFilter
+    {
+        public string Filter { get; set; }
+    }
 }

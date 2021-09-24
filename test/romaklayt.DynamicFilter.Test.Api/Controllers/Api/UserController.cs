@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using romaklayt.DynamicFilter.Binder.Net;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Extensions;
+using romaklayt.DynamicFilter.Parser;
 using romaklayt.DynamicFilter.Test.Api.Models;
 
 namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
@@ -45,7 +46,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         [ProducesResponseType(typeof(UserViewModel), 200)]
         public object GetContextList(DynamicFilterModel filterModelModel)
         {
-            return Data.Users.ToList().UseFilter(filterModelModel).Result.GetOnlySelectedProperties(filterModelModel);
+            return _myContext.Users.UseFilter(filterModelModel).Result.RenderOnlySelectedProperties(filterModelModel);
         }
     }
 }

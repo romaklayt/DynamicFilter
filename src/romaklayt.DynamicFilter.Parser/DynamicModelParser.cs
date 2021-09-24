@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Parser.Models;
-using Convert = romaklayt.DynamicFilter.Common.Convert;
 
 namespace romaklayt.DynamicFilter.Parser
 {
@@ -154,7 +153,7 @@ namespace romaklayt.DynamicFilter.Parser
             if (members.Any(s => s.Equals("root")))
             {
                 var rootProps = typeof(TTarget).GetProperties().Where(info =>
-                        Convert.IsSimple(info.PropertyType)).Select(info => info.Name.ToLower())
+                        SelectedRender.IsSimple(info.PropertyType)).Select(info => info.Name.ToLower())
                     .Intersect(typeof(TSource).GetProperties().Select(info => info.Name.ToLower()));
                 members.AddRange(rootProps);
                 members.Remove("root");

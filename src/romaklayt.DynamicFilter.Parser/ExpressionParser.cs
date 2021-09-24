@@ -47,7 +47,7 @@ namespace romaklayt.DynamicFilter.Parser
             if (value is string && type == typeof(Guid)) return new Guid(value as string);
             if (value is string && type == typeof(Version)) return new Version(value as string);
             if (!(value is IConvertible)) return value;
-            return Convert.ChangeType(value, type);
+            return ChangeType(value, type);
         }
 
         #region [ Public methods ]
@@ -220,7 +220,7 @@ namespace romaklayt.DynamicFilter.Parser
         private object ChangeType(string value, Type type)
         {
             if (type.IsEnum)
-                return Convert.ChangeType(Enum.Parse(type, value), type);
+                return ChangeType(Enum.Parse(type, value), type);
 
             if (type == typeof(Guid))
                 return Guid.Parse(value);
