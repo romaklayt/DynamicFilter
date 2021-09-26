@@ -27,7 +27,7 @@ namespace romaklayt.DynamicFilter.Parser
             if (filter.Select != null)
             {
                 var jArray = new List<object>();
-                CheckRootMember<T>(filter);
+                filter.Select = CheckRootMember(filter.Select,typeof(T).GenericTypeArguments.First());
                 UpdateMembersPath(filter.Select, source.FirstOrDefault()?.GetType(), out var items, true);
                 foreach (var o in source) jArray.Add(MapToDictionary(o, items));
                 return JsonConvert.SerializeObject(jArray, formatting);
@@ -36,20 +36,21 @@ namespace romaklayt.DynamicFilter.Parser
             return JsonConvert.SerializeObject(source, formatting);
         }
 
-        private static void CheckRootMember<T>(BaseDynamicFilter filter) where T : IEnumerable<object>
+        internal static string CheckRootMember(string filter, Type type)
         {
             var selectedMembers =
-                filter.Select.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                filter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
             if (selectedMembers.Contains("root"))
             {
                 selectedMembers.Remove("root");
-                selectedMembers.AddRange(typeof(T).GenericTypeArguments[0].GetProperties()
+                selectedMembers.AddRange(type.GetProperties()
                     .Where(info => IsSimple(info.PropertyType)).Select(info => FirstCharToLowerCase(info.Name)));
-                filter.Select = string.Join(",", selectedMembers);
+                filter = string.Join(",", selectedMembers);
             }
+            return filter; 
         }
 
-        private static void UpdateMembersPath(string includePropertiesString, Type type, out List<string> props,
+        internal static void UpdateMembersPath(string includePropertiesString, Type type, out List<string> props,
             bool isroot = false)
         {
             props = new List<string>();
