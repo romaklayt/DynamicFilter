@@ -41,6 +41,23 @@ namespace romaklayt.DynamicFilter.Parser
             return JsonConvert.SerializeObject(MapToDictionary(source, items), formatting);
         }
 
+        public static string RenderOnlySelectedProperties<T>(this PageModel<T> source,
+            BaseDynamicComplexModel complexModel,
+            Formatting formatting = Formatting.Indented)
+        {
+            var jArray = new JArray();
+            if (complexModel.Select == null) return JsonConvert.SerializeObject(source, formatting);
+            complexModel.Select = CheckRootMember(complexModel.Select, source.Items.FirstOrDefault()?.GetType());
+            UpdateMembersPath(complexModel.Select, source.Items.FirstOrDefault()?.GetType(), out var items, true);
+            foreach (var sourceItem in source.Items) jArray.Add(MapToDictionary(sourceItem, items));
+            source.Items = null;
+            var json = JsonConvert.SerializeObject(source, formatting);
+            var result = JsonConvert.DeserializeObject<JObject>(json);
+            result.Remove("Items");
+            result.Add("Items", jArray);
+            return JsonConvert.SerializeObject(result, formatting);
+        }
+
         internal static string CheckRootMember(string filter, Type type)
         {
             var selectedMembers =

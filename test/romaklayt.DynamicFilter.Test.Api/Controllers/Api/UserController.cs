@@ -39,9 +39,10 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         }
 
         [HttpGet("page")]
-        public async Task<PageModel<User>> GetPage(DynamicComplexModel complexModel)
+        public async Task<object> GetPage(DynamicComplexModel complexModel)
         {
-            return await Data.Users.ToPagedList(complexModel);
+            var data = await Data.Users.ToPagedList(complexModel);
+            return data.RenderOnlySelectedProperties(complexModel);
         }
 
         [HttpGet("context")]
