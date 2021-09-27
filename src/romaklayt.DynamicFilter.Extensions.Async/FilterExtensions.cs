@@ -35,16 +35,16 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         }
 
         public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
-            BaseDynamicFilter filter, bool pagination = true) where T : class
+            BaseDynamicComplexModel complexModel, bool pagination = true) where T : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
+            return await source.UseFilter(complexModel.BindFilterExpressions<T, T>(), pagination);
         }
 
         public static async Task<IAsyncEnumerable<TTarget>> UseFilter<TSource, TTarget>(
             this IAsyncEnumerable<TSource> source,
-            BaseDynamicFilter filter, bool pagination = true) where TSource : class where TTarget : class
+            BaseDynamicComplexModel complexModel, bool pagination = true) where TSource : class where TTarget : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>(), pagination);
+            return await source.UseFilter(complexModel.BindFilterExpressions<TSource, TTarget>(), pagination);
         }
 
         public static async Task<IAsyncQueryable<TTarget>> UseFilter<TSource, TTarget>(
@@ -73,29 +73,47 @@ namespace romaklayt.DynamicFilter.Extensions.Async
 
         public static async Task<IAsyncQueryable<TTarget>> UseFilter<TSource, TTarget>(
             this IAsyncQueryable<TSource> source,
-            BaseDynamicFilter filter, bool pagination = true) where TSource : class where TTarget : class
+            BaseDynamicComplexModel complexModel, bool pagination = true) where TSource : class where TTarget : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>(), pagination);
+            return await source.UseFilter(complexModel.BindFilterExpressions<TSource, TTarget>(), pagination);
         }
 
         public static async Task<IAsyncQueryable<T>> UseFilter<T>(this IAsyncQueryable<T> source,
-            BaseDynamicFilter filter, bool pagination = true) where T : class
+            BaseDynamicComplexModel complexModel, bool pagination = true) where T : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
+            return await source.UseFilter(complexModel.BindFilterExpressions<T, T>(), pagination);
         }
 
-        public static async Task<int> UseCountFilter<T>(this IAsyncEnumerable<T> source,
-            BaseCountDynamicFilter filter) where T : class
+        public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
+            BaseDynamicFilterModel filterModel) where T : class
         {
-            var filteredData = await source.UseFilter(filter.BindFilterExpressions<T, T>(), false);
-            return await filteredData.CountAsync();
+            var filteredData = await source.UseFilter(filterModel.BindFilterExpressions<T, T>(), false);
+            return filteredData;
         }
 
-        public static async Task<int> UseCountFilter<T>(this IAsyncQueryable<T> source,
-            BaseCountDynamicFilter filter) where T : class
+        public static async Task<IAsyncQueryable<T>> UseFilter<T>(this IAsyncQueryable<T> source,
+            BaseDynamicFilterModel filterModel) where T : class
         {
-            var filteredData = await source.UseFilter(filter.BindFilterExpressions<T, T>(), false);
-            return await filteredData.CountAsync();
+            var filteredData = await source.UseFilter(filterModel.BindFilterExpressions<T, T>(), false);
+            return filteredData;
+        }
+
+        public static async Task<IAsyncEnumerable<T>> UseSelect<T>(this IAsyncEnumerable<T> source,
+            BaseDynamicSelectModel selectModel) where T : class
+        {
+            var result = selectModel.Select != null
+                ? source.Select(selectModel.BindFilterExpressions<T, T>().Select.Compile())
+                : source;
+            return await Task.FromResult(result);
+        }
+
+        public static async Task<IAsyncQueryable<T>> UseSelect<T>(this IAsyncQueryable<T> source,
+            BaseDynamicSelectModel selectModel) where T : class
+        {
+            var result = selectModel.Select != null
+                ? source.Select(selectModel.BindFilterExpressions<T, T>().Select)
+                : source;
+            return await Task.FromResult(result);
         }
     }
 }

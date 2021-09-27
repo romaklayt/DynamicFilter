@@ -26,16 +26,16 @@ namespace romaklayt.DynamicFilter.Extensions.Async
 
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source,
-            BaseDynamicFilter filter) where T : class
+            BaseDynamicComplexModel complexModel) where T : class
         {
-            return await source.ToPagedList(filter.BindFilterExpressions<T, T>());
+            return await source.ToPagedList(complexModel.BindFilterExpressions<T, T>());
         }
 
         public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(
             this IAsyncEnumerable<TSource> source,
-            BaseDynamicFilter filter) where TSource : class where TTarget : class
+            BaseDynamicComplexModel complexModel) where TSource : class where TTarget : class
         {
-            return await source.ToPagedList(filter.BindFilterExpressions<TSource, TTarget>());
+            return await source.ToPagedList(complexModel.BindFilterExpressions<TSource, TTarget>());
         }
 
         public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(this IAsyncQueryable<TSource> source,
@@ -51,15 +51,15 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         }
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncQueryable<T> source,
-            BaseDynamicFilter filter) where T : class
+            BaseDynamicComplexModel complexModel) where T : class
         {
-            return await source.ToPagedList(filter.BindFilterExpressions<T, T>());
+            return await source.ToPagedList(complexModel.BindFilterExpressions<T, T>());
         }
 
         public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(this IAsyncQueryable<TSource> source,
-            BaseDynamicFilter filter) where TSource : class where TTarget : class
+            BaseDynamicComplexModel complexModel) where TSource : class where TTarget : class
         {
-            return await source.ToPagedList(filter.BindFilterExpressions<TSource, TTarget>());
+            return await source.ToPagedList(complexModel.BindFilterExpressions<TSource, TTarget>());
         }
     }
 }

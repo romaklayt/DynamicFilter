@@ -2,9 +2,9 @@
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
 
-namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
+namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Binders
 {
-    public class DynamicFilterBinder : IModelBinder
+    public class DynamicComplexBinder : IModelBinder
     {
         public virtual bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
         {
@@ -37,7 +37,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
                 model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
         }
 
-        private static void ExtractSelect(object model, ModelBindingContext bindingContext)
+        private protected static void ExtractSelect(object model, ModelBindingContext bindingContext)
         {
             var select = bindingContext.ValueProvider.GetValue("select")?.AttemptedValue;
 

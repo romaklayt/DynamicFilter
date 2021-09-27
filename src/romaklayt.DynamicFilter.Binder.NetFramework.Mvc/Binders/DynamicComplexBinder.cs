@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Web.Mvc;
 
-namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
+namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc.Binders
 {
-    public class DynamicFilterBinder : IModelBinder
+    public class DynamicComplexBinder : IModelBinder
     {
         public virtual object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
@@ -34,7 +34,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
                 model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
         }
 
-        private static void ExtractSelect(object model, ModelBindingContext bindingContext)
+        private protected static void ExtractSelect(object model, ModelBindingContext bindingContext)
         {
             var select = bindingContext.ValueProvider.GetValue("select")?.AttemptedValue;
 

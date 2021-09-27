@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
+using romaklayt.DynamicFilter.Binder.Net.Models;
 
 namespace romaklayt.DynamicFilter.Binder.Net.Providers
 {
@@ -21,7 +22,7 @@ namespace romaklayt.DynamicFilter.Binder.Net.Providers
             _dictionary = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             if (!string.IsNullOrWhiteSpace(json))
             {
-                var model = DeserializeObjectFromJson<DynamicFilterModel>(json);
+                var model = DeserializeObjectFromJson<DynamicComplexModel>(json);
                 if (model != null)
                     _dictionary = model.GetType()
                         .GetProperties(BindingFlags.Instance | BindingFlags.Public)

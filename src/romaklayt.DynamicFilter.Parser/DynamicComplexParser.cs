@@ -7,12 +7,12 @@ using romaklayt.DynamicFilter.Parser.Models;
 
 namespace romaklayt.DynamicFilter.Parser
 {
-    public static class DynamicModelParser
+    public static class DynamicComplexParser
     {
         public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
-            this BaseDynamicFilter filter)
+            this BaseDynamicComplexModel complexModel)
         {
-            if (filter == null) throw new ArgumentNullException(nameof(filter));
+            if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
 
             var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
 
@@ -20,13 +20,13 @@ namespace romaklayt.DynamicFilter.Parser
 
             var parameter = Expression.Parameter(itemType, "x");
 
-            ExtractFilters(model, filter, parameter, itemType);
+            ExtractFilters(model, complexModel, parameter, itemType);
 
-            ExtractOrder(model, filter, parameter);
+            ExtractOrder(model, complexModel, parameter);
 
-            ExtractPagination(model, filter);
+            ExtractPagination(model, complexModel);
 
-            ExtractSelect<TSource, TTarget>(model, filter, parameter, itemType);
+            ExtractSelect<TSource, TTarget>(model, complexModel);
             return model as ExpressionDynamicFilter<TSource, TTarget>;
         }
 
@@ -42,9 +42,7 @@ namespace romaklayt.DynamicFilter.Parser
                 model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
         }
 
-        private static void ExtractSelect<TSource, TTarget>(object model, object bindingContext,
-            ParameterExpression parameter,
-            Type itemType)
+        internal static void ExtractSelect<TSource, TTarget>(object model, object bindingContext)
         {
             var select = bindingContext.GetType().GetProperty("Select")?.GetValue(bindingContext, null) as string;
 
@@ -57,26 +55,24 @@ namespace romaklayt.DynamicFilter.Parser
         {
             var order = bindingContext.GetType().GetProperty("Order")?.GetValue(bindingContext, null) as string;
 
-            if (!string.IsNullOrWhiteSpace(order))
+            if (string.IsNullOrWhiteSpace(order)) return;
+            var orderItems = order.Split('=');
+            if (orderItems.Count() > 1)
             {
-                var orderItems = order.Split('=');
-                if (orderItems.Count() > 1)
-                {
-                    model.GetType().GetProperty("OrderType")
-                        ?.SetValue(model, Enum.Parse(typeof(OrderType), orderItems[1], true));
-                    order = orderItems[0];
-                }
-                else
-                {
-                    model.GetType().GetProperty("OrderType")?.SetValue(model, OrderType.Asc);
-                }
-
-                var property = Expression.PropertyOrField(parameter, order);
-
-                var orderExp = Expression.Lambda(Expression.Convert(property, typeof(object)).Reduce(), parameter);
-
-                model.GetType().GetProperty("Order")?.SetValue(model, orderExp);
+                model.GetType().GetProperty("OrderType")
+                    ?.SetValue(model, Enum.Parse(typeof(OrderType), orderItems[1], true));
+                order = orderItems[0];
             }
+            else
+            {
+                model.GetType().GetProperty("OrderType")?.SetValue(model, OrderType.Asc);
+            }
+
+            var property = Expression.PropertyOrField(parameter, order);
+
+            var orderExp = Expression.Lambda(Expression.Convert(property, typeof(object)).Reduce(), parameter);
+
+            model.GetType().GetProperty("Order")?.SetValue(model, orderExp);
         }
 
         internal static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
@@ -84,52 +80,49 @@ namespace romaklayt.DynamicFilter.Parser
         {
             var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;
 
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                var filterAndValues = filter.Split(',').ToArray();
+            if (string.IsNullOrWhiteSpace(filter)) return;
+            var filterAndValues = filter.Split(',').ToArray();
 
-                LambdaExpression finalExpression = null;
-                Expression currentExpression = null;
+            LambdaExpression finalExpression = null;
+            Expression currentExpression = null;
 
-                for (var i = 0; i < filterAndValues.Count(); i++)
-                    if (filterAndValues[i].Contains('|'))
+            for (var i = 0; i < filterAndValues.Count(); i++)
+                if (filterAndValues[i].Contains('|'))
+                {
+                    var orExpression = new ExpressionParser();
+                    var filterAndValue = orExpression.DefineOperation(filterAndValues[i], itemType);
+                    var options = filterAndValue[1].Split('|');
+
+                    for (var j = 0; j < options.Count(); j++)
                     {
-                        var orExpression = new ExpressionParser();
-                        var filterAndValue = orExpression.DefineOperation(filterAndValues[i], itemType);
-                        var options = filterAndValue[1].Split('|');
+                        var expression = GetExpression(parameter, itemType,
+                            $"{filterAndValue[0]}{orExpression.GetOperation()}{options[j]}");
 
-                        for (var j = 0; j < options.Count(); j++)
+                        if (j == 0)
                         {
-                            var expression = GetExpression(parameter, itemType,
-                                $"{filterAndValue[0]}{orExpression.GetOperation()}{options[j]}");
-
-                            if (j == 0)
-                            {
-                                currentExpression = currentExpression == null
-                                    ? expression
-                                    : Expression.And(currentExpression, expression);
-                            }
-                            else
-                            {
-                                if (currentExpression != null)
-                                    currentExpression = Expression.Or(currentExpression, expression);
-                            }
+                            currentExpression = currentExpression == null
+                                ? expression
+                                : Expression.And(currentExpression, expression);
+                        }
+                        else
+                        {
+                            if (currentExpression != null)
+                                currentExpression = Expression.Or(currentExpression, expression);
                         }
                     }
-                    else
-                    {
-                        var expression = GetExpression(parameter, itemType, filterAndValues[i]);
+                }
+                else
+                {
+                    var expression = GetExpression(parameter, itemType, filterAndValues[i]);
 
-                        if (currentExpression == null)
-                            currentExpression = expression;
-                        else
-                            currentExpression = Expression.And(currentExpression, expression);
-                    }
+                    currentExpression = currentExpression == null
+                        ? expression
+                        : Expression.And(currentExpression, expression);
+                }
 
-                if (currentExpression != null) finalExpression = Expression.Lambda(currentExpression, parameter);
+            if (currentExpression != null) finalExpression = Expression.Lambda(currentExpression, parameter);
 
-                model.GetType().GetProperty("Filter")?.SetValue(model, finalExpression);
-            }
+            model.GetType().GetProperty("Filter")?.SetValue(model, finalExpression);
         }
 
 
@@ -171,13 +164,13 @@ namespace romaklayt.DynamicFilter.Parser
             IGrouping<string, string[]> allMembers, out List<MemberBinding> bindings, int depth = 0)
         {
             bindings = new List<MemberBinding>();
-            foreach (var members in allMembers.GroupBy(strings => strings[depth + 1]).ToList())
+            foreach (var members in allMembers.GroupBy(strings => strings[depth]).ToList())
             {
                 var memberName = members.ToArray()[0][depth];
                 var target = Expression.Constant(null, targetType);
                 var targetMember = Expression.PropertyOrField(target, memberName);
                 var sourceMember = Expression.PropertyOrField(source, memberName);
-                var childMembers = members.Where(path => depth + 1 < path.Count() - 1).ToArray();
+                var childMembers = members.Where(path => depth + 1 < path.Count()).ToArray();
                 if (!childMembers.Any())
                 {
                     bindings.Add(Expression.Bind(targetMember.Member, sourceMember));

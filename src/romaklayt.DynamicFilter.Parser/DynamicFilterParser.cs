@@ -5,12 +5,12 @@ using romaklayt.DynamicFilter.Parser.Models;
 
 namespace romaklayt.DynamicFilter.Parser
 {
-    public static class DynamicCounterModelParser
+    public static class DynamicFilterParser
     {
         public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
-            this BaseCountDynamicFilter filter)
+            this BaseDynamicFilterModel filterModel)
         {
-            if (filter == null) throw new ArgumentNullException(nameof(filter));
+            if (filterModel == null) throw new ArgumentNullException(nameof(filterModel));
 
             var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
 
@@ -18,7 +18,7 @@ namespace romaklayt.DynamicFilter.Parser
 
             var parameter = Expression.Parameter(itemType, "x");
 
-            DynamicModelParser.ExtractFilters(model, filter, parameter, itemType);
+            DynamicComplexParser.ExtractFilters(model, filterModel, parameter, itemType);
 
             return model as ExpressionDynamicFilter<TSource, TTarget>;
         }

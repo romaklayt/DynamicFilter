@@ -1,9 +1,9 @@
 using System;
 using System.Web.Mvc;
 
-namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
+namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc.Binders
 {
-    public class DynamicCountFilterBinder : DynamicFilterBinder
+    public class DynamicSelectBinder : DynamicComplexBinder
     {
         public override object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
@@ -11,7 +11,7 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc
 
             var model = Activator.CreateInstance(bindingContext.ModelType);
 
-            ExtractFilters(model, bindingContext);
+            ExtractSelect(model, bindingContext);
 
             return model;
         }

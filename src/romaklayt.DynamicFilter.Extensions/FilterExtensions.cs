@@ -31,22 +31,31 @@ namespace romaklayt.DynamicFilter.Extensions
         }
 
         public static async Task<IQueryable<T>> UseFilter<T>(this IQueryable<T> source,
-            BaseDynamicFilter filter, bool pagination = true) where T : class
+            BaseDynamicComplexModel complexModel, bool pagination = true) where T : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
+            return await source.UseFilter(complexModel.BindFilterExpressions<T, T>(), pagination);
         }
 
-        public static async Task<int> UseFilter<T>(this IQueryable<T> source,
-            BaseCountDynamicFilter filter) where T : class
+        public static IQueryable<T> UseSelect<T>(this IQueryable<T> source,
+            BaseDynamicSelectModel selectModel) where T : class
         {
-            var filteredData = await source.UseFilter(filter.BindFilterExpressions<T, T>(), false);
-            return filteredData.Count();
+            var result = !string.IsNullOrWhiteSpace(selectModel.Select)
+                ? source.Select(selectModel.BindFilterExpressions<T, T>().Select)
+                : source;
+            return result;
+        }
+
+        public static async Task<IQueryable<T>> UseFilter<T>(this IQueryable<T> source,
+            BaseDynamicFilterModel filterModel) where T : class
+        {
+            var filteredData = await source.UseFilter(filterModel.BindFilterExpressions<T, T>(), false);
+            return filteredData;
         }
 
         public static async Task<IQueryable<TTarget>> UseFilter<TSource, TTarget>(this IQueryable<TSource> source,
-            BaseDynamicFilter filter, bool pagination = true) where TSource : class where TTarget : class
+            BaseDynamicComplexModel complexModel, bool pagination = true) where TSource : class where TTarget : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>(), pagination);
+            return await source.UseFilter(complexModel.BindFilterExpressions<TSource, TTarget>(), pagination);
         }
 
         public static async Task<IEnumerable<TTarget>> UseFilter<TSource, TTarget>(this IEnumerable<TSource> source,
@@ -71,22 +80,31 @@ namespace romaklayt.DynamicFilter.Extensions
         }
 
         public static async Task<IEnumerable<T>> UseFilter<T>(this IEnumerable<T> source,
-            BaseDynamicFilter filter, bool pagination = true) where T : class
+            BaseDynamicComplexModel complexModel, bool pagination = true) where T : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<T, T>(), pagination);
+            return await source.UseFilter(complexModel.BindFilterExpressions<T, T>(), pagination);
         }
 
-        public static async Task<int> UseCountFilter<T>(this IEnumerable<T> source,
-            BaseCountDynamicFilter filter) where T : class
+        public static IEnumerable<T> UseSelect<T>(this IEnumerable<T> source,
+            BaseDynamicSelectModel selectModel) where T : class
         {
-            var filteredData = await source.UseFilter(filter.BindFilterExpressions<T, T>(), false);
-            return filteredData.Count();
+            var result = !string.IsNullOrWhiteSpace(selectModel.Select)
+                ? source.Select(selectModel.BindFilterExpressions<T, T>().Select.Compile())
+                : source;
+            return result;
+        }
+
+        public static async Task<IEnumerable<T>> UseFilter<T>(this IEnumerable<T> source,
+            BaseDynamicFilterModel filterModel) where T : class
+        {
+            var filteredData = await source.UseFilter(filterModel.BindFilterExpressions<T, T>(), false);
+            return filteredData;
         }
 
         public static async Task<IEnumerable<TTarget>> UseFilter<TSource, TTarget>(this IEnumerable<TSource> source,
-            BaseDynamicFilter filter, bool pagination = true) where TSource : class where TTarget : class
+            BaseDynamicComplexModel complexModel, bool pagination = true) where TSource : class where TTarget : class
         {
-            return await source.UseFilter(filter.BindFilterExpressions<TSource, TTarget>(), pagination);
+            return await source.UseFilter(complexModel.BindFilterExpressions<TSource, TTarget>(), pagination);
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace romaklayt.DynamicFilter.Common
 {
-    public class BaseCountDynamicFilter
+    public class BaseDynamicFilterModel
     {
         public string Filter { get; set; }
     }

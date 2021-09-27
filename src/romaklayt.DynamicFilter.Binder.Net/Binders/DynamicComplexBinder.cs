@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace romaklayt.DynamicFilter.Binder.Net
+namespace romaklayt.DynamicFilter.Binder.Net.Binders
 {
-    public class DynamicFilterBinder : IModelBinder
+    public class DynamicComplexBinder : IModelBinder
     {
         public virtual Task BindModelAsync(ModelBindingContext bindingContext)
         {
@@ -37,7 +37,7 @@ namespace romaklayt.DynamicFilter.Binder.Net
                 model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
         }
 
-        private static void ExtractSelect(object model, ModelBindingContext bindingContext)
+        private protected static void ExtractSelect(object model, ModelBindingContext bindingContext)
         {
             var select = bindingContext.ValueProvider.GetValue("select").FirstValue ?? "root";
 

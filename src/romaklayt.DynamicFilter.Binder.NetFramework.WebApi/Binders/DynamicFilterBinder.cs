@@ -2,9 +2,9 @@ using System;
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
 
-namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi
+namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Binders
 {
-    public class DynamicCounterFilterBinder : DynamicFilterBinder
+    public class DynamicFilterBinder : DynamicComplexBinder
     {
         public override bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
         {

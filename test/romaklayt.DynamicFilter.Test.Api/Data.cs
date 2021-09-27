@@ -16,7 +16,6 @@ namespace romaklayt.DynamicFilter.Test.Api
 
         public static readonly List<User> Users = new()
         {
-            new User("Fred", "Loy", 33, new Address()),
             new User("Bruno", "Mars", 27, Addresses[4])
             {
                 Roles = new List<Role> { new("Admin", Addresses[1]) }

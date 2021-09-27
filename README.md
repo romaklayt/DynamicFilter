@@ -51,14 +51,14 @@ After downloaded, go to your webapi and create an *get* or *post* endpoint recei
 
 ```C#
 [HttpGet]
-public Task<List<User>> Get(DynamicFilter filter)
+public Task<List<User>> Get(DynamicComplexModel filter)
 ```
 
 Now you can query your endpoint with the DynamicFilter properties. Check *"tests"* folder on the Api projects for examples.
 
 ```C#
 [HttpGet]
-public Task<List<User>> Get(DynamicFilter filter)
+public Task<List<User>> Get(DynamicComplexModel filter)
 {
     var result = this.users.UseFilter(filter);
 
@@ -70,6 +70,18 @@ DynamicFilter.Parser will transform your URI Queries into .Net Expressions. That
 
 
 ## Simple Query
+
+You can use a **DynamicComplexModel** model for filtering. 
+A **DynamicFilterModel** model without additional properties is also available.
+
+```C#
+public Task<List<User>> Get(DynamicComplexModel filter) #or DynamicFilterModel
+{
+    var result = users.UseFilter(filter);
+
+    return Task.FromResult(result.ToList());
+}
+```
 
 Example Uri:
 
@@ -140,7 +152,7 @@ GET http://url?query=name=Bruno&order=name=Desc
 On your DynamicFilter object received on the endpoint, you'll get the orderType as an Enum, this way you can order by the type specified on enum.
 
 ```C#
-public Task<List<User>> Get(DynamicFilter filter)
+public Task<List<User>> Get(DynamicComplexModel filter)
 {
     var result = users.UseFilter(filter);
 
@@ -177,7 +189,7 @@ Example:
 
 ```C#
 [HttpGet("page")]
-public async Task<PageModel<User>> GetPage(DynamicFilterModel filterModel)
+public async Task<PageModel<User>> GetPage(DynamicComplexModel filterModel)
 {
     var filteredUsers = await Data.Users.UseFilter(filterModel);
     return await filteredUsers.ToPagedList(filterModel);
@@ -200,6 +212,16 @@ GET http://url?select=address.zip,root #select Address.Zip and all root properti
 If you don't want to send model properties that are not included in your **Select** request, you can use the *GetOnlySelectedProperties* extension method, which will render you only the selected properties. Example:
 ```C#
 result = items.UseFilter(filter).Result.GetOnlySelectedProperties(filterModelModel);
+```
+
+If you need to select properties from *only one model* (the GetById method, for example), you can also use the method **UseFilter**.
+```C#
+[HttpGet("{id}")]
+public async Task<object> GetById(DynamicSelectModel dynamicSelectModel, Guid id)
+{
+    var user = await Data.Users.UseSelect(dynamicSelectModel).FirstOrDefaultAsync(user => user.Id == id);
+    return user.RenderOnlySelectedProperties(dynamicSelectModel);
+}
 ```
 
 # Filter operator support

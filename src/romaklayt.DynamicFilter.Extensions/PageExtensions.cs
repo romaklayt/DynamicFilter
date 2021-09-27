@@ -34,32 +34,34 @@ namespace romaklayt.DynamicFilter.Extensions
             return await Task.FromResult(new PageModel<TTarget>(items, count, filter.Page, filter.PageSize));
         }
 
-        public static async Task<PageModel<T>> ToPagedList<T>(this IEnumerable<T> source, BaseDynamicFilter filter)
+        public static async Task<PageModel<T>> ToPagedList<T>(this IEnumerable<T> source,
+            BaseDynamicComplexModel complexModel)
             where T : class
         {
-            return await source.ToPagedList(filter.BindFilterExpressions<T, T>());
+            return await source.ToPagedList(complexModel.BindFilterExpressions<T, T>());
         }
 
 
-        public static async Task<PageModel<T>> ToPagedList<T>(this IQueryable<T> source, BaseDynamicFilter filter)
+        public static async Task<PageModel<T>> ToPagedList<T>(this IQueryable<T> source,
+            BaseDynamicComplexModel complexModel)
             where T : class
         {
-            return await source.ToPagedList(filter.BindFilterExpressions<T, T>());
+            return await source.ToPagedList(complexModel.BindFilterExpressions<T, T>());
         }
 
         public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(this IEnumerable<TSource> source,
-            BaseDynamicFilter filter)
+            BaseDynamicComplexModel complexModel)
             where TSource : class where TTarget : class
         {
-            return await source.ToPagedList(filter.BindFilterExpressions<TSource, TTarget>());
+            return await source.ToPagedList(complexModel.BindFilterExpressions<TSource, TTarget>());
         }
 
 
         public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(this IQueryable<TSource> source,
-            BaseDynamicFilter filter)
+            BaseDynamicComplexModel complexModel)
             where TSource : class where TTarget : class
         {
-            return await source.ToPagedList(filter.BindFilterExpressions<TSource, TTarget>());
+            return await source.ToPagedList(complexModel.BindFilterExpressions<TSource, TTarget>());
         }
     }
 }

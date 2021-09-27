@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace romaklayt.DynamicFilter.Binder.Net
+namespace romaklayt.DynamicFilter.Binder.Net.Binders
 {
-    public class DynamicCountFilterBinder : DynamicFilterBinder
+    public class DynamicSelectBinder : DynamicComplexBinder
     {
         public override Task BindModelAsync(ModelBindingContext bindingContext)
         {
@@ -12,7 +12,7 @@ namespace romaklayt.DynamicFilter.Binder.Net
 
             var model = Activator.CreateInstance(bindingContext.ModelType);
 
-            ExtractFilters(model, bindingContext);
+            ExtractSelect(model, bindingContext);
 
             bindingContext.Result = ModelBindingResult.Success(model);
 

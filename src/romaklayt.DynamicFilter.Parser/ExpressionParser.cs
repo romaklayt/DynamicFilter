@@ -32,8 +32,8 @@ namespace romaklayt.DynamicFilter.Parser
             if (type == value.GetType()) return value;
             if (type.IsEnum)
             {
-                if (value is string)
-                    return Enum.Parse(type, value as string);
+                if (value is string s)
+                    return Enum.Parse(type, s);
                 return Enum.ToObject(type, value);
             }
 

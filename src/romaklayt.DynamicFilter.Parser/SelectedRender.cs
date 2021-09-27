@@ -16,38 +16,41 @@ namespace romaklayt.DynamicFilter.Parser
         ///     Return json string with only selected properties
         /// </summary>
         /// <param name="source">IEnumerable source</param>
-        /// <param name="filter">Dynamic filter</param>
+        /// <param name="complexModel">Dynamic filter</param>
         /// <param name="formatting">Json string format</param>
         /// <typeparam name="T">IEnumerable type</typeparam>
         /// <returns>Json string</returns>
-        public static string RenderOnlySelectedProperties<T>(this T source, BaseDynamicFilter filter,
+        public static string RenderOnlySelectedProperties<T>(this IEnumerable<T> source,
+            BaseDynamicComplexModel complexModel,
             Formatting formatting = Formatting.Indented)
-            where T : IEnumerable<object>
         {
-            if (filter.Select != null)
-            {
-                var jArray = new List<object>();
-                filter.Select = CheckRootMember(filter.Select,typeof(T).GenericTypeArguments.First());
-                UpdateMembersPath(filter.Select, source.FirstOrDefault()?.GetType(), out var items, true);
-                foreach (var o in source) jArray.Add(MapToDictionary(o, items));
-                return JsonConvert.SerializeObject(jArray, formatting);
-            }
+            if (complexModel.Select == null) return JsonConvert.SerializeObject(source, formatting);
+            var jArray = new List<object>();
+            complexModel.Select = CheckRootMember(complexModel.Select, typeof(T));
+            UpdateMembersPath(complexModel.Select, source.FirstOrDefault()?.GetType(), out var items, true);
+            foreach (var o in source) jArray.Add(MapToDictionary(o, items));
+            return JsonConvert.SerializeObject(jArray, formatting);
+        }
 
-            return JsonConvert.SerializeObject(source, formatting);
+        public static string RenderOnlySelectedProperties<T>(this T source, BaseDynamicSelectModel complexModel,
+            Formatting formatting = Formatting.Indented)
+        {
+            if (complexModel.Select == null) return JsonConvert.SerializeObject(source, formatting);
+            complexModel.Select = CheckRootMember(complexModel.Select, source.GetType());
+            UpdateMembersPath(complexModel.Select, source.GetType(), out var items, true);
+            return JsonConvert.SerializeObject(MapToDictionary(source, items), formatting);
         }
 
         internal static string CheckRootMember(string filter, Type type)
         {
             var selectedMembers =
                 filter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            if (selectedMembers.Contains("root"))
-            {
-                selectedMembers.Remove("root");
-                selectedMembers.AddRange(type.GetProperties()
-                    .Where(info => IsSimple(info.PropertyType)).Select(info => FirstCharToLowerCase(info.Name)));
-                filter = string.Join(",", selectedMembers);
-            }
-            return filter; 
+            if (!selectedMembers.Contains("root")) return filter;
+            selectedMembers.Remove("root");
+            selectedMembers.AddRange(type.GetProperties()
+                .Where(info => IsSimple(info.PropertyType)).Select(info => FirstCharToLowerCase(info.Name)));
+            filter = string.Join(",", selectedMembers);
+            return filter;
         }
 
         internal static void UpdateMembersPath(string includePropertiesString, Type type, out List<string> props,
@@ -87,7 +90,7 @@ namespace romaklayt.DynamicFilter.Parser
                     var subtype = GetPropertyType(type, includeProperty);
                     if (IsSimple(subtype))
                     {
-                        props.Add(includeProperty);
+                        if (isroot) props.Add(includeProperty);
                         continue;
                     }
 
