@@ -129,7 +129,11 @@ namespace romaklayt.DynamicFilter.Parser
 
         private static bool IsGenericList(this Type type)
         {
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>);
+            foreach (var intf in type.GetInterfaces())
+                if (intf.IsGenericType && intf.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    return true;
+
+            return false;
         }
 
         public static bool IsSimple(Type type)
