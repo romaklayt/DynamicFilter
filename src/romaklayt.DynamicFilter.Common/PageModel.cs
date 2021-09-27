@@ -5,6 +5,10 @@ namespace romaklayt.DynamicFilter.Common
 {
     public class PageModel<T>
     {
+        public PageModel()
+        {
+        }
+        
         public PageModel(List<T> items, int count, int pageNumber, int pageSize)
         {
             TotalCount = count;
