@@ -192,12 +192,14 @@ namespace romaklayt.DynamicFilter.Parser
                     }
                     else
                     {
-                        targetValue = BuildSelectorExpression(targetMember.Type, sourceMember,
-                            members, out _, depth + 1);
+                        targetValue = Expression.Condition(
+                            Expression.Equal(Expression.Property(source, memberName),
+                                Expression.Constant(null, sourceMember.Type)),
+                            Expression.Constant(null, sourceMember.Type), BuildSelectorExpression(targetMember.Type,
+                                sourceMember,
+                                members, out _, depth + 1));
                     }
-                    bindings.Add(Expression.Bind(targetMember.Member, Expression.Condition(
-                        Expression.Equal(Expression.Property(source, memberName), Expression.Constant(null,targetMember.Type)),
-                        Expression.Constant(null, targetMember.Type), targetValue)));
+                    bindings.Add(Expression.Bind(targetMember.Member, targetValue));
                 }
             }
             return Expression.MemberInit(Expression.New(targetType), bindings);
