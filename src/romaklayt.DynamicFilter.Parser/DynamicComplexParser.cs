@@ -195,11 +195,11 @@ namespace romaklayt.DynamicFilter.Parser
                         targetValue = BuildSelectorExpression(targetMember.Type, sourceMember,
                             members, out _, depth + 1);
                     }
-
-                    bindings.Add(Expression.Bind(targetMember.Member, targetValue));
+                    bindings.Add(Expression.Bind(targetMember.Member, Expression.Condition(
+                        Expression.Equal(Expression.Property(source, memberName), Expression.Constant(null,targetMember.Type)),
+                        Expression.Constant(null, targetMember.Type), targetValue)));
                 }
             }
-
             return Expression.MemberInit(Expression.New(targetType), bindings);
         }
 
