@@ -11,40 +11,18 @@ namespace romaklayt.DynamicFilter.Extensions.Async
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class FilterExtensions
     {
-        public static async Task<IAsyncEnumerable<TTarget>> UseFilter<TSource, TTarget>(
-            this IAsyncEnumerable<TSource> source,
-            ExpressionDynamicFilter<TSource, TTarget> filter, bool pagination = true) where TSource : class
-            where TTarget : class
-        {
-            var queryable = filter.Filter != null
-                ? source.Where(filter.Filter.Compile())
-                : source.AsAsyncQueryable();
-
-            if (filter.Order != null)
-                queryable = filter.OrderType == OrderType.Asc
-                    ? queryable.OrderBy(filter.Order.Compile())
-                    : queryable.OrderByDescending(filter.Order.Compile());
-
-            var result = filter.Select != null ? queryable.Select(filter.Select.Compile()) : queryable.Cast<TTarget>();
-            if (filter.PageSize == default && filter.Page == default || !pagination)
-                return await Task.FromResult(result);
-
-            if (filter.PageSize < 1) filter.PageSize = 10;
-            if (filter.Page < 1) filter.Page = 1;
-            return await Task.FromResult(result.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize));
-        }
-
         public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
             BaseDynamicComplexModel complexModel, bool pagination = true) where T : class
         {
-            return await source.UseFilter(complexModel.BindFilterExpressions<T, T>(), pagination);
+            return await source.AsAsyncQueryable().UseFilter(complexModel.BindFilterExpressions<T, T>(), pagination);
         }
 
         public static async Task<IAsyncEnumerable<TTarget>> UseFilter<TSource, TTarget>(
             this IAsyncEnumerable<TSource> source,
             BaseDynamicComplexModel complexModel, bool pagination = true) where TSource : class where TTarget : class
         {
-            return await source.UseFilter(complexModel.BindFilterExpressions<TSource, TTarget>(), pagination);
+            return await source.AsAsyncQueryable()
+                .UseFilter(complexModel.BindFilterExpressions<TSource, TTarget>(), pagination);
         }
 
         public static async Task<IAsyncQueryable<TTarget>> UseFilter<TSource, TTarget>(
@@ -87,7 +65,8 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
             BaseDynamicFilterModel filterModel) where T : class
         {
-            var filteredData = await source.UseFilter(filterModel.BindFilterExpressions<T, T>(), false);
+            var filteredData =
+                await source.AsAsyncQueryable().UseFilter(filterModel.BindFilterExpressions<T, T>(), false);
             return filteredData;
         }
 

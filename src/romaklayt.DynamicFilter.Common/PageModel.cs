@@ -8,13 +8,13 @@ namespace romaklayt.DynamicFilter.Common
         public PageModel()
         {
         }
-        
+
         public PageModel(List<T> items, int count, int pageNumber, int pageSize)
         {
             TotalCount = count;
             PageSize = pageSize;
             CurrentPage = pageNumber;
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            TotalPages = (int) Math.Ceiling(count / (double) pageSize);
             if (pageNumber > TotalPages) throw new IndexOutOfRangeException("Page not found");
             Items = items;
         }

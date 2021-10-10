@@ -12,7 +12,7 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework
             routes.MapRoute(
                 "Default",
                 "{controller}/{action}/{id}",
-                new { controller = "User", action = "GetList", id = UrlParameter.Optional }
+                new {controller = "User", action = "GetList", id = UrlParameter.Optional}
             );
         }
     }

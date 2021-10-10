@@ -146,8 +146,8 @@ namespace romaklayt.DynamicFilter.Parser
             var parameter = Expression.Parameter(typeof(TSource), "e");
             var body = new List<MemberBinding>();
             var allMembers = members.OrderByDescending(s =>
-                s.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Count()).ToList();
-            var array = allMembers.Select(s => s.Trim().Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries))
+                s.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries).Count()).ToList();
+            var array = allMembers.Select(s => s.Trim().Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries))
                 .ToList();
             var u = array.GroupBy(strings => strings[0]).ToList();
             foreach (var member in u)
@@ -185,23 +185,29 @@ namespace romaklayt.DynamicFilter.Parser
                         targetValue = BuildSelectorExpression(targetElementType, sourceElementParam,
                             members, out _, depth + 1);
                         targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
-                            new[] { sourceElementType, targetElementType }, sourceMember,
+                            new[] {sourceElementType, targetElementType}, sourceMember,
                             Expression.Lambda(targetValue, sourceElementParam));
-
-                        targetValue = CorrectEnumerableResult(targetValue, targetElementType, targetMember.Type);
+                        targetValue = Expression.Condition(
+                            Expression.Equal(sourceMember,
+                                Expression.Constant(null, sourceMember.Type)),
+                            Expression.Constant(null, sourceMember.Type),
+                            CorrectEnumerableResult(targetValue, targetElementType, targetMember.Type),
+                            sourceMember.Type);
                     }
                     else
                     {
                         targetValue = Expression.Condition(
-                            Expression.Equal(Expression.Property(source, memberName),
+                            Expression.Equal(sourceMember,
                                 Expression.Constant(null, sourceMember.Type)),
                             Expression.Constant(null, sourceMember.Type), BuildSelectorExpression(targetMember.Type,
                                 sourceMember,
                                 members, out _, depth + 1));
                     }
+
                     bindings.Add(Expression.Bind(targetMember.Member, targetValue));
                 }
             }
+
             return Expression.MemberInit(Expression.New(targetType), bindings);
         }
 
@@ -231,14 +237,14 @@ namespace romaklayt.DynamicFilter.Parser
                 return enumerable;
 
             if (memberType.IsArray)
-                return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] { elementType },
+                return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] {elementType},
                     enumerable);
 
             if (IsSameCollectionType(memberType, typeof(List<>), elementType)
                 || IsSameCollectionType(memberType, typeof(ICollection<>), elementType)
                 || IsSameCollectionType(memberType, typeof(IReadOnlyList<>), elementType)
                 || IsSameCollectionType(memberType, typeof(IReadOnlyCollection<>), elementType))
-                return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] { elementType },
+                return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] {elementType},
                     enumerable);
 
             throw new NotImplementedException($"Not implemented transformation for type '{memberType.Name}'");

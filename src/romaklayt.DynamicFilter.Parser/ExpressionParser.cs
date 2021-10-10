@@ -109,7 +109,7 @@ namespace romaklayt.DynamicFilter.Parser
                     {
                         var expression1 = Expression.Call(body, toLowerMethod);
 
-                        var method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                        var method = typeof(string).GetMethod("Contains", new[] {typeof(string)});
 
                         if (method is not null)
                             returnExpression = Expression.Call(expression1, method, constantExpression);
@@ -119,7 +119,7 @@ namespace romaklayt.DynamicFilter.Parser
                 }
                 case OperatorEnum.ContainsCaseSensitive:
                 {
-                    var method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+                    var method = typeof(string).GetMethod("Contains", new[] {typeof(string)});
 
                     if (method is not null) returnExpression = Expression.Call(body, method, constantExpression);
 

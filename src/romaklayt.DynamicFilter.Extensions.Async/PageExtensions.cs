@@ -17,13 +17,12 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         {
             if (filter.PageSize < 1) filter.PageSize = 10;
             if (filter.Page < 1) filter.Page = 1;
-            var filteredEntities = await source.UseFilter(filter, false);
+            var filteredEntities = await source.AsAsyncQueryable().UseFilter(filter, false);
             var enumerable = await filteredEntities.ToListAsync();
             var count = enumerable.Count();
             var items = enumerable.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize).ToList();
             return new PageModel<TTarget>(items, count, filter.Page, filter.PageSize);
         }
-
 
         public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source,
             BaseDynamicComplexModel complexModel) where T : class
@@ -32,8 +31,8 @@ namespace romaklayt.DynamicFilter.Extensions.Async
         }
 
         public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(
-            this IAsyncEnumerable<TSource> source,
-            BaseDynamicComplexModel complexModel) where TSource : class where TTarget : class
+            this IAsyncEnumerable<TSource> source, BaseDynamicComplexModel complexModel)
+            where TSource : class where TTarget : class
         {
             return await source.ToPagedList(complexModel.BindFilterExpressions<TSource, TTarget>());
         }

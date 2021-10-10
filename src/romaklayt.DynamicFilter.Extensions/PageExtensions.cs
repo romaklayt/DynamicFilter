@@ -27,7 +27,7 @@ namespace romaklayt.DynamicFilter.Extensions
         {
             if (filter.PageSize < 1) filter.PageSize = 10;
             if (filter.Page < 1) filter.Page = 1;
-            var filteredEntities = await source.UseFilter(filter, false);
+            var filteredEntities = await source.AsQueryable().UseFilter(filter, false);
             var enumerable = filteredEntities.ToList();
             var count = enumerable.Count();
             var items = enumerable.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize).ToList();

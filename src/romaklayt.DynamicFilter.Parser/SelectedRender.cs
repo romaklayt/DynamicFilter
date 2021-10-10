@@ -61,7 +61,7 @@ namespace romaklayt.DynamicFilter.Parser
         internal static string CheckRootMember(string filter, Type type)
         {
             var selectedMembers =
-                filter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                filter.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
             if (!selectedMembers.Contains("root")) return filter;
             selectedMembers.Remove("root");
             selectedMembers.AddRange(type.GetProperties()
@@ -74,16 +74,16 @@ namespace romaklayt.DynamicFilter.Parser
             bool isroot = false)
         {
             props = new List<string>();
-            foreach (var includeProperty in includePropertiesString.Split(new[] { ',' },
+            foreach (var includeProperty in includePropertiesString.Split(new[] {','},
                 StringSplitOptions.RemoveEmptyEntries))
             {
-                var prop = includeProperty.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                var prop = includeProperty.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
                 if (prop.Length > 1)
                 {
                     var y = GetPropertyType(type, prop[0]);
                     if (y != null)
                     {
-                        UpdateMembersPath(includeProperty.Split(new[] { '.' }, 2)[1], y, out var list);
+                        UpdateMembersPath(includeProperty.Split(new[] {'.'}, 2)[1], y, out var list);
                         if (list == null) continue;
                         if (isroot)
                         {
@@ -161,7 +161,7 @@ namespace romaklayt.DynamicFilter.Parser
         private static JObject MapToDictionary(object source, List<string> members)
         {
             var dictionary = new JObject();
-            var parsedMembersList = members.Select(s => s.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries))
+            var parsedMembersList = members.Select(s => s.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries))
                 .ToList();
             foreach (var parsedMembers in parsedMembersList) MapToDictionaryInternal(dictionary, source, parsedMembers);
             return dictionary;
@@ -181,7 +181,7 @@ namespace romaklayt.DynamicFilter.Parser
             else if (propertyInfo.GetValue(source, null) is IEnumerable)
             {
                 var newArrayValues = new JArray();
-                foreach (var o in (IEnumerable)propertyInfo.GetValue(source, null))
+                foreach (var o in (IEnumerable) propertyInfo.GetValue(source, null))
                 {
                     var l = new JObject();
                     MapToDictionaryInternal(l, o, members, deep + 1);
