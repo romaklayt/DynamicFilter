@@ -47,8 +47,7 @@ If you need to add a filter to the **MVC** controller use the package
 nuget install romaklayt.DynamicFilter.Binder.NetFramework.Mvc
 ```
 
-and, if you need, add to your *Application_Start* **Global.asax.cs** class for register value providers (form-data,
-x-www-form-urlencoded and JSON) for body POST request
+and, if you need, add to your *Application_Start* **Global.asax.cs** class for register value providers (form-data, x-www-form-urlencoded and JSON) for body POST request
 
 ```C#
 DynamicFilterProviders.AddProviders();
@@ -60,15 +59,14 @@ If you need to use DynamicFilter with IAsyncEnumerable or IAsyncQueryable use th
 nuget install romaklayt.DynamicFilter.Extensions.Async
 ```
 
-After downloaded, go to your webapi and create an *get* or *post* endpoint receiving ``` DynamicFilter ``` as parameter.
+After downloaded, go to your webapi and create an *get* or *post* endpoint receiving ```DynamicComplexModel``` as parameter.
 
 ```C#
 [HttpGet]
 public Task<List<User>> Get(DynamicComplexModel filter)
 ```
 
-Now you can query your endpoint with the DynamicFilter properties. Check *"tests"* folder on the Api projects for
-examples.
+Now you can query your endpoint with the DynamicFilter properties. Check *"tests"* folder on the Api projects for examples.
 
 ```C#
 [HttpGet]
@@ -80,13 +78,11 @@ public Task<List<User>> Get(DynamicComplexModel filter)
 }
 ```
 
-DynamicFilter.Parser will transform your URI Queries into .Net Expressions. That way, you can use these expressions to
-filter your values into your database repository.
+DynamicFilter.Parser will transform your URI Queries into .Net Expressions. That way, you can use these expressions to filter your values into your database repository.
 
 ## Simple Query
 
-You can use a **DynamicComplexModel** model for filtering. A **DynamicFilterModel** model without additional properties
-is also available.
+You can use a **DynamicComplexModel** model for filtering. A **DynamicFilterModel** model without additional properties is also available.
 
 ```C#
 public Task<List<User>> Get(DynamicComplexModel filter) #or DynamicFilterModel
@@ -155,8 +151,7 @@ x => x.Address.Number == 23
 
 # Ordering
 
-You can also order your queries via DynamicFilter. You simply need to add an order parameter on your query, where you
-specify the property you'll use for order.
+You can also order your queries via DynamicFilter. You simply need to add an order parameter on your query, where you specify the property you'll use for order.
 
 ```http
 GET http://url?query=name=Bruno&order=name
@@ -170,8 +165,7 @@ GET http://url?query=name=Bruno&order=name=Asc
 GET http://url?query=name=Bruno&order=name=Desc
 ```
 
-On your DynamicFilter object received on the endpoint, you'll get the orderType as an Enum, this way you can order by
-the type specified on enum.
+On your DynamicFilter object received on the endpoint, you'll get the orderType as an Enum, this way you can order by the type specified on enum.
 
 ```C#
 public Task<List<User>> Get(DynamicComplexModel filter)
@@ -188,8 +182,7 @@ public Task<List<User>> Get(DynamicComplexModel filter)
 GET http://url?query=name%b&order=name&page=1&pagesize=10
 ```
 
-In romaklayt.DynamicFilter.Extensions and romaklayt.DynamicFilter.Extensions.Async there is a method of expanding the **
-ToPagedList** which returns *PageModel* with *info about page* and your *filtered data*.
+In romaklayt.DynamicFilter.Extensions and romaklayt.DynamicFilter.Extensions.Async there is a method of expanding the **ToPagedList** which returns *PageModel* with *info about page* and your *filtered data*.
 
 ```C#
 var page = users.ToPagedList(filterModel);
@@ -201,8 +194,7 @@ If you no need page info, you simply needs to add the parameters page and pagesi
 result = result.UseFilter(filter); #page mode without info
 ```
 
-If you specify the page number and size in the filter model, pagination is disabled when using **UseFilter**. You can
-also disable pagination by forcibly calling:
+If you specify the page number and size in the filter model, pagination is disabled when using **UseFilter**. You can also disable pagination by forcibly calling:
 
 ```C#
 result = result.UseFilter(filter, false); #only filtering without pagination
@@ -221,29 +213,25 @@ public async Task<PageModel<User>> GetPage(DynamicComplexModel filterModel)
 
 # Select
 
-To select, you simply needs to add the parameter select with the properties you want to select from. It will render
-either an linq select and a plain string select.
+To select, you simply needs to add the parameter select with the properties you want to select from. It will render either an linq select and a plain string select.
 
 ```http
 GET http://url?select=name,age
 ```
 
-If you select a nested property, from default, the properties from the root model will be ignored, to select all the
-root properties, use the word root.
+If you select a nested property, from default, the properties from the root model will be  ignored, to select all the root properties, use the word root.
 
 ```http
 GET http://url?select=address.zip,root #select Address.Zip and all root properties
 ```
 
-If you don't want to send model properties that are not included in your **Select** request, you can use the *
-GetOnlySelectedProperties* extension method, which will render you only the selected properties. Example:
+If you don't want to send model properties that are not included in your **Select** request, you can use the *GetOnlySelectedProperties* extension method, which will render you only the selected properties. Example:
 
 ```C#
 result = items.UseFilter(filter).Result.GetOnlySelectedProperties(filterModelModel);
 ```
 
-If you need to select properties from *only one model* (the GetById method, for example), you can also use the method **
-UseFilter**.
+If you need to select properties from *only one model* (the GetById method, for example), you can also use the method **UseFilter**.
 
 ```C#
 [HttpGet("{id}")]
