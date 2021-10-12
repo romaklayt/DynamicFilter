@@ -120,11 +120,12 @@ namespace romaklayt.DynamicFilter.Parser
                         continue;
                     }
 
-                    props.AddRange(subtype.GetProperties().Where(info => IsSimple(info.PropertyType))
-                        .Select(info =>
-                            isroot
-                                ? $"{includeProperty}.{FirstCharToLowerCase(info.Name)}"
-                                : FirstCharToLowerCase(info.Name)).ToList());
+                    if (props != null && props.Any())
+                        props.AddRange(subtype.GetProperties().Where(info => IsSimple(info.PropertyType))
+                            .Select(info =>
+                                isroot
+                                    ? $"{includeProperty}.{FirstCharToLowerCase(info.Name)}"
+                                    : FirstCharToLowerCase(info.Name)).ToList());
                 }
             }
         }
@@ -139,23 +140,24 @@ namespace romaklayt.DynamicFilter.Parser
 
         private static Type GetPropertyType(Type type, string prop)
         {
-            return type.GenericTypeArguments.FirstOrDefault()?.GetProperties()
-                .FirstOrDefault(info => info.Name.ToLower() == prop.ToLower())?.PropertyType ?? type
+            return type?.GenericTypeArguments?.FirstOrDefault()?.GetProperties()
+                .FirstOrDefault(info => info.Name.ToLower() == prop.ToLower())?.PropertyType ?? type?
                 .GetProperties().FirstOrDefault(info => info.Name.ToLower() == prop.ToLower())?.PropertyType;
         }
 
         private static bool IsGenericList(this Type type)
         {
-            foreach (var intf in type.GetInterfaces())
-                if (intf.IsGenericType && intf.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                    return true;
+            if (type != null)
+                foreach (var intf in type.GetInterfaces())
+                    if (intf.IsGenericType && intf.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                        return true;
 
             return false;
         }
 
         public static bool IsSimple(Type type)
         {
-            return TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
+            return type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
         }
 
         private static JObject MapToDictionary(object source, List<string> members)

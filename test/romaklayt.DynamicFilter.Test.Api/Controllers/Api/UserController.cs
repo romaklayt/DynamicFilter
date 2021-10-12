@@ -6,7 +6,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using romaklayt.DynamicFilter.Binder.Net.Models;
-using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Extensions;
 using romaklayt.DynamicFilter.Parser;
 using romaklayt.DynamicFilter.Test.Api.Models;
