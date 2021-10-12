@@ -47,7 +47,7 @@ namespace romaklayt.DynamicFilter.Parser
         {
             var jArray = new JArray();
             if (complexModel.Select == null) return JsonConvert.SerializeObject(source, formatting);
-            complexModel.Select = CheckRootMember(complexModel.Select, source.Items.FirstOrDefault()?.GetType());
+            complexModel.Select = CheckRootMember(complexModel.Select, source.GetType().GenericTypeArguments[0]);
             UpdateMembersPath(complexModel.Select, source.Items.FirstOrDefault()?.GetType(), out var items, true);
             foreach (var sourceItem in source.Items) jArray.Add(MapToDictionary(sourceItem, items));
             source.Items = null;
