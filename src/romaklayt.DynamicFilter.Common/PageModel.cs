@@ -15,7 +15,7 @@ namespace romaklayt.DynamicFilter.Common
             PageSize = pageSize;
             CurrentPage = pageNumber;
             TotalPages = (int) Math.Ceiling(count / (double) pageSize);
-            if (pageNumber > TotalPages) throw new IndexOutOfRangeException("Page not found");
+            if (pageNumber > TotalPages && TotalCount > 0) throw new IndexOutOfRangeException("Page not found");
             Items = items;
         }
 
