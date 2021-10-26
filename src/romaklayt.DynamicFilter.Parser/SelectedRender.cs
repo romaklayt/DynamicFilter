@@ -120,7 +120,7 @@ namespace romaklayt.DynamicFilter.Parser
                         continue;
                     }
 
-                    if (props != null && props.Any())
+                    if (props != null && !props.Any())
                         props.AddRange(subtype.GetProperties().Where(info => IsSimple(info.PropertyType))
                             .Select(info =>
                                 isroot
