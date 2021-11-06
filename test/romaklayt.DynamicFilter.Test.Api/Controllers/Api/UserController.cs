@@ -76,7 +76,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         [ProducesResponseType(typeof(User), 200)]
         public async Task<object> RenderGetById(DynamicSelectModel dynamicSelectModel, Guid id)
         {
-            var user = await _myContext.Users.UseSelect(dynamicSelectModel).FirstOrDefaultAsync(user => user.Id == id);
+            var user = await _myContext.Users.UseSelect(dynamicSelectModel).DynamicFirstOfDefault("Id", id);
             return user.RenderOnlySelectedProperties(dynamicSelectModel);
         }
     }

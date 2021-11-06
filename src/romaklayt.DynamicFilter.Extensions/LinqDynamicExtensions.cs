@@ -8,81 +8,82 @@ namespace romaklayt.DynamicFilter.Extensions
 {
     public static class LinqDynamicExtensions
     {
-        public static async Task<TEntity> FirstOfDefault<TEntity, TKeyValue>(
-            IQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
+        public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IQueryable<TEntity> source,
+            string propertyName, TKeyValue keyValue)
         {
             return await Task.FromResult(
                 source.FirstOrDefault(GenerateConstantExpression(source, propertyName, keyValue)));
         }
 
-        public static async Task<TEntity> FirstOfDefault<TEntity, TKeyValue>(
-            IEnumerable<TEntity> source, string propertyName, TKeyValue keyValue)
+        public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
+            string propertyName, TKeyValue keyValue)
         {
-            return await FirstOfDefault(source.AsQueryable(), propertyName, keyValue);
+            return await DynamicFirstOfDefault(source.AsQueryable(), propertyName, keyValue);
         }
 
-        public static async Task<TEntity> First<TEntity, TKeyValue>(
-            IQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
+        public static async Task<TEntity> DynamicFirst<TEntity, TKeyValue>(this IQueryable<TEntity> source,
+            string propertyName, TKeyValue keyValue)
         {
             return await Task.FromResult(source.First(GenerateConstantExpression(source, propertyName, keyValue)));
         }
 
-        public static async Task<TEntity> First<TEntity, TKeyValue>(
-            IEnumerable<TEntity> source, string propertyName, TKeyValue keyValue)
+        public static async Task<TEntity> DynamicFirst<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
+            string propertyName, TKeyValue keyValue)
         {
-            return await FirstOfDefault(source.AsQueryable(), propertyName, keyValue);
+            return await DynamicFirstOfDefault(source.AsQueryable(), propertyName, keyValue);
         }
 
-        public static async Task<TEntity> LastOfDefault<TEntity, TKeyValue>(
-            IQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
+        public static async Task<TEntity> DynamicLastOfDefault<TEntity, TKeyValue>(this IQueryable<TEntity> source,
+            string propertyName, TKeyValue keyValue)
         {
             return await Task.FromResult(
                 source.LastOrDefault(GenerateConstantExpression(source, propertyName, keyValue)));
         }
 
-        public static async Task<TEntity> LastOfDefault<TEntity, TKeyValue>(
-            IEnumerable<TEntity> source, string propertyName, TKeyValue keyValue)
+        public static async Task<TEntity> DynamicLastOfDefault<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
+            string propertyName, TKeyValue keyValue)
         {
-            return await LastOfDefault(source.AsQueryable(), propertyName, keyValue);
+            return await DynamicLastOfDefault(source.AsQueryable(), propertyName, keyValue);
         }
 
-        public static async Task<TEntity> Last<TEntity, TKeyValue>(
-            IQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
+        public static async Task<TEntity> DynamicLast<TEntity, TKeyValue>(this IQueryable<TEntity> source,
+            string propertyName, TKeyValue keyValue)
         {
             return await Task.FromResult(source.Last(GenerateConstantExpression(source, propertyName, keyValue)));
         }
 
-        public static async Task<TEntity> Last<TEntity, TKeyValue>(
-            IEnumerable<TEntity> source, string propertyName, TKeyValue keyValue)
+        public static async Task<TEntity> DynamicLast<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
+            string propertyName, TKeyValue keyValue)
         {
-            return await LastOfDefault(source.AsQueryable(), propertyName, keyValue);
+            return await DynamicLastOfDefault(source.AsQueryable(), propertyName, keyValue);
         }
 
-        public static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> source, string orderByProperty)
+        public static IQueryable<TEntity> DynamicOrderBy<TEntity>(this IQueryable<TEntity> source,
+            string orderByProperty)
         {
             return source.GenerateOrderExpression(orderByProperty, false);
         }
 
-        public static IQueryable<TEntity> OrderByDescending<TEntity>(this IQueryable<TEntity> source,
+        public static IQueryable<TEntity> DynamicOrderByDescending<TEntity>(this IQueryable<TEntity> source,
             string orderByProperty)
         {
             return source.GenerateOrderExpression(orderByProperty, true);
         }
 
-        public static IQueryable<TEntity> OrderBy<TEntity>(this IEnumerable<TEntity> source, string orderByProperty)
+        public static IQueryable<TEntity> DynamicOrderBy<TEntity>(this IEnumerable<TEntity> source,
+            string orderByProperty)
         {
             return source.AsQueryable().GenerateOrderExpression(orderByProperty, false);
         }
 
-        public static IQueryable<TEntity> OrderByDescending<TEntity>(this IEnumerable<TEntity> source,
+        public static IQueryable<TEntity> DynamicOrderByDescending<TEntity>(this IEnumerable<TEntity> source,
             string orderByProperty)
         {
             return source.AsQueryable().GenerateOrderExpression(orderByProperty, true);
         }
 
         private static IQueryable<TEntity> GenerateOrderExpression<TEntity>(this IQueryable<TEntity> source,
-            string orderByProperty,
-            bool desc)
+            string orderByProperty, bool desc)
         {
             var command = desc ? "OrderByDescending" : "OrderBy";
             var type = typeof(TEntity);

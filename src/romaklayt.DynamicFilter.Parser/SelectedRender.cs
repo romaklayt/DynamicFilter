@@ -155,7 +155,7 @@ namespace romaklayt.DynamicFilter.Parser
             return false;
         }
 
-        public static bool IsSimple(Type type)
+        private static bool IsSimple(Type type)
         {
             return type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
         }
