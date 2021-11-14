@@ -55,24 +55,8 @@ namespace romaklayt.DynamicFilter.Parser
         {
             var order = bindingContext.GetType().GetProperty("Order")?.GetValue(bindingContext, null) as string;
 
-            if (string.IsNullOrWhiteSpace(order)) return;
-            var orderItems = order.Split('=');
-            if (orderItems.Count() > 1)
-            {
-                model.GetType().GetProperty("OrderType")
-                    ?.SetValue(model, Enum.Parse(typeof(OrderType), orderItems[1], true));
-                order = orderItems[0];
-            }
-            else
-            {
-                model.GetType().GetProperty("OrderType")?.SetValue(model, OrderType.Asc);
-            }
-
-            var property = Expression.PropertyOrField(parameter, order);
-
-            var orderExp = Expression.Lambda(Expression.Convert(property, typeof(object)).Reduce(), parameter);
-
-            model.GetType().GetProperty("Order")?.SetValue(model, orderExp);
+            if (!string.IsNullOrWhiteSpace(order))
+                model.GetType().GetProperty("Order")?.SetValue(model, order);
         }
 
         internal static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,

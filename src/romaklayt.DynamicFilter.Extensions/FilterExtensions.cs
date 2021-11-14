@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,11 +17,16 @@ namespace romaklayt.DynamicFilter.Extensions
             where TSource : class where TTarget : class
         {
             var queryable = filter.Filter != null ? source.Where(filter.Filter).AsQueryable() : source.AsQueryable();
-
             if (filter.Order != null)
-                queryable = filter.OrderType == OrderType.Asc
-                    ? queryable.OrderBy(filter.Order).AsQueryable()
-                    : queryable.OrderByDescending(filter.Order).AsQueryable();
+                queryable = queryable.DynamicOrderBy(filter.Order
+                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s =>
+                    {
+                        var split = s.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries);
+                        return new Tuple<string, bool>(split.First(),
+                            split.Count() > 1 && split[1].ToLower().Contains("desc"));
+                    }).ToArray());
+
             var result = filter.Select != null ? queryable.Select(filter.Select) : queryable.Cast<TTarget>();
             if (filter.PageSize == default && filter.Page == default || !pagination)
                 return await Task.FromResult(result);

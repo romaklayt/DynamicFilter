@@ -59,43 +59,69 @@ namespace romaklayt.DynamicFilter.Extensions
         }
 
         public static IQueryable<TEntity> DynamicOrderBy<TEntity>(this IQueryable<TEntity> source,
-            string orderByProperty)
+            params Tuple<string, bool>[] order)
         {
-            return source.GenerateOrderExpression(orderByProperty, false);
+            IOrderedQueryable<TEntity> orderExpression = null;
+            for (var index = 0; index < order.Length; index++)
+            {
+                var tuple = order[index];
+                if (index == 0)
+                    orderExpression = tuple.Item2
+                        ? source.DynamicOrderByMemberDescending(tuple.Item1)
+                        : source.DynamicOrderByMember(tuple.Item1);
+                else
+                    orderExpression = tuple.Item2
+                        ? orderExpression.DynamicThenByMemberDescending(tuple.Item1)
+                        : orderExpression.DynamicThenByMember(tuple.Item1);
+            }
+
+            return orderExpression ?? source;
         }
 
-        public static IQueryable<TEntity> DynamicOrderByDescending<TEntity>(this IQueryable<TEntity> source,
-            string orderByProperty)
+        public static IOrderedQueryable<T> DynamicOrderByMember<T>(this IQueryable<T> source, string memberPath)
         {
-            return source.GenerateOrderExpression(orderByProperty, true);
+            return source.OrderByMemberUsing(memberPath, "OrderBy");
         }
 
-        public static IQueryable<TEntity> DynamicOrderBy<TEntity>(this IEnumerable<TEntity> source,
-            string orderByProperty)
+        public static IOrderedQueryable<T> DynamicOrderByMemberDescending<T>(this IQueryable<T> source,
+            string memberPath)
         {
-            return source.AsQueryable().GenerateOrderExpression(orderByProperty, false);
+            return source.OrderByMemberUsing(memberPath, "OrderByDescending");
         }
 
-        public static IQueryable<TEntity> DynamicOrderByDescending<TEntity>(this IEnumerable<TEntity> source,
-            string orderByProperty)
+        public static IOrderedQueryable<T> DynamicThenByMember<T>(this IOrderedQueryable<T> source, string memberPath)
         {
-            return source.AsQueryable().GenerateOrderExpression(orderByProperty, true);
+            return source.OrderByMemberUsing(memberPath, "ThenBy");
         }
 
-        private static IQueryable<TEntity> GenerateOrderExpression<TEntity>(this IQueryable<TEntity> source,
-            string orderByProperty, bool desc)
+        public static IOrderedQueryable<T> DynamicThenByMemberDescending<T>(this IOrderedQueryable<T> source,
+            string memberPath)
         {
-            var command = desc ? "OrderByDescending" : "OrderBy";
-            var type = typeof(TEntity);
-            var property = type.GetProperty(orderByProperty);
-            var parameter = Expression.Parameter(type, "p");
-            if (property is null) return source;
-            var propertyAccess = Expression.MakeMemberAccess(parameter, property);
-            var orderByExpression = Expression.Lambda(propertyAccess, parameter);
-            var resultExpression = Expression.Call(typeof(Queryable), command, new[] {type, property.PropertyType},
-                source.Expression, Expression.Quote(orderByExpression));
-            return source.Provider.CreateQuery<TEntity>(resultExpression);
+            return source.OrderByMemberUsing(memberPath, "ThenByDescending");
+        }
 
+        public static IOrderedQueryable<T> DynamicOrderByMember<T>(this IEnumerable<T> source, string memberPath)
+        {
+            return source.AsQueryable().OrderByMemberUsing(memberPath, "OrderBy");
+        }
+
+        public static IOrderedQueryable<T> DynamicOrderByMemberDescending<T>(this IEnumerable<T> source,
+            string memberPath)
+        {
+            return source.AsQueryable().OrderByMemberUsing(memberPath, "OrderByDescending");
+        }
+
+        private static IOrderedQueryable<T> OrderByMemberUsing<T>(this IQueryable<T> source, string memberPath,
+            string method)
+        {
+            var parameter = Expression.Parameter(typeof(T), "item");
+            var member = memberPath.Split('.')
+                .Aggregate((Expression) parameter, Expression.PropertyOrField);
+            var keySelector = Expression.Lambda(member, parameter);
+            var methodCall = Expression.Call(
+                typeof(Queryable), method, new[] {parameter.Type, member.Type},
+                source.Expression, Expression.Quote(keySelector));
+            return (IOrderedQueryable<T>) source.Provider.CreateQuery(methodCall);
         }
 
         private static Expression<Func<TEntity, bool>> GenerateConstantExpression<TEntity, TKeyValue>(

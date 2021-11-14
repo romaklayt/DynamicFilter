@@ -165,6 +165,15 @@ GET http://url?query=name=Bruno&order=name=Asc
 GET http://url?query=name=Bruno&order=name=Desc
 ```
 
+To sort by multiple properties:
+
+```http
+GET http://url?query=name=Bruno&order=name=asc,firstname=asc
+
+GET http://url?query=name=Bruno&order=name=desc,firstname
+```
+If you do not specify the sort type, **asc** is used by default.
+
 On your DynamicFilter object received on the endpoint, you'll get the orderType as an Enum, this way you can order by the type specified on enum.
 
 ```C#
