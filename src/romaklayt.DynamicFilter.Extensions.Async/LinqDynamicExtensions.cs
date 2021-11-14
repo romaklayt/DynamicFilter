@@ -131,9 +131,8 @@ namespace romaklayt.DynamicFilter.Extensions.Async
             IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
         {
             var parameter = Expression.Parameter(typeof(TEntity), "x");
-            var property = Expression.Property(parameter, propertyName);
-            var equal = Expression.Condition(Expression.Equal(property, Expression.Constant(null, property.Type)),
-                Expression.Constant(null, property.Type), Expression.Equal(property, Expression.Constant(keyValue)));
+            var property = Expression.PropertyOrField(parameter, propertyName);
+            var equal = Expression.Equal(property, Expression.Constant(keyValue));
             var lambda = Expression.Lambda<Func<TEntity, bool>>(equal, parameter);
             return lambda;
         }
