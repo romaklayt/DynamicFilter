@@ -120,12 +120,11 @@ namespace romaklayt.DynamicFilter.Parser
                         continue;
                     }
 
-                    if (props != null && !props.Any())
-                        props.AddRange(subtype.GetProperties().Where(info => IsSimple(info.PropertyType))
-                            .Select(info =>
-                                isroot
-                                    ? $"{includeProperty}.{FirstCharToLowerCase(info.Name)}"
-                                    : FirstCharToLowerCase(info.Name)).ToList());
+                    props.AddRange(subtype.GetProperties().Where(info => IsSimple(info.PropertyType))
+                        .Select(info =>
+                            isroot
+                                ? $"{includeProperty}.{FirstCharToLowerCase(info.Name)}"
+                                : FirstCharToLowerCase(info.Name)).ToList());
                 }
             }
         }
