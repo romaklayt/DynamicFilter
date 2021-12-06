@@ -38,7 +38,7 @@ jobs:
       id: github_release
       with:
         configuration: ".github/changelog.configuration.json"
-      uses: mikepenz/release-changelog-builder-action@v2.6.0
+      uses: mikepenz/release-changelog-builder-action@v2.7.1
       env:
         GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
 
