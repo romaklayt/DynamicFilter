@@ -217,6 +217,7 @@ namespace romaklayt.DynamicFilter.Parser
 
         private object ChangeType(string value, Type type)
         {
+            if (string.IsNullOrWhiteSpace(value)) value = GetDefaultValue(type).ToString();
             if (type.IsEnum)
                 return ChangeType(Enum.Parse(type, value), type);
 
@@ -352,5 +353,12 @@ namespace romaklayt.DynamicFilter.Parser
         }
 
         #endregion
+        private object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType && Nullable.GetUnderlyingType(t) == null)
+                return Activator.CreateInstance(t);
+            else
+                return null;
+        }
     }
 }
