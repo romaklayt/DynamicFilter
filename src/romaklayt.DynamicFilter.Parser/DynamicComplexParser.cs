@@ -59,28 +59,64 @@ namespace romaklayt.DynamicFilter.Parser
                 model.GetType().GetProperty("Order")?.SetValue(model, order);
         }
 
+        private static string RemoveSubstring(string sourceString, string removeString)
+        {
+            int index = sourceString.IndexOf(removeString, StringComparison.InvariantCulture);
+            return (index < 0)
+                ? sourceString
+                : sourceString.Remove(index, removeString.Length);
+        }
+
         internal static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
             Type itemType)
         {
             var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;
-
+            var operators = new[] {"=", "%", "%%", ">", ">=", "<", "<=", "!="};
             if (string.IsNullOrWhiteSpace(filter)) return;
-            var filterAndValues = filter.Split(',').ToArray();
+            var temp = filter.Split(',').ToList();
+            var filterAndValues = new List<string>();
+            foreach (var f in temp)
+            {
+                var split = f.Split(operators, StringSplitOptions.RemoveEmptyEntries);
+                var property = split.First();
+                var op = RemoveSubstring(RemoveSubstring(f, split.First()), split.Last());
+                if (split.Last().StartsWith("[") && split.Last().EndsWith("]"))
+                {
+                    if (split.Last().Contains("~"))
+                    {
+                        var values = split.Last().Trim('[', ']')
+                            .Split(new[] {"~"}, StringSplitOptions.RemoveEmptyEntries);
+                        filterAndValues.AddRange(values.Select(value => $"{property}{op}{value}"));
+                        continue;
+                    }
 
+                    if (split.Last().Contains("|"))
+                    {
+                        var values = split.Last().Trim('[', ']')
+                            .Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries);
+                        filterAndValues.Add(values
+                            .Aggregate(string.Empty, (current, value) => current + $"|{property}{op}{value}")
+                            .TrimStart('|'));
+                        continue;
+                    }
+                }
+
+                filterAndValues.Add(f);
+            }
             LambdaExpression finalExpression = null;
             Expression currentExpression = null;
 
             for (var i = 0; i < filterAndValues.Count(); i++)
                 if (filterAndValues[i].Contains('|'))
                 {
-                    var orExpression = new ExpressionParser();
-                    var filterAndValue = orExpression.DefineOperation(filterAndValues[i], itemType);
-                    var options = filterAndValue[1].Split('|');
-
+                    var options = filterAndValues[i].Split('|');
+                    
                     for (var j = 0; j < options.Count(); j++)
                     {
+                        var split = options[j].Split(operators, StringSplitOptions.RemoveEmptyEntries);
+                        
                         var expression = GetExpression(parameter, itemType,
-                            $"{filterAndValue[0]}{orExpression.GetOperation()}{options[j]}");
+                            $"{split.First()}{RemoveSubstring(RemoveSubstring(options[j], split.First()), split.Last())}{split.Last()}");
 
                         if (j == 0)
                         {

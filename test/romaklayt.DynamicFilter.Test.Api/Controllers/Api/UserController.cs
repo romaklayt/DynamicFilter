@@ -26,7 +26,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<IEnumerable<User>> GetList(DynamicComplexModel complexModelModel)
+        public async Task<IEnumerable<User>> GetList([FromQuery]DynamicComplexModel complexModelModel)
         {
             return await Data.Users.UseFilter(complexModelModel);
         }
