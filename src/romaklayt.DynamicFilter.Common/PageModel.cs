@@ -11,6 +11,8 @@ namespace romaklayt.DynamicFilter.Common
 
         public PageModel(List<T> items, int count, int pageNumber, int pageSize)
         {
+            if (pageNumber < 1) throw new Exception($"The {nameof(pageNumber)} value cannot be less than 1");
+            if (pageSize < 1) throw new Exception($"The {nameof(PageSize)} value cannot be less than 1");
             TotalCount = count;
             PageSize = pageSize;
             CurrentPage = pageNumber;
