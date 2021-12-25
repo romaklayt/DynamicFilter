@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using romaklayt.DynamicFilter.Binder.Net.Models;
+using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Extensions;
 using romaklayt.DynamicFilter.Parser;
 using romaklayt.DynamicFilter.Test.Api.Models;
@@ -41,7 +42,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         public async Task<object> GetPage(DynamicComplexModel complexModel)
         {
             var data = await Data.Users.ToPagedList(complexModel);
-            return data.RenderOnlySelectedProperties(complexModel);
+            return data;
         }
 
         [HttpGet("context")]
@@ -55,7 +56,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         [ProducesResponseType(typeof(UserViewModel), 200)]
         public object GetContextListRender(DynamicComplexModel complexModelModel)
         {
-            return _myContext.Users.UseFilter(complexModelModel).Result.RenderOnlySelectedProperties(complexModelModel);
+            return _myContext.Users.UseFilter(complexModelModel).Result;
         }
 
         [HttpGet("count")]
@@ -69,15 +70,15 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers.Api
         [ProducesResponseType(typeof(User), 200)]
         public async Task<object> GetById(DynamicSelectModel dynamicSelectModel, Guid id)
         {
-            return await _myContext.Users.UseSelect(dynamicSelectModel).DynamicFirstOfDefault("Id", id);
+            return await _myContext.Users.UseFilter(dynamicSelectModel).Result.DynamicFirstOfDefault("Id", id);
         }
 
         [HttpGet("render/{id}")]
         [ProducesResponseType(typeof(User), 200)]
         public async Task<object> RenderGetById(DynamicSelectModel dynamicSelectModel, Guid id)
         {
-            var user = await _myContext.Users.UseSelect(dynamicSelectModel).DynamicFirstOfDefault("Id", id);
-            return user.RenderOnlySelectedProperties(dynamicSelectModel);
+            var user = await _myContext.Users.UseFilter(dynamicSelectModel).Result.DynamicFirstOfDefault("Id", id);
+            return user;
         }
     }
 }

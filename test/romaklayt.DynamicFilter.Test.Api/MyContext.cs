@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using romaklayt.DynamicFilter.Test.Api.Models;
 
@@ -14,5 +15,7 @@ namespace romaklayt.DynamicFilter.Test.Api
         public DbSet<Role> Roles { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Zip> Zips { get; set; }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.LogTo(Console.WriteLine);
     }
 }

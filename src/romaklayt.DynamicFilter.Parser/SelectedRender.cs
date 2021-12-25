@@ -10,7 +10,7 @@ using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Parser
 {
-    public static class SelectedRender
+    static class SelectedRender
     {
         /// <summary>
         ///     Return json string with only selected properties
@@ -20,7 +20,7 @@ namespace romaklayt.DynamicFilter.Parser
         /// <param name="formatting">Json string format</param>
         /// <typeparam name="T">IEnumerable type</typeparam>
         /// <returns>Json string</returns>
-        public static string RenderOnlySelectedProperties<T>(this IEnumerable<T> source,
+        private static string RenderOnlySelectedProperties<T>(this IEnumerable<T> source,
             BaseDynamicComplexModel complexModel,
             Formatting formatting = Formatting.Indented)
         {
@@ -32,7 +32,7 @@ namespace romaklayt.DynamicFilter.Parser
             return JsonConvert.SerializeObject(jArray, formatting);
         }
 
-        public static string RenderOnlySelectedProperties<T>(this T source, BaseDynamicSelectModel complexModel,
+        private static string RenderOnlySelectedProperties<T>(this T source, BaseDynamicSelectModel complexModel,
             Formatting formatting = Formatting.Indented)
         {
             if (complexModel.Select == null) return JsonConvert.SerializeObject(source, formatting);
@@ -41,7 +41,7 @@ namespace romaklayt.DynamicFilter.Parser
             return JsonConvert.SerializeObject(MapToDictionary(source, items), formatting);
         }
 
-        public static string RenderOnlySelectedProperties<T>(this PageModel<T> source,
+        private static string RenderOnlySelectedProperties<T>(this PageModel<T> source,
             BaseDynamicComplexModel complexModel,
             Formatting formatting = Formatting.Indented)
         {

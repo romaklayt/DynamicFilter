@@ -65,17 +65,4 @@ public static class FilterExtensions
         return await source.AsQueryable().UseFilter(selectModel.BindFilterExpressions<T, T>(), applyFiltering,
             applySorting, applyPagination, applySelect);
     }
-
-    /*public static async Task<IEnumerable<T>> UseFilter<T>(this IEnumerable<T> source,BaseDynamicComplexModel complexModel,
-        bool applyFiltering = true, bool applySorting = true,
-        bool applyPagination = true, bool applySelect = true) where T : class
-        => await source.AsQueryable().UseFilter(complexModel.BindFilterExpressions<T, T>(), applyFiltering,applySorting, applyPagination, applySelect);
-
-    public static async Task<IQueryable<T>> UseFilter<T>(this IQueryable<T> source,
-        BaseDynamicComplexModel complexModel,
-        bool applyFiltering = true, bool applySorting = true,
-        bool applyPagination = true, bool applySelect = true) where T : class
-        =>
-            await source.UseFilter(complexModel.BindFilterExpressions<T, T>(), applyFiltering,
-                applySorting, applyPagination, applySelect);*/
 }
