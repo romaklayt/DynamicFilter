@@ -18,17 +18,17 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
-        <PackageReference Include="System.Linq.Async" Version="5.1.0" />
-        <PackageReference Include="System.Linq.Async.Queryable" Version="5.1.0" />
+        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0"/>
+        <PackageReference Include="System.Linq.Async" Version="5.1.0"/>
+        <PackageReference Include="System.Linq.Async.Queryable" Version="5.1.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj" />
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath="" />
-        <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="../../README.md" Pack="true" Visible="false" PackagePath=""/>
     </ItemGroup>
 </Project>

@@ -2,62 +2,61 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace romaklayt.DynamicFilter.Binder.Net.Binders
+namespace romaklayt.DynamicFilter.Binder.Net.Binders;
+
+public class DynamicComplexBinder : IModelBinder
 {
-    public class DynamicComplexBinder : IModelBinder
+    public virtual Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        public virtual Task BindModelAsync(ModelBindingContext bindingContext)
-        {
-            if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
+        if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
 
-            var model = Activator.CreateInstance(bindingContext.ModelType);
+        var model = Activator.CreateInstance(bindingContext.ModelType);
 
-            ExtractFilters(model, bindingContext);
+        ExtractFilters(model, bindingContext);
 
-            ExtractOrder(model, bindingContext);
+        ExtractOrder(model, bindingContext);
 
-            ExtractPagination(model, bindingContext);
+        ExtractPagination(model, bindingContext);
 
-            ExtractSelect(model, bindingContext);
+        ExtractSelect(model, bindingContext);
 
-            bindingContext.Result = ModelBindingResult.Success(model);
+        bindingContext.Result = ModelBindingResult.Success(model);
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
+    }
 
-        private static void ExtractPagination(object model, ModelBindingContext bindingContext)
-        {
-            var page = bindingContext.ValueProvider.GetValue("page").FirstValue;
-            var pageSize = bindingContext.ValueProvider.GetValue("pagesize").FirstValue;
+    private static void ExtractPagination(object model, ModelBindingContext bindingContext)
+    {
+        var page = bindingContext.ValueProvider.GetValue("page").FirstValue;
+        var pageSize = bindingContext.ValueProvider.GetValue("pagesize").FirstValue;
 
-            if (!string.IsNullOrWhiteSpace(page))
-                model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
+        if (!string.IsNullOrWhiteSpace(page))
+            model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
 
-            if (!string.IsNullOrWhiteSpace(pageSize))
-                model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
-        }
+        if (!string.IsNullOrWhiteSpace(pageSize))
+            model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
+    }
 
-        private protected static void ExtractSelect(object model, ModelBindingContext bindingContext)
-        {
-            var select = bindingContext.ValueProvider.GetValue("select").FirstValue ?? "root";
+    private protected static void ExtractSelect(object model, ModelBindingContext bindingContext)
+    {
+        var select = bindingContext.ValueProvider.GetValue("select").FirstValue ?? "root";
 
-            if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select")?.SetValue(model, select);
-        }
+        if (!string.IsNullOrWhiteSpace(select)) model.GetType().GetProperty("Select")?.SetValue(model, select);
+    }
 
 
-        private static void ExtractOrder(object model, ModelBindingContext bindingContext)
-        {
-            var order = bindingContext.ValueProvider.GetValue("order").FirstValue;
+    private static void ExtractOrder(object model, ModelBindingContext bindingContext)
+    {
+        var order = bindingContext.ValueProvider.GetValue("order").FirstValue;
 
-            if (!string.IsNullOrWhiteSpace(order)) model.GetType().GetProperty("Order")?.SetValue(model, order);
-        }
+        if (!string.IsNullOrWhiteSpace(order)) model.GetType().GetProperty("Order")?.SetValue(model, order);
+    }
 
-        private protected static void ExtractFilters(object model, ModelBindingContext bindingContext)
-        {
-            var filter = bindingContext.ValueProvider.GetValue("filter").FirstValue ??
-                         bindingContext.ValueProvider.GetValue("query").FirstValue;
+    private protected static void ExtractFilters(object model, ModelBindingContext bindingContext)
+    {
+        var filter = bindingContext.ValueProvider.GetValue("filter").FirstValue ??
+                     bindingContext.ValueProvider.GetValue("query").FirstValue;
 
-            if (!string.IsNullOrWhiteSpace(filter)) model.GetType().GetProperty("Filter")?.SetValue(model, filter);
-        }
+        if (!string.IsNullOrWhiteSpace(filter)) model.GetType().GetProperty("Filter")?.SetValue(model, filter);
     }
 }

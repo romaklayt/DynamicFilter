@@ -1,8 +1,7 @@
-namespace romaklayt.DynamicFilter.Common
+namespace romaklayt.DynamicFilter.Common;
+
+public class BaseDynamicFilterModel : BaseDynamicSelectModel
 {
-    public class BaseDynamicFilterModel:BaseDynamicSelectModel
-    {
-        public string Order { get; set; }
-        public string Filter { get; set; }
-    }
+    public string Order { get; set; }
+    public string Filter { get; set; }
 }

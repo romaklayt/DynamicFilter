@@ -2,21 +2,20 @@
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
 
-namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Binders
+namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Binders;
+
+public class DynamicSelectBinder : DynamicComplexBinder
 {
-    public class DynamicSelectBinder : DynamicComplexBinder
+    public override bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
     {
-        public override bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
-        {
-            if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
+        if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
 
-            var model = Activator.CreateInstance(bindingContext.ModelType);
+        var model = Activator.CreateInstance(bindingContext.ModelType);
 
-            ExtractSelect(model, bindingContext);
+        ExtractSelect(model, bindingContext);
 
-            bindingContext.Model = model;
+        bindingContext.Model = model;
 
-            return true;
-        }
+        return true;
     }
 }

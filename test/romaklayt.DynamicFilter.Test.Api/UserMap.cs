@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using romaklayt.DynamicFilter.Test.Api.Models;
 
-namespace romaklayt.DynamicFilter.Test.Api
+namespace romaklayt.DynamicFilter.Test.Api;
+
+public class UserMap : Profile
 {
-    public class UserMap : Profile
+    public UserMap()
     {
-        public UserMap()
-        {
-            CreateMap<User, UserViewModel>();
-        }
+        CreateMap<User, UserViewModel>();
     }
 }

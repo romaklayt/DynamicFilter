@@ -1,13 +1,12 @@
 using System;
 
-namespace romaklayt.DynamicFilter.Parser.Models
+namespace romaklayt.DynamicFilter.Parser.Models;
+
+[Serializable]
+public class PropertyNotFoundException : Exception
 {
-    [Serializable]
-    public class PropertyNotFoundException : Exception
+    public PropertyNotFoundException(string propertyName, string className) : base(
+        $"Property {propertyName} was not found on {className}")
     {
-        public PropertyNotFoundException(string propertyName, string className) : base(
-            $"Property {propertyName} was not found on {className}")
-        {
-        }
     }
 }

@@ -5,269 +5,269 @@ using System.Linq.Expressions;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Parser.Models;
 
-namespace romaklayt.DynamicFilter.Parser
+namespace romaklayt.DynamicFilter.Parser;
+
+public static class DynamicComplexParser
 {
-    public static class DynamicComplexParser
+    public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
+        this BaseDynamicComplexModel complexModel)
     {
-        public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
-            this BaseDynamicComplexModel complexModel)
+        if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
+
+        var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
+
+        var itemType = typeof(ExpressionDynamicFilter<TSource, TTarget>).GenericTypeArguments[0];
+
+        var parameter = Expression.Parameter(itemType, "x");
+
+        ExtractFilters(model, complexModel, parameter, itemType);
+
+        ExtractOrder(model, complexModel, parameter);
+
+        ExtractPagination(model, complexModel);
+
+        ExtractSelect<TSource, TTarget>(model, complexModel);
+        return model as ExpressionDynamicFilter<TSource, TTarget>;
+    }
+
+    private static void ExtractPagination(object model, object bindingContext)
+    {
+        var page = bindingContext.GetType().GetProperty("Page")?.GetValue(bindingContext, null).ToString();
+        var pageSize = bindingContext.GetType().GetProperty("PageSize")?.GetValue(bindingContext, null).ToString();
+
+        if (!string.IsNullOrWhiteSpace(page))
+            model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
+
+        if (!string.IsNullOrWhiteSpace(pageSize))
+            model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
+    }
+
+    internal static void ExtractSelect<TSource, TTarget>(object model, object bindingContext)
+    {
+        var select = bindingContext.GetType().GetProperty("Select")?.GetValue(bindingContext, null) as string;
+
+        if (!string.IsNullOrWhiteSpace(select))
+            model.GetType().GetProperty("Select")
+                ?.SetValue(model, BuildSelector<TSource, TTarget>(select));
+    }
+
+    private static void ExtractOrder(object model, object bindingContext, ParameterExpression parameter)
+    {
+        var order = bindingContext.GetType().GetProperty("Order")?.GetValue(bindingContext, null) as string;
+
+        if (!string.IsNullOrWhiteSpace(order))
+            model.GetType().GetProperty("Order")?.SetValue(model, order);
+    }
+
+    private static string RemoveSubstring(string sourceString, string removeString)
+    {
+        var index = sourceString.IndexOf(removeString, StringComparison.InvariantCulture);
+        return index < 0
+            ? sourceString
+            : sourceString.Remove(index, removeString.Length);
+    }
+
+    internal static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
+        Type itemType)
+    {
+        var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;
+        var operators = new[] {"=", "%", "%%", ">", ">=", "<", "<=", "!="};
+        if (string.IsNullOrWhiteSpace(filter)) return;
+        var temp = filter.Split(',').ToList();
+        var filterAndValues = new List<string>();
+        foreach (var f in temp)
         {
-            if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
-
-            var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
-
-            var itemType = typeof(ExpressionDynamicFilter<TSource, TTarget>).GenericTypeArguments[0];
-
-            var parameter = Expression.Parameter(itemType, "x");
-
-            ExtractFilters(model, complexModel, parameter, itemType);
-
-            ExtractOrder(model, complexModel, parameter);
-
-            ExtractPagination(model, complexModel);
-
-            ExtractSelect<TSource, TTarget>(model, complexModel);
-            return model as ExpressionDynamicFilter<TSource, TTarget>;
-        }
-
-        private static void ExtractPagination(object model, object bindingContext)
-        {
-            var page = bindingContext.GetType().GetProperty("Page")?.GetValue(bindingContext, null).ToString();
-            var pageSize = bindingContext.GetType().GetProperty("PageSize")?.GetValue(bindingContext, null).ToString();
-
-            if (!string.IsNullOrWhiteSpace(page))
-                model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
-
-            if (!string.IsNullOrWhiteSpace(pageSize))
-                model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
-        }
-
-        internal static void ExtractSelect<TSource, TTarget>(object model, object bindingContext)
-        {
-            var select = bindingContext.GetType().GetProperty("Select")?.GetValue(bindingContext, null) as string;
-
-            if (!string.IsNullOrWhiteSpace(select))
-                model.GetType().GetProperty("Select")
-                    ?.SetValue(model, BuildSelector<TSource, TTarget>(select));
-        }
-
-        private static void ExtractOrder(object model, object bindingContext, ParameterExpression parameter)
-        {
-            var order = bindingContext.GetType().GetProperty("Order")?.GetValue(bindingContext, null) as string;
-
-            if (!string.IsNullOrWhiteSpace(order))
-                model.GetType().GetProperty("Order")?.SetValue(model, order);
-        }
-
-        private static string RemoveSubstring(string sourceString, string removeString)
-        {
-            int index = sourceString.IndexOf(removeString, StringComparison.InvariantCulture);
-            return (index < 0)
-                ? sourceString
-                : sourceString.Remove(index, removeString.Length);
-        }
-
-        internal static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
-            Type itemType)
-        {
-            var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;
-            var operators = new[] {"=", "%", "%%", ">", ">=", "<", "<=", "!="};
-            if (string.IsNullOrWhiteSpace(filter)) return;
-            var temp = filter.Split(',').ToList();
-            var filterAndValues = new List<string>();
-            foreach (var f in temp)
+            var split = f.Split(operators, StringSplitOptions.RemoveEmptyEntries);
+            var property = split.First();
+            var op = RemoveSubstring(RemoveSubstring(f, split.First()), split.Last());
+            if (split.Last().StartsWith("[") && split.Last().EndsWith("]"))
             {
-                var split = f.Split(operators, StringSplitOptions.RemoveEmptyEntries);
-                var property = split.First();
-                var op = RemoveSubstring(RemoveSubstring(f, split.First()), split.Last());
-                if (split.Last().StartsWith("[") && split.Last().EndsWith("]"))
+                if (split.Last().Contains("~"))
                 {
-                    if (split.Last().Contains("~"))
-                    {
-                        var values = split.Last().Trim('[', ']')
-                            .Split(new[] {"~"}, StringSplitOptions.RemoveEmptyEntries);
-                        filterAndValues.AddRange(values.Select(value => $"{property}{op}{value}"));
-                        continue;
-                    }
-
-                    if (split.Last().Contains("|"))
-                    {
-                        var values = split.Last().Trim('[', ']')
-                            .Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries);
-                        filterAndValues.Add(values
-                            .Aggregate(string.Empty, (current, value) => current + $"|{property}{op}{value}")
-                            .TrimStart('|'));
-                        continue;
-                    }
+                    var values = split.Last().Trim('[', ']')
+                        .Split(new[] {"~"}, StringSplitOptions.RemoveEmptyEntries);
+                    filterAndValues.AddRange(values.Select(value => $"{property}{op}{value}"));
+                    continue;
                 }
 
-                filterAndValues.Add(f);
-            }
-            LambdaExpression finalExpression = null;
-            Expression currentExpression = null;
-
-            for (var i = 0; i < filterAndValues.Count(); i++)
-                if (filterAndValues[i].Contains('|'))
+                if (split.Last().Contains("|"))
                 {
-                    var options = filterAndValues[i].Split('|');
-                    
-                    for (var j = 0; j < options.Count(); j++)
-                    {
-                        var split = options[j].Split(operators, StringSplitOptions.RemoveEmptyEntries);
-                        
-                        var expression = GetExpression(parameter, itemType,
-                            $"{split.First()}{RemoveSubstring(RemoveSubstring(options[j], split.First()), split.Last())}{split.Last()}");
-
-                        if (j == 0)
-                        {
-                            currentExpression = currentExpression == null
-                                ? expression
-                                : Expression.And(currentExpression, expression);
-                        }
-                        else
-                        {
-                            if (currentExpression != null)
-                                currentExpression = Expression.Or(currentExpression, expression);
-                        }
-                    }
+                    var values = split.Last().Trim('[', ']')
+                        .Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries);
+                    filterAndValues.Add(values
+                        .Aggregate(string.Empty, (current, value) => current + $"|{property}{op}{value}")
+                        .TrimStart('|'));
+                    continue;
                 }
-                else
-                {
-                    var expression = GetExpression(parameter, itemType, filterAndValues[i]);
-
-                    currentExpression = currentExpression == null
-                        ? expression
-                        : Expression.And(currentExpression, expression);
-                }
-
-            if (currentExpression != null) finalExpression = Expression.Lambda(currentExpression, parameter);
-
-            model.GetType().GetProperty("Filter")?.SetValue(model, finalExpression);
-        }
-
-
-        private static Expression GetExpression(ParameterExpression parameter, Type itemType, string filterAndValue)
-        {
-            var expressionType = new ExpressionParser(filterAndValue, itemType);
-
-            var expression = expressionType.GetExpression(parameter);
-            return expression;
-        }
-
-        private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members)
-        {
-            members = SelectedRender.CheckRootMember(members, typeof(TSource));
-            SelectedRender.UpdateMembersPath(members, typeof(TSource), out var items, true);
-            return BuildSelector<TSource, TTarget>(items);
-        }
-
-        private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(List<string> members)
-        {
-            var parameter = Expression.Parameter(typeof(TSource), "e");
-            var body = new List<MemberBinding>();
-            var allMembers = members.OrderByDescending(s =>
-                s.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries).Count()).ToList();
-            var array = allMembers.Select(s => s.Trim().Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries))
-                .ToList();
-            var u = array.GroupBy(strings => strings[0]).ToList();
-            foreach (var member in u)
-            {
-                BuildSelectorExpression(typeof(TTarget), parameter, member, out var list);
-                body.AddRange(list);
             }
 
-            return Expression.Lambda<Func<TSource, TTarget>>(
-                Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
+            filterAndValues.Add(f);
         }
 
-        private static Expression BuildSelectorExpression(Type targetType, Expression source,
-            IGrouping<string, string[]> allMembers, out List<MemberBinding> bindings, int depth = 0)
-        {
-            bindings = new List<MemberBinding>();
-            foreach (var members in allMembers.GroupBy(strings => strings[depth]).ToList())
+        LambdaExpression finalExpression = null;
+        Expression currentExpression = null;
+
+        for (var i = 0; i < filterAndValues.Count(); i++)
+            if (filterAndValues[i].Contains('|'))
             {
-                var memberName = members.ToArray()[0][depth];
-                var target = Expression.Constant(null, targetType);
-                var targetMember = Expression.PropertyOrField(target, memberName);
-                var sourceMember = Expression.PropertyOrField(source, memberName);
-                var childMembers = members.Where(path => depth + 1 < path.Count()).ToArray();
-                if (!childMembers.Any())
+                var options = filterAndValues[i].Split('|');
+
+                for (var j = 0; j < options.Count(); j++)
                 {
-                    bindings.Add(Expression.Bind(targetMember.Member, sourceMember));
-                }
-                else
-                {
-                    Expression targetValue;
-                    if (IsEnumerableType(targetMember.Type, out var sourceElementType) &&
-                        IsEnumerableType(targetMember.Type, out var targetElementType))
+                    var split = options[j].Split(operators, StringSplitOptions.RemoveEmptyEntries);
+
+                    var expression = GetExpression(parameter, itemType,
+                        $"{split.First()}{RemoveSubstring(RemoveSubstring(options[j], split.First()), split.Last())}{split.Last()}");
+
+                    if (j == 0)
                     {
-                        var sourceElementParam = Expression.Parameter(sourceElementType, "e");
-                        targetValue = BuildSelectorExpression(targetElementType, sourceElementParam,
-                            members, out _, depth + 1);
-                        targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
-                            new[] {sourceElementType, targetElementType}, sourceMember,
-                            Expression.Lambda(targetValue, sourceElementParam));
-                        targetValue = Expression.Condition(
-                            Expression.Equal(sourceMember,
-                                Expression.Constant(null, sourceMember.Type)),
-                            Expression.Constant(null, sourceMember.Type),
-                            CorrectEnumerableResult(targetValue, targetElementType, targetMember.Type),
-                            sourceMember.Type);
+                        currentExpression = currentExpression == null
+                            ? expression
+                            : Expression.And(currentExpression, expression);
                     }
                     else
                     {
-                        targetValue = Expression.Condition(
-                            Expression.Equal(sourceMember,
-                                Expression.Constant(null, sourceMember.Type)),
-                            Expression.Constant(null, sourceMember.Type), BuildSelectorExpression(targetMember.Type,
-                                sourceMember,
-                                members, out _, depth + 1));
+                        if (currentExpression != null)
+                            currentExpression = Expression.Or(currentExpression, expression);
                     }
-
-                    bindings.Add(Expression.Bind(targetMember.Member, targetValue));
                 }
             }
+            else
+            {
+                var expression = GetExpression(parameter, itemType, filterAndValues[i]);
 
-            return Expression.MemberInit(Expression.New(targetType), bindings);
+                currentExpression = currentExpression == null
+                    ? expression
+                    : Expression.And(currentExpression, expression);
+            }
+
+        if (currentExpression != null) finalExpression = Expression.Lambda(currentExpression, parameter);
+
+        model.GetType().GetProperty("Filter")?.SetValue(model, finalExpression);
+    }
+
+
+    private static Expression GetExpression(ParameterExpression parameter, Type itemType, string filterAndValue)
+    {
+        var expressionType = new ExpressionParser(filterAndValue, itemType);
+
+        var expression = expressionType.GetExpression(parameter);
+        return expression;
+    }
+
+    private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members)
+    {
+        members = SelectedRender.CheckRootMember(members, typeof(TSource));
+        SelectedRender.UpdateMembersPath(members, typeof(TSource), out var items, true);
+        return BuildSelector<TSource, TTarget>(items);
+    }
+
+    private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(List<string> members)
+    {
+        var parameter = Expression.Parameter(typeof(TSource), "e");
+        var body = new List<MemberBinding>();
+        var allMembers = members.OrderByDescending(s =>
+            s.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries).Count()).ToList();
+        var array = allMembers.Select(s => s.Trim().Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries))
+            .ToList();
+        var u = array.GroupBy(strings => strings[0]).ToList();
+        foreach (var member in u)
+        {
+            BuildSelectorExpression(typeof(TTarget), parameter, member, out var list);
+            body.AddRange(list);
         }
 
+        return Expression.Lambda<Func<TSource, TTarget>>(
+            Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
+    }
 
-        private static bool IsEnumerableType(Type type, out Type elementType)
+    private static Expression BuildSelectorExpression(Type targetType, Expression source,
+        IGrouping<string, string[]> allMembers, out List<MemberBinding> bindings, int depth = 0)
+    {
+        bindings = new List<MemberBinding>();
+        foreach (var members in allMembers.GroupBy(strings => strings[depth]).ToList())
         {
-            foreach (var intf in type.GetInterfaces())
-                if (intf.IsGenericType && intf.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            var memberName = members.ToArray()[0][depth];
+            var target = Expression.Constant(null, targetType);
+            var targetMember = Expression.PropertyOrField(target, memberName);
+            var sourceMember = Expression.PropertyOrField(source, memberName);
+            var childMembers = members.Where(path => depth + 1 < path.Count()).ToArray();
+            if (!childMembers.Any())
+            {
+                bindings.Add(Expression.Bind(targetMember.Member, sourceMember));
+            }
+            else
+            {
+                Expression targetValue;
+                if (IsEnumerableType(targetMember.Type, out var sourceElementType) &&
+                    IsEnumerableType(targetMember.Type, out var targetElementType))
                 {
-                    elementType = intf.GetGenericArguments()[0];
-                    return true;
+                    var sourceElementParam = Expression.Parameter(sourceElementType, "e");
+                    targetValue = BuildSelectorExpression(targetElementType, sourceElementParam,
+                        members, out _, depth + 1);
+                    targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
+                        new[] {sourceElementType, targetElementType}, sourceMember,
+                        Expression.Lambda(targetValue, sourceElementParam));
+                    targetValue = Expression.Condition(
+                        Expression.Equal(sourceMember,
+                            Expression.Constant(null, sourceMember.Type)),
+                        Expression.Constant(null, sourceMember.Type),
+                        CorrectEnumerableResult(targetValue, targetElementType, targetMember.Type),
+                        sourceMember.Type);
+                }
+                else
+                {
+                    targetValue = Expression.Condition(
+                        Expression.Equal(sourceMember,
+                            Expression.Constant(null, sourceMember.Type)),
+                        Expression.Constant(null, sourceMember.Type), BuildSelectorExpression(targetMember.Type,
+                            sourceMember,
+                            members, out _, depth + 1));
                 }
 
-            elementType = null;
-            return false;
+                bindings.Add(Expression.Bind(targetMember.Member, targetValue));
+            }
         }
 
-        private static bool IsSameCollectionType(Type type, Type genericType, Type elementType)
-        {
-            var result = genericType.MakeGenericType(elementType).IsAssignableFrom(type);
-            return result;
-        }
+        return Expression.MemberInit(Expression.New(targetType), bindings);
+    }
 
-        private static Expression CorrectEnumerableResult(Expression enumerable, Type elementType, Type memberType)
-        {
-            if (memberType == enumerable.Type)
-                return enumerable;
 
-            if (memberType.IsArray)
-                return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] {elementType},
-                    enumerable);
+    private static bool IsEnumerableType(Type type, out Type elementType)
+    {
+        foreach (var intf in type.GetInterfaces())
+            if (intf.IsGenericType && intf.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            {
+                elementType = intf.GetGenericArguments()[0];
+                return true;
+            }
 
-            if (IsSameCollectionType(memberType, typeof(List<>), elementType)
-                || IsSameCollectionType(memberType, typeof(ICollection<>), elementType)
-                || IsSameCollectionType(memberType, typeof(IReadOnlyList<>), elementType)
-                || IsSameCollectionType(memberType, typeof(IReadOnlyCollection<>), elementType))
-                return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] {elementType},
-                    enumerable);
+        elementType = null;
+        return false;
+    }
 
-            throw new NotImplementedException($"Not implemented transformation for type '{memberType.Name}'");
-        }
+    private static bool IsSameCollectionType(Type type, Type genericType, Type elementType)
+    {
+        var result = genericType.MakeGenericType(elementType).IsAssignableFrom(type);
+        return result;
+    }
+
+    private static Expression CorrectEnumerableResult(Expression enumerable, Type elementType, Type memberType)
+    {
+        if (memberType == enumerable.Type)
+            return enumerable;
+
+        if (memberType.IsArray)
+            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] {elementType},
+                enumerable);
+
+        if (IsSameCollectionType(memberType, typeof(List<>), elementType)
+            || IsSameCollectionType(memberType, typeof(ICollection<>), elementType)
+            || IsSameCollectionType(memberType, typeof(IReadOnlyList<>), elementType)
+            || IsSameCollectionType(memberType, typeof(IReadOnlyCollection<>), elementType))
+            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] {elementType},
+                enumerable);
+
+        throw new NotImplementedException($"Not implemented transformation for type '{memberType.Name}'");
     }
 }

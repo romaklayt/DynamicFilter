@@ -1,32 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace romaklayt.DynamicFilter.Common
+namespace romaklayt.DynamicFilter.Common;
+
+public class PageModel<T>
 {
-    public class PageModel<T>
+    public PageModel()
     {
-        public PageModel()
-        {
-        }
-
-        public PageModel(List<T> items, int count, int pageNumber, int pageSize)
-        {
-            if (pageNumber < 1) throw new Exception($"The {nameof(pageNumber)} value cannot be less than 1");
-            if (pageSize < 1) throw new Exception($"The {nameof(PageSize)} value cannot be less than 1");
-            TotalCount = count;
-            PageSize = pageSize;
-            CurrentPage = pageNumber;
-            TotalPages = (int) Math.Ceiling(count / (double) pageSize);
-            if (pageNumber > TotalPages && TotalCount > 0) throw new IndexOutOfRangeException("Page not found");
-            Items = items;
-        }
-
-        public int CurrentPage { get; set; }
-        public int TotalPages { get; set; }
-        public int PageSize { get; set; }
-        public int TotalCount { get; set; }
-        public bool HasPrevious => CurrentPage > 1;
-        public bool HasNext => CurrentPage < TotalPages;
-        public List<T> Items { get; set; }
     }
+
+    public PageModel(List<T> items, int count, int pageNumber, int pageSize)
+    {
+        if (pageNumber < 1) throw new Exception($"The {nameof(pageNumber)} value cannot be less than 1");
+        if (pageSize < 1) throw new Exception($"The {nameof(PageSize)} value cannot be less than 1");
+        TotalCount = count;
+        PageSize = pageSize;
+        CurrentPage = pageNumber;
+        TotalPages = (int) Math.Ceiling(count / (double) pageSize);
+        if (pageNumber > TotalPages && TotalCount > 0) throw new IndexOutOfRangeException("Page not found");
+        Items = items;
+    }
+
+    public int CurrentPage { get; set; }
+    public int TotalPages { get; set; }
+    public int PageSize { get; set; }
+    public int TotalCount { get; set; }
+    public bool HasPrevious => CurrentPage > 1;
+    public bool HasNext => CurrentPage < TotalPages;
+    public List<T> Items { get; set; }
 }

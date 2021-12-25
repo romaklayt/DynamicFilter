@@ -1,19 +1,18 @@
 using System;
 using System.Web.Mvc;
 
-namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc.Binders
+namespace romaklayt.DynamicFilter.Binder.NetFramework.Mvc.Binders;
+
+public class DynamicSelectBinder : DynamicComplexBinder
 {
-    public class DynamicSelectBinder : DynamicComplexBinder
+    public override object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
     {
-        public override object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
-        {
-            if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
+        if (bindingContext == null) throw new ArgumentNullException(nameof(bindingContext));
 
-            var model = Activator.CreateInstance(bindingContext.ModelType);
+        var model = Activator.CreateInstance(bindingContext.ModelType);
 
-            ExtractSelect(model, bindingContext);
+        ExtractSelect(model, bindingContext);
 
-            return model;
-        }
+        return model;
     }
 }

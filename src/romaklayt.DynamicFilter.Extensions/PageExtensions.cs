@@ -17,19 +17,15 @@ public static class PageExtensions
     {
         if (filter.PageSize == default) filter.PageSize = 10;
         if (filter.Page == default) filter.Page = 1;
-        var filteredEntities = await source.UseFilter(filter, applyPagination: false, applyFiltering: applyFiltering,
-            applySelect: applySelect,
-            applySorting: applySorting);
+        var filteredEntities = await source.UseFilter(filter, applyFiltering, applySorting, false, applySelect);
         var count = filteredEntities.Count();
         var items = filteredEntities.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize).ToList();
         return await Task.FromResult(new PageModel<TTarget>(items, count, filter.Page, filter.PageSize));
     }
 
-
     public static async Task<PageModel<T>> ToPagedList<T>(this IEnumerable<T> source,
         BaseDynamicComplexModel complexModel, bool applyFiltering = true, bool applySorting = true,
-        bool applySelect = true)
-        where T : class
+        bool applySelect = true) where T : class
     {
         return await source.AsQueryable().ToPagedList(complexModel.BindFilterExpressions<T, T>(), applyFiltering,
             applySorting, applySelect);
