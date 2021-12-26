@@ -45,17 +45,16 @@ public static class FilterExtensions
 
     public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
         BaseDynamicFilterModel filterModel, bool applyFiltering = true, bool applySorting = true,
-        bool applyPagination = true, bool applySelect = true) where T : class
+        bool applySelect = true) where T : class
     {
         return await source.AsAsyncQueryable().UseFilter(filterModel.BindFilterExpressions<T, T>(), applyFiltering,
-            applySorting, applyPagination, applySelect);
+            applySorting, false, applySelect);
     }
 
     public static async Task<IAsyncEnumerable<T>> UseFilter<T>(this IAsyncEnumerable<T> source,
-        BaseDynamicSelectModel selectModel, bool applyFiltering = true, bool applySorting = true,
-        bool applyPagination = true, bool applySelect = true) where T : class
+        BaseDynamicSelectModel selectModel) where T : class
     {
-        return await source.AsAsyncQueryable().UseFilter(selectModel.BindFilterExpressions<T, T>(), applyFiltering,
-            applySorting, applyPagination, applySelect);
+        return await source.AsAsyncQueryable().UseFilter(selectModel.BindFilterExpressions<T, T>(), false,
+            false, false, true);
     }
 }
