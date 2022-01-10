@@ -77,7 +77,7 @@ internal static class SelectedRender
         foreach (var includeProperty in includePropertiesString.Split(new[] {','},
                      StringSplitOptions.RemoveEmptyEntries))
         {
-            var prop = includeProperty.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+            var prop = includeProperty.Trim().Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
             if (prop.Length > 1)
             {
                 var y = GetPropertyType(type, prop[0]);

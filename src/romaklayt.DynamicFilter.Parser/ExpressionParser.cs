@@ -20,35 +20,6 @@ public class ExpressionParser
         Value = ParseValue(values[1]);
     }
 
-    public ExpressionParser()
-    {
-        Properties = new List<PropertyInfo>();
-    }
-
-    private object ChangeType(object value, Type type)
-    {
-        if (value == null && type.IsGenericType) return Activator.CreateInstance(type);
-        if (value == null) return null;
-        if (type == value.GetType()) return value;
-        if (type.IsEnum)
-        {
-            if (value is string s)
-                return Enum.Parse(type, s);
-            return Enum.ToObject(type, value);
-        }
-
-        if (!type.IsInterface && type.IsGenericType)
-        {
-            var innerType = type.GetGenericArguments()[0];
-            var innerValue = ChangeType(value, innerType);
-            return Activator.CreateInstance(type, innerValue);
-        }
-
-        if (value is string && type == typeof(Guid)) return new Guid(value as string);
-        if (value is string && type == typeof(Version)) return new Version(value as string);
-        if (!(value is IConvertible)) return value;
-        return ChangeType(value, type);
-    }
 
     #region [ Public methods ]
 
@@ -171,11 +142,17 @@ public class ExpressionParser
 
     #endregion
 
-    private object GetDefaultValue(Type t)
+    private object GetDefaultValue(Type type)
     {
-        if (t.IsValueType && Nullable.GetUnderlyingType(t) == null)
-            return Activator.CreateInstance(t);
-        return null;
+        if (type == null) throw new ArgumentNullException("type");
+
+        var e = Expression.Lambda<Func<object>>(
+            Expression.Convert(
+                Expression.Default(type), typeof(object)
+            )
+        );
+
+        return e.Compile()();
     }
 
     #region [ Properties ]
@@ -193,41 +170,16 @@ public class ExpressionParser
         object parsedValue = null;
 
         foreach (var property in Properties)
-        {
-            if (property.PropertyType.IsClass && property.PropertyType.Name.ToLower() != "string" &&
-                property.PropertyType.Name.ToLower() != "datetime")
-                continue;
-            //Verifying if is nullable
-            if (Nullable.GetUnderlyingType(property.PropertyType) != null)
-            {
-                var underlyingType = Nullable.GetUnderlyingType(property.PropertyType);
-                var type = typeof(Nullable<>).MakeGenericType(underlyingType);
-
-                object newValue;
-
-                if (underlyingType.IsEnum) newValue = Enum.Parse(underlyingType, value);
-
-                newValue = ChangeType(value, underlyingType);
-
-                var nullableObject = Activator.CreateInstance(type, newValue);
-
-                parsedValue = nullableObject;
-            }
-            else
-            {
-                parsedValue = ChangeType(value, property.PropertyType);
-            }
-        }
+            parsedValue = ChangeType(value, property.PropertyType);
 
         return parsedValue;
     }
 
     private object ChangeType(string value, Type type)
     {
-        if (string.IsNullOrWhiteSpace(value)) value = GetDefaultValue(type).ToString();
+        if (string.IsNullOrWhiteSpace(value)) return GetDefaultValue(type);
         if (type.IsEnum)
-            return ChangeType(Enum.Parse(type, value), type);
-
+            return Enum.Parse(type, value);
         if (type == typeof(Guid))
             return Guid.Parse(value);
 
@@ -236,32 +188,7 @@ public class ExpressionParser
         return converter.ConvertFrom(value);
     }
 
-    public string GetOperation()
-    {
-        switch (Condition)
-        {
-            case OperatorEnum.Equals:
-                return "=";
-            case OperatorEnum.Contains:
-                return "%";
-            case OperatorEnum.ContainsCaseSensitive:
-                return "%%";
-            case OperatorEnum.GreaterThan:
-                return ">";
-            case OperatorEnum.LessThan:
-                return "<";
-            case OperatorEnum.GreaterOrEqual:
-                return ">=";
-            case OperatorEnum.LessOrEqual:
-                return "<=";
-            case OperatorEnum.NotEquals:
-                return "!=";
-            default:
-                return "=";
-        }
-    }
-
-    public string[] DefineOperation(string filterValues, Type itemType)
+    private string[] DefineOperation(string filterValues, Type itemType)
     {
         string[] values = null;
 
@@ -333,7 +260,7 @@ public class ExpressionParser
         return values;
     }
 
-    public List<PropertyInfo> GetNestedProp(string name, Type obj)
+    private List<PropertyInfo> GetNestedProp(string name, Type obj)
     {
         var infos = new List<PropertyInfo>();
         foreach (var part in name.Split('.'))
