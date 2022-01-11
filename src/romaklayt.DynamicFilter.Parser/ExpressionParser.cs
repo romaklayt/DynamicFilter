@@ -183,9 +183,7 @@ public class ExpressionParser
         if (type == typeof(Guid))
             return Guid.Parse(value);
 
-        var converter = TypeDescriptor.GetConverter(type);
-
-        return converter.ConvertFrom(value);
+        return Convert.ChangeType(value, type);
     }
 
     private string[] DefineOperation(string filterValues, Type itemType)
