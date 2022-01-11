@@ -115,7 +115,7 @@ internal static class SelectedRender
                 {
                     props.AddRange(subtype.GenericTypeArguments.First().GetProperties()
                         .Where(info => IsSimple(info.PropertyType))
-                        .Select(info => $"{prop[0]}.{FirstCharToLowerCase(info.Name)}")
+                        .Select(info => $"{FirstCharToLowerCase(info.Name)}")
                         .ToList());
                     continue;
                 }
