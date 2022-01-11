@@ -31,10 +31,11 @@ public class ExpressionParser
         Expression baseExp = null;
         Type genericType = null;
 
-        if (Nullable.GetUnderlyingType(Properties.LastOrDefault().PropertyType) != null)
+        var propertyType = Properties.LastOrDefault()?.PropertyType;
+        if (propertyType != null && Nullable.GetUnderlyingType(propertyType) != null)
         {
             var type = typeof(Nullable<>).MakeGenericType(
-                Nullable.GetUnderlyingType(Properties.LastOrDefault().PropertyType));
+                Nullable.GetUnderlyingType(propertyType));
             constantExpression = Expression.Constant(Value, type);
         }
 
@@ -169,8 +170,7 @@ public class ExpressionParser
     {
         object parsedValue = null;
 
-        foreach (var property in Properties)
-            parsedValue = ChangeType(value, property.PropertyType);
+        parsedValue = ChangeType(value, Properties.LastOrDefault()?.PropertyType);
 
         return parsedValue;
     }
@@ -182,10 +182,12 @@ public class ExpressionParser
             return Enum.Parse(type, value);
         if (type == typeof(Guid))
             return Guid.Parse(value);
+        var converter = TypeDescriptor.GetConverter(type);
 
-        return Convert.ChangeType(value, type);
+        return converter.ConvertFrom(value);
     }
-
+    
+   
     private string[] DefineOperation(string filterValues, Type itemType)
     {
         string[] values = null;
