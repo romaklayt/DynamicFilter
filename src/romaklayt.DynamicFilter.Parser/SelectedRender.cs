@@ -99,7 +99,7 @@ internal static class SelectedRender
                 }
                 else
                 {
-                    props.Add(includeProperty);
+                    throw new ArgumentException($"Not found {includeProperty} in type {type.Name}");
                 }
             }
             else
@@ -114,17 +114,18 @@ internal static class SelectedRender
                 if (subtype.IsGenericList())
                 {
                     props.AddRange(subtype.GenericTypeArguments.First().GetProperties()
-                        .Where(info => IsSimple(info.PropertyType))
-                        .Select(info => $"{FirstCharToLowerCase(info.Name)}")
-                        .ToList());
+                        .Where(info => IsSimple(info.PropertyType)).Select(info =>
+                            isroot
+                                ? $"{prop[0]}.{FirstCharToLowerCase(info.Name)}"
+                                : $"{FirstCharToLowerCase(info.Name)}").ToList());
                     continue;
                 }
 
-                props.AddRange(subtype.GetProperties().Where(info => IsSimple(info.PropertyType))
-                    .Select(info =>
+                props.AddRange(subtype.GetProperties().Where(info => IsSimple(info.PropertyType)).Select(info =>
                         isroot
                             ? $"{includeProperty}.{FirstCharToLowerCase(info.Name)}"
-                            : FirstCharToLowerCase(info.Name)).ToList());
+                            : FirstCharToLowerCase(info.Name))
+                    .ToList());
             }
         }
     }
