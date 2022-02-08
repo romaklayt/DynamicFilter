@@ -111,7 +111,7 @@ public static class DynamicComplexParser
             if (filterAndValues[i].Contains('|'))
             {
                 var options = filterAndValues[i].Split('|');
-
+                Expression splitExpression = null;
                 for (var j = 0; j < options.Count(); j++)
                 {
                     var split = options[j].Split(operators, StringSplitOptions.None);
@@ -121,16 +121,20 @@ public static class DynamicComplexParser
 
                     if (j == 0)
                     {
-                        currentExpression = currentExpression == null
-                            ? expression
-                            : Expression.And(currentExpression, expression);
+                        splitExpression = expression;
                     }
                     else
                     {
-                        if (currentExpression != null)
-                            currentExpression = Expression.Or(currentExpression, expression);
+                        if (splitExpression != null)
+                            splitExpression = Expression.Or(splitExpression, expression);
                     }
                 }
+
+                currentExpression = currentExpression == null
+                    ? splitExpression
+                    : splitExpression == null
+                        ? currentExpression
+                        : Expression.And(currentExpression, splitExpression);
             }
             else
             {
