@@ -85,7 +85,7 @@ public static class DynamicComplexParser
                 if (split.Last().Contains("~"))
                 {
                     var values = split.Last().Trim('[', ']')
-                        .Split(new[] {"~"}, StringSplitOptions.RemoveEmptyEntries);
+                        .Split(new[] {"~"}, StringSplitOptions.None);
                     filterAndValues.AddRange(values.Select(value => $"{property}{op}{value}"));
                     continue;
                 }
@@ -93,7 +93,7 @@ public static class DynamicComplexParser
                 if (split.Last().Contains("|"))
                 {
                     var values = split.Last().Trim('[', ']')
-                        .Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries);
+                        .Split(new[] {"|"}, StringSplitOptions.None);
                     filterAndValues.Add(values
                         .Aggregate(string.Empty, (current, value) => current + $"|{property}{op}{value}")
                         .TrimStart('|'));
@@ -114,7 +114,7 @@ public static class DynamicComplexParser
 
                 for (var j = 0; j < options.Count(); j++)
                 {
-                    var split = options[j].Split(operators, StringSplitOptions.RemoveEmptyEntries);
+                    var split = options[j].Split(operators, StringSplitOptions.None);
 
                     var expression = GetExpression(parameter, itemType,
                         $"{split.First()}{RemoveSubstring(RemoveSubstring(options[j], split.First()), split.Last())}{split.Last()}");
