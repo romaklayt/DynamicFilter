@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Parser.Models;
 
@@ -161,9 +163,7 @@ public static class DynamicComplexParser
 
     private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members)
     {
-        members = SelectedRender.CheckRootMember(members, typeof(TSource));
-        SelectedRender.UpdateMembersPath(members, typeof(TSource), out var items, true);
-        return BuildSelector<TSource, TTarget>(items);
+        return BuildSelector<TSource, TTarget>(CheckRootMember(members, typeof(TTarget)));
     }
 
     private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(List<string> members)
@@ -183,6 +183,30 @@ public static class DynamicComplexParser
 
         return Expression.Lambda<Func<TSource, TTarget>>(
             Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
+    }
+    
+    private static List<string> CheckRootMember(string filter, Type type)
+    {
+        var selectedMembers =
+            filter.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
+        if (!selectedMembers.Contains("root")) return selectedMembers;
+        selectedMembers.Remove("root");
+        selectedMembers.AddRange(type.GetProperties()
+            .Where(info => IsSimple(info.PropertyType)).Select(info => FirstCharToLowerCase(info.Name)));
+        return selectedMembers;
+    }
+    
+    private static string FirstCharToLowerCase(string str)
+    {
+        if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
+            return str;
+
+        return char.ToLower(str[0]) + str.Substring(1);
+    }
+    
+    private static bool IsSimple(Type type)
+    {
+        return type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
     }
 
     private static Expression BuildSelectorExpression(Type targetType, Expression source,
