@@ -4,7 +4,7 @@ using romaklayt.DynamicFilter.Common;
 
 namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Models;
 
-[ModelBinder(typeof(DynamicFilterBinder))]
+[ModelBinder(typeof(DynamicComplexBinder))]
 public class DynamicFilterModel : BaseDynamicFilterModel
 {
 }
