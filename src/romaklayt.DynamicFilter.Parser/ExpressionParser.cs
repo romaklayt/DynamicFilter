@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using romaklayt.DynamicFilter.Common.Exceptions;
 using romaklayt.DynamicFilter.Parser.Models;
 
 namespace romaklayt.DynamicFilter.Parser;
