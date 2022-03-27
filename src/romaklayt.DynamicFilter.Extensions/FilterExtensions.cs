@@ -25,7 +25,7 @@ public static class FilterExtensions
                 {
                     var split = s.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries);
                     return new Tuple<string, bool>(split.First(),
-                        split.Count() > 1 && split[1].ToLower().Contains("desc"));
+                        split.Length > 1 && split[1].ToLower().Contains("desc"));
                 }).ToArray());
         var result = filter.Select != null && applySelect ? queryable.Select(filter.Select) : queryable.Cast<TTarget>();
         if (filter.PageSize == default && filter.Page == default || !applyPagination)

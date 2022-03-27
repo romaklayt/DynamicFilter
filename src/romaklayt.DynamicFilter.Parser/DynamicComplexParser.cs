@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Parser.Models;
 
@@ -24,7 +23,7 @@ public static class DynamicComplexParser
 
         ExtractFilters(model, complexModel, parameter, itemType);
 
-        ExtractOrder(model, complexModel, parameter);
+        ExtractOrder(model, complexModel);
 
         ExtractPagination(model, complexModel);
 
@@ -53,7 +52,7 @@ public static class DynamicComplexParser
                 ?.SetValue(model, BuildSelector<TSource, TTarget>(select));
     }
 
-    private static void ExtractOrder(object model, object bindingContext, ParameterExpression parameter)
+    private static void ExtractOrder(object model, object bindingContext)
     {
         var order = bindingContext.GetType().GetProperty("Order")?.GetValue(bindingContext, null) as string;
 
@@ -184,7 +183,7 @@ public static class DynamicComplexParser
         return Expression.Lambda<Func<TSource, TTarget>>(
             Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
     }
-    
+
     private static List<string> CheckRootMember(string filter, Type type)
     {
         var selectedMembers =
@@ -195,7 +194,7 @@ public static class DynamicComplexParser
             .Where(info => IsSimple(info.PropertyType)).Select(info => FirstCharToLowerCase(info.Name)));
         return selectedMembers;
     }
-    
+
     private static string FirstCharToLowerCase(string str)
     {
         if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
@@ -203,7 +202,7 @@ public static class DynamicComplexParser
 
         return char.ToLower(str[0]) + str.Substring(1);
     }
-    
+
     private static bool IsSimple(Type type)
     {
         return type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));

@@ -114,7 +114,7 @@ public static class LinqDynamicExtensions
     private static IOrderedAsyncQueryable<T> OrderByMemberUsing<T>(this IAsyncQueryable<T> source, string memberPath,
         string method)
     {
-        var parameter = Expression.Parameter(typeof(T), "item");
+        var parameter = Expression.Parameter(typeof(T), "o");
         var member = memberPath.Split('.').Aggregate((Expression) parameter, Expression.PropertyOrField);
         var keySelector = Expression.Lambda(member, parameter);
         var methodCall = Expression.Call(typeof(AsyncQueryable), method, new[] {parameter.Type, member.Type},
@@ -125,7 +125,7 @@ public static class LinqDynamicExtensions
     private static Expression<Func<TEntity, bool>> GenerateConstantExpression<TEntity, TKeyValue>(
         IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
     {
-        var parameter = Expression.Parameter(typeof(TEntity), "x");
+        var parameter = Expression.Parameter(typeof(TEntity), "c");
         var property = Expression.PropertyOrField(parameter, propertyName);
         var equal = Expression.Equal(property, Expression.Constant(keyValue));
         var lambda = Expression.Lambda<Func<TEntity, bool>>(equal, parameter);

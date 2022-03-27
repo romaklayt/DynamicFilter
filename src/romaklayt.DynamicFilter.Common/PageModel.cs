@@ -9,8 +9,10 @@ public class PageModel<T>
 {
     public PageModel(List<T> items, int count, int pageNumber, int pageSize)
     {
-        if (pageNumber < 1) throw new PageNumberOutOfRangeException($"The {nameof(pageNumber)} value cannot be less than 1");
-        if (pageSize < 1) throw new PageNumberOutOfRangeException($"The {nameof(PageSize)} value cannot be less than 1");
+        if (pageNumber < 1)
+            throw new PageNumberOutOfRangeException($"The {nameof(pageNumber)} value cannot be less than 1");
+        if (pageSize < 1)
+            throw new PageNumberOutOfRangeException($"The {nameof(PageSize)} value cannot be less than 1");
         TotalCount = count;
         PageSize = pageSize;
         CurrentPage = pageNumber;

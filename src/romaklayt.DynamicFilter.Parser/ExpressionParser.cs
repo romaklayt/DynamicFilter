@@ -187,8 +187,8 @@ public class ExpressionParser
 
         return converter.ConvertFrom(value);
     }
-    
-   
+
+
     private string[] DefineOperation(string filterValues, Type itemType)
     {
         string[] values = null;
