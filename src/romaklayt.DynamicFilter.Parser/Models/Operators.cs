@@ -14,4 +14,14 @@ internal class Operators
     public const string StartsWithCaseInsensitive = "_=*";
     public const string EndsWithCaseInsensitive = "_-=*";
     public const string EqualsCaseInsensitive = "==*";
+
+    internal static string[] GetOperators()
+    {
+        return new[]
+        {
+            Equals, Contains, EndsWith, GreaterThan, LessThan, GreaterOrEqual, LessOrEqual, StartsWith,
+            ContainsCaseInsensitive,
+            StartsWithCaseInsensitive, EndsWithCaseInsensitive, EqualsCaseInsensitive
+        };
+    }
 }

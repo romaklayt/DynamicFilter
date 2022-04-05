@@ -90,21 +90,20 @@ public static class DynamicComplexParser
         Type itemType)
     {
         var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;
-        var operators = new[] {"=", "%", "%%", ">", ">=", "<", "<=", "!="};
         if (string.IsNullOrWhiteSpace(filter)) return;
         var temp = filter.Split(',').ToList();
         var filterAndValues = new List<string>();
         foreach (var f in temp)
         {
-            var split = f.Split(operators, StringSplitOptions.RemoveEmptyEntries);
+            var split = f.Split(Operators.GetOperators(), StringSplitOptions.RemoveEmptyEntries);
             var property = split.First();
             var op = RemoveSubstring(RemoveSubstring(f, split.First()), split.Last());
             if (split.Last().StartsWith("[") && split.Last().EndsWith("]"))
             {
-                if (split.Last().Contains("~"))
+                if (split.Last().Contains("&"))
                 {
                     var values = split.Last().Trim('[', ']')
-                        .Split(new[] {"~"}, StringSplitOptions.None);
+                        .Split(new[] {"&"}, StringSplitOptions.None);
                     filterAndValues.AddRange(values.Select(value => $"{property}{op}{value}"));
                     continue;
                 }
@@ -125,40 +124,32 @@ public static class DynamicComplexParser
 
         LambdaExpression finalExpression = null;
         Expression currentExpression = null;
-
         for (var i = 0; i < filterAndValues.Count(); i++)
-            if (filterAndValues[i].Contains('|'))
+            if (filterAndValues[i].Contains("|"))
             {
                 var options = filterAndValues[i].Split('|');
                 Expression splitExpression = null;
                 for (var j = 0; j < options.Count(); j++)
                 {
-                    var split = options[j].Split(operators, StringSplitOptions.None);
-
+                    var split = options[j].Split(Operators.GetOperators(), StringSplitOptions.None);
                     var expression = GetExpression(parameter, itemType,
                         $"{split.First()}{RemoveSubstring(RemoveSubstring(options[j], split.First()), split.Last())}{split.Last()}");
-
                     if (j == 0)
                     {
                         splitExpression = expression;
                     }
                     else
                     {
-                        if (splitExpression != null)
-                            splitExpression = Expression.Or(splitExpression, expression);
+                        if (splitExpression != null) splitExpression = Expression.Or(splitExpression, expression);
                     }
                 }
 
-                currentExpression = currentExpression == null
-                    ? splitExpression
-                    : splitExpression == null
-                        ? currentExpression
-                        : Expression.And(currentExpression, splitExpression);
+                currentExpression = currentExpression == null ? splitExpression :
+                    splitExpression == null ? currentExpression : Expression.And(currentExpression, splitExpression);
             }
             else
             {
                 var expression = GetExpression(parameter, itemType, filterAndValues[i]);
-
                 currentExpression = currentExpression == null
                     ? expression
                     : Expression.And(currentExpression, expression);
