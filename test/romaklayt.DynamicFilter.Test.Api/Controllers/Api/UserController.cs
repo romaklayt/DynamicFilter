@@ -23,21 +23,21 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<User>> GetList([FromQuery] DynamicComplexModel complexModelModel)
+    public IEnumerable<User> GetList([FromQuery] DynamicComplexModel complexModelModel)
     {
-        return await Data.Users.UseFilter(complexModelModel);
+        return Data.Users.Apply(complexModelModel);
     }
 
     [HttpPost]
-    public async Task<IEnumerable<User>> GetPostList(DynamicComplexModel complexModelModel)
+    public IEnumerable<User> GetPostList(DynamicComplexModel complexModelModel)
     {
-        return await Data.Users.UseFilter(complexModelModel);
+        return Data.Users.Apply(complexModelModel);
     }
 
     [HttpGet("page")]
     public async Task<object> GetPage([FromQuery] DynamicComplexModel complexModel)
     {
-        var data = await Data.Users.ToPagedList(complexModel);
+        var data = await Data.Users.ToPageModel(complexModel);
         return data;
     }
 
@@ -45,20 +45,20 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(UserViewModel), 200)]
     public object GetContextList([FromQuery] DynamicComplexModel complexModelModel)
     {
-        return _myContext.Users.UseFilter(complexModelModel).Result;
+        return _myContext.Users.Apply(complexModelModel);
     }
 
     [HttpGet("count")]
     [ProducesResponseType(typeof(int), 200)]
     public object Count([FromQuery] DynamicFilterModel filterModelModel)
     {
-        return _myContext.Users.UseFilter(filterModelModel).Result;
+        return _myContext.Users.ApplyFilter(filterModelModel);
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(User), 200)]
     public async Task<object> GetById([FromQuery] DynamicSelectModel dynamicSelectModel, Guid id)
     {
-        return await _myContext.Users.UseFilter(dynamicSelectModel).Result.DynamicFirstOfDefault("Id", id);
+        return await _myContext.Users.ApplySelect(dynamicSelectModel).DynamicFirstOfDefault("Id", id);
     }
 }

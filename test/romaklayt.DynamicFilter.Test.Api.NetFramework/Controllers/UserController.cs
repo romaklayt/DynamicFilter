@@ -11,22 +11,22 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers
         [ActionName("List")]
         public JsonResult GetList(DynamicComplexModel complexModelModel)
         {
-            return Json(Data.Users.UseFilter(complexModelModel).Result, JsonRequestBehavior.AllowGet);
+            return Json(Data.Users.Apply(complexModelModel), JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
         [ActionName("List")]
-        public async Task<JsonResult> GetPostList(DynamicComplexModel complexModelModel)
+        public JsonResult GetPostList(DynamicComplexModel complexModelModel)
         {
-            return Json(await Data.Users.UseFilter(complexModelModel));
+            return Json(Data.Users.Apply(complexModelModel));
         }
 
         [HttpGet]
         [ActionName("Page")]
         public async Task<JsonResult> GetPage(DynamicComplexModel complexModel)
         {
-            var filteredUsers = await Data.Users.UseFilter(complexModel);
-            return Json(await filteredUsers.ToPagedList(complexModel), JsonRequestBehavior.AllowGet);
+            var filteredUsers = Data.Users.Apply(complexModel);
+            return Json(await filteredUsers.ToPageModel(complexModel), JsonRequestBehavior.AllowGet);
         }
     }
 }

@@ -14,22 +14,22 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers.Api
         [ActionName("List")]
         public IEnumerable<User> GetList(DynamicComplexModel complexModelModel)
         {
-            return Data.Users.UseFilter(complexModelModel).Result;
+            return Data.Users.Apply(complexModelModel);
         }
 
         [HttpPost]
         [ActionName("List")]
-        public async Task<IEnumerable<User>> GetPostList(DynamicComplexModel complexModelModel)
+        public IEnumerable<User> GetPostList(DynamicComplexModel complexModelModel)
         {
-            return await Data.Users.UseFilter(complexModelModel);
+            return Data.Users.Apply(complexModelModel);
         }
 
         [HttpGet]
         [ActionName("Page")]
         public async Task<PageModel<User>> GetPage(DynamicComplexModel complexModel)
         {
-            var filteredUsers = await Data.Users.UseFilter(complexModel);
-            return await filteredUsers.ToPagedList(complexModel);
+            var filteredUsers = Data.Users.Apply(complexModel);
+            return await filteredUsers.ToPageModel(complexModel);
         }
     }
 }

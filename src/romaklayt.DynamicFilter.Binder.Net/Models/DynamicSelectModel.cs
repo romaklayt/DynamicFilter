@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using romaklayt.DynamicFilter.Binder.Net.Binders;
-using romaklayt.DynamicFilter.Common;
+using romaklayt.DynamicFilter.Common.Interfaces;
 
 namespace romaklayt.DynamicFilter.Binder.Net.Models;
 
 [ModelBinder(BinderType = typeof(DynamicComplexBinder))]
-public class DynamicSelectModel : BaseDynamicSelectModel
+public class DynamicSelectModel : IDynamicSelect
 {
+    public string Select { get; set; }
 }

@@ -5,8 +5,8 @@ using romaklayt.DynamicFilter.Common.Interfaces;
 namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Models;
 
 [ModelBinder(typeof(DynamicComplexBinder))]
-public class DynamicFilterModel : IDynamicFilter
+public class DynamicPagingModel : IDynamicPaging
 {
-    public string Order { get; set; }
-    public string Filter { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
 }

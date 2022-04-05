@@ -3,30 +3,26 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using romaklayt.DynamicFilter.Common;
+using romaklayt.DynamicFilter.Common.Interfaces;
 using romaklayt.DynamicFilter.Parser;
-using romaklayt.DynamicFilter.Parser.Models;
 
 namespace romaklayt.DynamicFilter.Extensions.Async;
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public static class PageExtensions
 {
-    public static async Task<PageModel<T>> ToPagedList<T>(this IAsyncEnumerable<T> source,
-        BaseDynamicComplexModel complexModel) where T : class
+    public static async Task<PageModel<T>> ToPageModel<T>(this IAsyncEnumerable<T> source,
+        IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
+        bool applySelect = true) where T : class
     {
-        return await source.AsAsyncQueryable().ToPagedList(complexModel.BindFilterExpressions<T, T>());
-    }
-
-    public static async Task<PageModel<TTarget>> ToPagedList<TSource, TTarget>(this IAsyncQueryable<TSource> source,
-        ExpressionDynamicFilter<TSource, TTarget> filter, bool applyFiltering = true, bool applySorting = true,
-        bool applySelect = true) where TSource : class where TTarget : class
-    {
+        var filter = complexModel.BindFilterExpressions<T, T>();
         if (filter.PageSize == default) filter.PageSize = 10;
         if (filter.Page == default) filter.Page = 1;
-        var filteredEntities = await source.UseFilter(filter, applyFiltering, applySorting, false, applySelect);
+        var filteredEntities =
+            source.Apply(complexModel, applyFiltering, applySorting, false, applySelect).AsAsyncQueryable();
         var count = await filteredEntities.CountAsync();
         var items = await filteredEntities.Skip((filter.Page - 1) * filter.PageSize).Take(filter.PageSize)
             .ToListAsync();
-        return new PageModel<TTarget>(items, count, filter.Page, filter.PageSize);
+        return await Task.FromResult(new PageModel<T>(items, count, filter.Page, filter.PageSize));
     }
 }

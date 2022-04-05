@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using romaklayt.DynamicFilter.Common;
+using romaklayt.DynamicFilter.Common.Interfaces;
 using romaklayt.DynamicFilter.Parser.Models;
 
 namespace romaklayt.DynamicFilter.Parser;
@@ -11,7 +11,7 @@ namespace romaklayt.DynamicFilter.Parser;
 public static class DynamicComplexParser
 {
     public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
-        this BaseDynamicComplexModel complexModel)
+        this IDynamicComplex complexModel)
     {
         if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
 
@@ -29,6 +29,24 @@ public static class DynamicComplexParser
 
         ExtractSelect<TSource, TTarget>(model, complexModel);
         return model as ExpressionDynamicFilter<TSource, TTarget>;
+    }
+
+    public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
+        this IDynamicFilter complexModel)
+    {
+        return (complexModel as IDynamicComplex).BindFilterExpressions<TSource, TTarget>();
+    }
+
+    public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
+        this IDynamicSelect complexModel)
+    {
+        return (complexModel as IDynamicComplex).BindFilterExpressions<TSource, TTarget>();
+    }
+
+    public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
+        this IDynamicPaging complexModel)
+    {
+        return (complexModel as IDynamicComplex).BindFilterExpressions<TSource, TTarget>();
     }
 
     private static void ExtractPagination(object model, object bindingContext)

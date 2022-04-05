@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Common.Exceptions;
 using romaklayt.DynamicFilter.Parser.Models;
 
@@ -19,6 +18,19 @@ public class ExpressionParser
         var values = DefineOperation(filterValues, itemType);
 
         Value = ParseValue(values[1]);
+    }
+
+    private object GetDefaultValue(Type type)
+    {
+        if (type == null) throw new ArgumentNullException("type");
+
+        var e = Expression.Lambda<Func<object>>(
+            Expression.Convert(
+                Expression.Default(type), typeof(object)
+            )
+        );
+
+        return e.Compile()();
     }
 
 
@@ -141,7 +153,8 @@ public class ExpressionParser
         return returnExpression;
     }
 
-    private static Expression GetCustomExpression(Expression body, ConstantExpression constantExpression, string methodName)
+    private static Expression GetCustomExpression(Expression body, ConstantExpression constantExpression,
+        string methodName)
     {
         Expression returnExpression = null;
         var method = typeof(string).GetMethod(methodName, new[] {typeof(string)});
@@ -152,23 +165,10 @@ public class ExpressionParser
 
     #endregion
 
-    private object GetDefaultValue(Type type)
-    {
-        if (type == null) throw new ArgumentNullException("type");
-
-        var e = Expression.Lambda<Func<object>>(
-            Expression.Convert(
-                Expression.Default(type), typeof(object)
-            )
-        );
-
-        return e.Compile()();
-    }
-
     #region [ Properties ]
 
     private List<PropertyInfo> Properties { get; set; }
-    private object Value { get; set; }
+    private object Value { get; }
     private OperatorEnum Condition { get; set; }
     private bool IsNotExpression { get; set; }
 
@@ -201,12 +201,12 @@ public class ExpressionParser
     private string[] DefineOperation(string filterValues, Type itemType)
     {
         string[] values = null;
-        
+
         foreach (OperatorEnum operatorName in Enum.GetValues(typeof(OperatorEnum)))
         {
             var op = typeof(Operators).GetField(operatorName.ToString()).GetValue(new Operators()).ToString();
             if (!filterValues.Contains(op)) continue;
-            values = filterValues.Split(new []{op},StringSplitOptions.RemoveEmptyEntries);
+            values = filterValues.Split(new[] {op}, StringSplitOptions.RemoveEmptyEntries);
             Condition = operatorName;
             if (!values[0].EndsWith("!")) continue;
             IsNotExpression = true;
