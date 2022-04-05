@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.RegularExpressions;
+using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Common.Exceptions;
 using romaklayt.DynamicFilter.Parser.Models;
 
@@ -68,77 +68,85 @@ public class ExpressionParser
         {
             default:
             case OperatorEnum.Equals:
-            {
                 returnExpression = Expression.Equal(body, constantExpression);
                 break;
-            }
+            case OperatorEnum.ContainsCaseInsensitive:
+                returnExpression = GetCustomCaseInsensitiveExpression(body, "Contains");
+                break;
             case OperatorEnum.Contains:
-            {
-                constantExpression = Expression.Constant(Value.ToString().ToLower());
-
-                var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
-
-                if (toLowerMethod is not null)
-                {
-                    var expression1 = Expression.Call(body, toLowerMethod);
-
-                    var method = typeof(string).GetMethod("Contains", new[] {typeof(string)});
-
-                    if (method is not null)
-                        returnExpression = Expression.Call(expression1, method, constantExpression);
-                }
-
+                returnExpression = GetCustomExpression(body, constantExpression, "Contains");
                 break;
-            }
-            case OperatorEnum.ContainsCaseSensitive:
-            {
-                var method = typeof(string).GetMethod("Contains", new[] {typeof(string)});
-
-                if (method is not null) returnExpression = Expression.Call(body, method, constantExpression);
-
-                break;
-            }
             case OperatorEnum.GreaterThan:
-            {
                 returnExpression = Expression.GreaterThan(body, constantExpression);
-
                 break;
-            }
             case OperatorEnum.LessThan:
-            {
                 returnExpression = Expression.LessThan(body, constantExpression);
                 break;
-            }
             case OperatorEnum.GreaterOrEqual:
-            {
                 returnExpression = Expression.GreaterThanOrEqual(body, constantExpression);
                 break;
-            }
             case OperatorEnum.LessOrEqual:
-            {
                 returnExpression = Expression.LessThanOrEqual(body, constantExpression);
                 break;
-            }
-            case OperatorEnum.NotEquals:
-            {
-                returnExpression = Expression.NotEqual(body, constantExpression);
+            case OperatorEnum.StartsWith:
+                returnExpression = GetCustomExpression(body, constantExpression, "StartsWith");
                 break;
-            }
+            case OperatorEnum.EndsWith:
+                returnExpression = GetCustomExpression(body, constantExpression, "EndsWith");
+                break;
+            case OperatorEnum.StartsWithCaseInsensitive:
+                returnExpression = GetCustomCaseInsensitiveExpression(body, "StartsWith");
+                break;
+            case OperatorEnum.EndsWithCaseInsensitive:
+                returnExpression = GetCustomCaseInsensitiveExpression(body, "EndsWith");
+                break;
+            case OperatorEnum.EqualsCaseInsensitive:
+                returnExpression = GetCustomCaseInsensitiveExpression(body, "Equals");
+                break;
         }
 
-        if (genericType != null)
+        if (IsNotExpression) returnExpression = Expression.Not(returnExpression);
+
+        if (genericType == null) return returnExpression;
+        var anyMethod = typeof(Enumerable)
+            .GetMethods()
+            .FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Count() == 2)
+            ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
+
+
+        if (constantExpression.Value != null && anyMethod is not null && returnExpression is not null)
+            returnExpression =
+                Expression.Call(anyMethod, baseExp, Expression.Lambda(returnExpression, subParam));
+
+        return returnExpression;
+    }
+
+    private Expression GetCustomCaseInsensitiveExpression(Expression body, string methodName)
+    {
+        Expression returnExpression = null;
+        var constantExpression = Expression.Constant(Value.ToString().ToLower());
+
+        var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
+
+        if (toLowerMethod is not null)
         {
-            var anyMethod = typeof(Enumerable)
-                .GetMethods()
-                .FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Count() == 2)
-                ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
+            var expression1 = Expression.Call(body, toLowerMethod);
 
+            var method = typeof(string).GetMethod(methodName, new[] {typeof(string)});
 
-            if (constantExpression.Value != null && anyMethod is not null && returnExpression is not null)
-                returnExpression =
-                    Expression.Call(anyMethod, baseExp, Expression.Lambda(returnExpression, subParam));
+            if (method is not null)
+                returnExpression = Expression.Call(expression1, method, constantExpression);
         }
 
+        return returnExpression;
+    }
+
+    private static Expression GetCustomExpression(Expression body, ConstantExpression constantExpression, string methodName)
+    {
+        Expression returnExpression = null;
+        var method = typeof(string).GetMethod(methodName, new[] {typeof(string)});
+
+        if (method is not null) returnExpression = Expression.Call(body, method, constantExpression);
         return returnExpression;
     }
 
@@ -159,9 +167,10 @@ public class ExpressionParser
 
     #region [ Properties ]
 
-    public List<PropertyInfo> Properties { get; set; }
-    public object Value { get; set; }
-    public OperatorEnum Condition { get; set; }
+    private List<PropertyInfo> Properties { get; set; }
+    private object Value { get; set; }
+    private OperatorEnum Condition { get; set; }
+    private bool IsNotExpression { get; set; }
 
     #endregion
 
@@ -192,55 +201,16 @@ public class ExpressionParser
     private string[] DefineOperation(string filterValues, Type itemType)
     {
         string[] values = null;
-
-        if (filterValues.Contains('='))
+        
+        foreach (OperatorEnum operatorName in Enum.GetValues(typeof(OperatorEnum)))
         {
-            values = filterValues.Split('=');
-            Condition = OperatorEnum.Equals;
-        }
-
-        if (filterValues.Contains('%'))
-        {
-            if (filterValues.Contains("%%"))
-            {
-                Condition = OperatorEnum.ContainsCaseSensitive;
-                values = Regex.Split(filterValues, "%%");
-            }
-            else
-            {
-                Condition = OperatorEnum.Contains;
-                values = filterValues.Split('%');
-            }
-        }
-
-        if (filterValues.Contains('>'))
-        {
-            values = filterValues.Split('>');
-            Condition = OperatorEnum.GreaterThan;
-        }
-
-        if (filterValues.Contains('<'))
-        {
-            values = filterValues.Split('<');
-            Condition = OperatorEnum.LessThan;
-        }
-
-        if (filterValues.Contains(">="))
-        {
-            values = Regex.Split(filterValues, ">=");
-            Condition = OperatorEnum.GreaterOrEqual;
-        }
-
-        if (filterValues.Contains("<="))
-        {
-            values = Regex.Split(filterValues, "<=");
-            Condition = OperatorEnum.LessOrEqual;
-        }
-
-        if (filterValues.Contains("!="))
-        {
-            values = Regex.Split(filterValues, "!=");
-            Condition = OperatorEnum.NotEquals;
+            var op = typeof(Operators).GetField(operatorName.ToString()).GetValue(new Operators()).ToString();
+            if (!filterValues.Contains(op)) continue;
+            values = filterValues.Split(new []{op},StringSplitOptions.RemoveEmptyEntries);
+            Condition = operatorName;
+            if (!values[0].EndsWith("!")) continue;
+            IsNotExpression = true;
+            values[0] = values[0].TrimEnd('!');
         }
 
         if (values == null)
