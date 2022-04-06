@@ -11,7 +11,7 @@ namespace romaklayt.DynamicFilter.Parser;
 public static class DynamicComplexParser
 {
     public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
-        this IDynamicComplex complexModel)
+        this IDynamicFilter complexModel)
     {
         if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
 
@@ -23,30 +23,42 @@ public static class DynamicComplexParser
 
         ExtractFilters(model, complexModel, parameter, itemType);
 
+        return model as ExpressionDynamicFilter<TSource, TTarget>;
+    }
+
+    public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
+        this IDynamicSorting complexModel)
+    {
+        if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
+
+        var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
+
         ExtractOrder(model, complexModel);
 
-        ExtractPagination(model, complexModel);
+        return model as ExpressionDynamicFilter<TSource, TTarget>;
+    }
+
+    public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
+        this IDynamicSelect complexModel)
+    {
+        if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
+
+        var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
 
         ExtractSelect<TSource, TTarget>(model, complexModel);
         return model as ExpressionDynamicFilter<TSource, TTarget>;
     }
 
     public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
-        this IDynamicFilter complexModel)
-    {
-        return (complexModel as IDynamicComplex).BindFilterExpressions<TSource, TTarget>();
-    }
-
-    public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
-        this IDynamicSelect complexModel)
-    {
-        return (complexModel as IDynamicComplex).BindFilterExpressions<TSource, TTarget>();
-    }
-
-    public static ExpressionDynamicFilter<TSource, TTarget> BindFilterExpressions<TSource, TTarget>(
         this IDynamicPaging complexModel)
     {
-        return (complexModel as IDynamicComplex).BindFilterExpressions<TSource, TTarget>();
+        if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
+
+        var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
+
+        ExtractPagination(model, complexModel);
+
+        return model as ExpressionDynamicFilter<TSource, TTarget>;
     }
 
     private static void ExtractPagination(object model, object bindingContext)
