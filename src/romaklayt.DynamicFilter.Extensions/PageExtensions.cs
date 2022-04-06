@@ -15,7 +15,14 @@ public static class PageExtensions
         IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
         bool applySelect = true) where T : class
     {
-        var filter = complexModel.BindFilterExpressions<T, T>();
+        return await source.AsQueryable().ToPageModel(complexModel, applyFiltering, applySorting, applySelect);
+    }
+
+    public static async Task<PageModel<T>> ToPageModel<T>(this IQueryable<T> source,
+        IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
+        bool applySelect = true) where T : class
+    {
+        var filter = (complexModel as IDynamicPaging).BindFilterExpressions<T, T>();
         if (filter.PageSize == default) filter.PageSize = 10;
         if (filter.Page == default) filter.Page = 1;
         var filteredEntities =

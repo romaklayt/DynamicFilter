@@ -10,7 +10,7 @@ public class PageModel<T>
     public PageModel()
     {
     }
-    
+
     public PageModel(List<T> items, int count, int pageNumber, int pageSize)
     {
         if (pageNumber < 1)

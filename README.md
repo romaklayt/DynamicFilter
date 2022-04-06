@@ -171,20 +171,20 @@ specify the property you'll use for order.
 GET http://url?filter=name==Bruno&order=name
 ```
 
-Default order type is Ascending. You can specify the order type with an equals (=) *Asc* or *Desc* after the property.
+Default order type is Ascending. You can adding a `-` before the name switches to sorting descendingly..
 
 ```http
-GET http://url?filter=name==Bruno&order=name=Asc
+GET http://url?filter=name==Bruno&order=name
 
-GET http://url?filter=name==Bruno&order=name=Desc
+GET http://url?filter=name==Bruno&order=-name
 ```
 
 To sort by multiple properties:
 
 ```http
-GET http://url?filter=name==Bruno&order=name=asc,firstname=asc
+GET http://url?filter=name==Bruno&order=name,firstname
 
-GET http://url?filter=name==Bruno&order=name=desc,firstname
+GET http://url?filter=name==Bruno&order=-name,firstname
 ```
 
 If you do not specify the sort type, **asc** is used by default.
@@ -217,7 +217,8 @@ If you no need page info, you simply needs to add the parameters page and pagesi
 result = result.ApplyFilter(filter); #page mode without additional info
 ```
 
-If you specify the page number and size in the filter model, pagination is disabled when using **ApplyFilter**. You can also disable pagination by forcibly calling:
+If you specify the page number and size in the filter model, pagination is disabled when using **ApplyFilter**. You can
+also disable pagination by forcibly calling:
 
 ```C#
 result = result.ApplyFilter(filter, false); #only filtering without pagination

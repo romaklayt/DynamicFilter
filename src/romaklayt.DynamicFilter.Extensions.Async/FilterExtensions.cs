@@ -14,42 +14,77 @@ public static class FilterExtensions
         IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
         bool applyPagination = true, bool applySelect = true) where T : class
     {
-        return source.ApplyFilter(complexModel, applyFiltering, applySorting)
-            .ApplySelect(complexModel, applySelect).ApplyPaging(complexModel, applyPagination);
+        return source.AsAsyncQueryable()
+            .Apply(complexModel, applyFiltering, applySorting, applyPagination, applySelect);
+    }
+
+    public static IAsyncQueryable<T> Apply<T>(this IAsyncQueryable<T> source,
+        IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
+        bool applyPagination = true, bool applySelect = true) where T : class
+    {
+        if (applyFiltering) source = source.ApplyFilter(complexModel);
+        if (applySorting) source = source.ApplySorting(complexModel);
+        if (applyPagination) source = source.ApplyPaging(complexModel);
+        if (applySelect) source = source.ApplySelect(complexModel);
+
+        return source;
     }
 
     public static IAsyncEnumerable<T> ApplyFilter<T>(this IAsyncEnumerable<T> source,
-        IDynamicFilter complexModel, bool applyFiltering = true, bool applySorting = true) where T : class
+        IDynamicFilter complexModel) where T : class
+    {
+        return source.AsAsyncQueryable().ApplyFilter(complexModel);
+    }
+
+    public static IAsyncQueryable<T> ApplyFilter<T>(this IAsyncQueryable<T> source,
+        IDynamicFilter complexModel) where T : class
     {
         var filter = complexModel.BindFilterExpressions<T, T>();
-        var queryable = filter.Filter != null && applyFiltering
+        return filter.Filter != null
             ? source.AsAsyncQueryable().Where(filter.Filter)
             : source.AsAsyncQueryable();
-        if (filter.Order != null && applySorting)
-            queryable = queryable.DynamicOrderBy(filter.Order.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
-                .Select(s =>
-                {
-                    var split = s.Split(new[] {'='}, StringSplitOptions.RemoveEmptyEntries);
-                    return new Tuple<string, bool>(split.First(),
-                        split.Length > 1 && split[1].ToLower().Contains("desc"));
-                }).ToArray());
-        return queryable;
+    }
+
+    public static IAsyncEnumerable<T> ApplySorting<T>(this IAsyncEnumerable<T> source,
+        IDynamicFilter complexModel) where T : class
+    {
+        return source.AsAsyncQueryable().ApplySorting(complexModel);
+    }
+
+    public static IAsyncQueryable<T> ApplySorting<T>(this IAsyncQueryable<T> source,
+        IDynamicFilter complexModel) where T : class
+    {
+        var filter = complexModel.BindFilterExpressions<T, T>();
+        if (filter.Order != null)
+            source = source.DynamicOrderBy(filter.Order.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => new Tuple<string, bool>(s.TrimStart('-'), s.StartsWith("-"))).ToArray());
+        return source;
     }
 
     public static IAsyncEnumerable<T> ApplySelect<T>(this IAsyncEnumerable<T> source,
-        IDynamicSelect complexModel, bool applySelect = true) where T : class
+        IDynamicSelect complexModel) where T : class
+    {
+        return source.AsAsyncQueryable().ApplySelect(complexModel);
+    }
+
+    public static IAsyncQueryable<T> ApplySelect<T>(this IAsyncQueryable<T> source,
+        IDynamicSelect complexModel) where T : class
     {
         var filter = complexModel.BindFilterExpressions<T, T>();
-        var result = filter.Select != null && applySelect ? source.AsAsyncQueryable().Select(filter.Select) : source;
-        return result;
+        return filter.Select != null ? source.AsAsyncQueryable().Select(filter.Select) : source;
     }
 
     public static IAsyncEnumerable<T> ApplyPaging<T>(this IAsyncEnumerable<T> source,
-        IDynamicPaging complexModel,
-        bool applyPagination = true) where T : class
+        IDynamicPaging complexModel) where T : class
+    {
+        return source.AsAsyncQueryable().ApplyPaging(complexModel);
+    }
+
+    public static IAsyncQueryable<T> ApplyPaging<T>(this IAsyncQueryable<T> source,
+        IDynamicPaging complexModel) where T : class
     {
         var filter = complexModel.BindFilterExpressions<T, T>();
-        if (filter.PageSize == default && filter.Page == default || !applyPagination)
+        if (filter.PageSize == default && filter.Page == default)
             return source;
         if (filter.PageSize == default) filter.PageSize = 10;
         if (filter.Page == default) filter.Page = 1;
