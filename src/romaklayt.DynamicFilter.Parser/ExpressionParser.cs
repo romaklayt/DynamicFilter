@@ -55,7 +55,7 @@ public class ExpressionParser
         Expression body = parameter;
         foreach (var member in Properties)
             if (member.PropertyType.IsGenericType && member.PropertyType.GetGenericTypeDefinition().GetInterfaces()
-                    .Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))))
+                    .Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))) && ApplyToEnumerable)
             {
                 genericType = member.PropertyType;
                 baseExp = Expression.Property(body, member);
@@ -171,6 +171,7 @@ public class ExpressionParser
     private object Value { get; }
     private OperatorEnum Condition { get; set; }
     private bool IsNotExpression { get; set; }
+    private bool ApplyToEnumerable { get; set; } = true;
 
     #endregion
 
@@ -218,7 +219,7 @@ public class ExpressionParser
 
         var property = itemType.GetProperty(values[0],
             BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty |
-            BindingFlags.Instance);
+            BindingFlags.Instance | BindingFlags.GetField);
 
         if (property != null)
             Properties.Add(property);
@@ -240,13 +241,18 @@ public class ExpressionParser
 
             if (obj.IsGenericType && obj.GetGenericTypeDefinition().GetInterfaces()
                     .Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))))
-                obj = obj.GetGenericArguments().FirstOrDefault();
+            {
+                if (SupportedEnumerableProperties.GetOperators().Contains(part.ToLower()))
+                    ApplyToEnumerable = false;
+                else
+                    obj = obj.GetGenericArguments().FirstOrDefault();
+            }
             if (obj != null)
             {
                 var info = obj.GetProperty(part,
                     BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic |
                     BindingFlags.GetProperty |
-                    BindingFlags.Instance);
+                    BindingFlags.Instance | BindingFlags.GetField);
                 if (info == null) return infos;
 
                 obj = info.PropertyType;

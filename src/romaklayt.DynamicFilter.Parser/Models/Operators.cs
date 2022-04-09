@@ -1,3 +1,5 @@
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace romaklayt.DynamicFilter.Parser.Models;
 
 internal class Operators
