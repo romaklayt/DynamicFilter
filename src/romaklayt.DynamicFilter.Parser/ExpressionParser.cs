@@ -11,6 +11,17 @@ namespace romaklayt.DynamicFilter.Parser;
 
 public class ExpressionParser
 {
+    #region [ Properties ]
+
+    private List<PropertyInfo> Properties { get; set; }
+    private object Value { get; }
+    private OperatorEnum Condition { get; set; }
+    private bool IsNotExpression { get; set; }
+    private bool ApplyToEnumerable { get; set; } = true;
+    private const string DefaultValue = @"\default";
+
+    #endregion
+    
     public ExpressionParser(string filterValues, Type itemType)
     {
         Properties = new List<PropertyInfo>();
@@ -165,16 +176,6 @@ public class ExpressionParser
 
     #endregion
 
-    #region [ Properties ]
-
-    private List<PropertyInfo> Properties { get; set; }
-    private object Value { get; }
-    private OperatorEnum Condition { get; set; }
-    private bool IsNotExpression { get; set; }
-    private bool ApplyToEnumerable { get; set; } = true;
-
-    #endregion
-
     #region [ Private Methods ]
 
     private object ParseValue(string value)
@@ -188,7 +189,7 @@ public class ExpressionParser
 
     private object ChangeType(string value, Type type)
     {
-        if (string.IsNullOrWhiteSpace(value)) return GetDefaultValue(type);
+        if (string.IsNullOrWhiteSpace(value) || value == DefaultValue) return GetDefaultValue(type);
         if (type.IsEnum)
             return Enum.Parse(type, value);
         if (type == typeof(Guid))
