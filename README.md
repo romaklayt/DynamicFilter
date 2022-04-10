@@ -118,6 +118,18 @@ Your request will be converted to:
 users.Where(x => x.Roles.Any(y => y.Name == "admin"))
 ```
 
+The parser supports the count property for the collection, you can use it as a regular collection property:
+
+```http
+GET http://url?filter=roles.count==1
+```
+
+If you need to filter values by default for the value type, use **\default**:
+
+```http
+GET http://url?filter=roles.name==\default
+```
+
 ## Complex Filter
 
 Example Uri:
