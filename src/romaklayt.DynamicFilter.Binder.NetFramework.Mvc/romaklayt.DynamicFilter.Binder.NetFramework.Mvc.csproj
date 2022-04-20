@@ -15,20 +15,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="GitVersion.MsBuild" Version="5.9.0">
+        <PackageReference Include="GitVersion.MsBuild" Version="5.10.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7"/>
+        <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.8" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath=""/>
-        <None Include="../../README.md" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj"/>
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj" />
     </ItemGroup>
 
 </Project>
