@@ -120,10 +120,10 @@ public static class DynamicComplexParser
                     continue;
                 }
 
-                if (split.Last().Contains("|"))
+                if (split.Last().Contains("||"))
                 {
                     var values = split.Last().Trim('[', ']')
-                        .Split(new[] {"|"}, StringSplitOptions.None);
+                        .Split(new[] {"||"}, StringSplitOptions.None);
                     filterAndValues.Add(values
                         .Aggregate(string.Empty, (current, value) => current + $"|{property}{op}{value}")
                         .TrimStart('|'));
