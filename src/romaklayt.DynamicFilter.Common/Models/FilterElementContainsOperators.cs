@@ -1,8 +1,10 @@
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace romaklayt.DynamicFilter.Parser.Models;
+using System.Linq;
 
-internal class Operators
+namespace romaklayt.DynamicFilter.Common.Models;
+
+public class FilterElementContainsOperators
 {
     public new const string Equals = "==";
     public const string Contains = "@=";
@@ -17,13 +19,29 @@ internal class Operators
     public const string EndsWithCaseInsensitive = "_-=*";
     public const string EqualsCaseInsensitive = "==*";
 
-    internal static string[] GetOperators()
+    public static string[] GetOperators()
     {
         return new[]
         {
             Equals, Contains, EndsWith, GreaterThan, LessThan, GreaterOrEqual, LessOrEqual, StartsWith,
             ContainsCaseInsensitive,
             StartsWithCaseInsensitive, EndsWithCaseInsensitive, EqualsCaseInsensitive
-        };
+        }.Reverse().ToArray();
     }
+}
+
+public enum FilterElementContainsOperatorEnum
+{
+    Equals,
+    Contains,
+    GreaterThan,
+    LessThan,
+    GreaterOrEqual,
+    LessOrEqual,
+    StartsWith,
+    EndsWith,
+    ContainsCaseInsensitive,
+    StartsWithCaseInsensitive,
+    EndsWithCaseInsensitive,
+    EqualsCaseInsensitive
 }

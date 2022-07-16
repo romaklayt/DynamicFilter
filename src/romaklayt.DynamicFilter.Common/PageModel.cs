@@ -20,7 +20,7 @@ public class PageModel<T>
         TotalCount = count;
         PageSize = pageSize;
         CurrentPage = pageNumber;
-        TotalPages = (int) Math.Ceiling(count / (double) pageSize);
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
         if (pageNumber > TotalPages && TotalCount > 0) throw new PageNumberOutOfRangeException("Page not found");
         Items = items;
     }

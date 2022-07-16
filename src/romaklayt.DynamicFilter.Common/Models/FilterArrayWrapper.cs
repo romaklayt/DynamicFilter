@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+
+namespace romaklayt.DynamicFilter.Common.Models;
+
+public class FilterArrayWrapper
+{
+    public FilterArrayWrapper(string wrap, Type type, ParameterExpression parameter)
+    {
+        var countMaxBraces = CountMaxBraces(wrap);
+        var split = wrap.Split(Generate(countMaxBraces), StringSplitOptions.RemoveEmptyEntries);
+        if (split.Length > 1 && countMaxBraces != 0)
+        {
+            FilterArrayWrappers = split.Select(s => new FilterArrayWrapper(s, type, countMaxBraces - 1, parameter))
+                .ToList();
+            Operators = Extensions.ParseOperators(wrap, split);
+        }
+        else
+        {
+            FilterArray = new FilterArray(wrap, type, parameter);
+        }
+
+        Expression = GetExpression();
+    }
+
+    public FilterArrayWrapper(string wrap, Type type, int depth, ParameterExpression parameter)
+    {
+        var split = wrap.Split(Generate(depth), StringSplitOptions.RemoveEmptyEntries);
+        if (split.Length > 1 && depth != 0)
+        {
+            FilterArrayWrappers = split.Select(s => new FilterArrayWrapper(s, type, depth - 1, parameter)).ToList();
+            Operators = Extensions.ParseOperators(wrap, split);
+        }
+        else
+        {
+            FilterArray = new FilterArray(wrap, type, parameter);
+        }
+
+        Expression = GetExpression();
+    }
+
+    private FilterArray FilterArray { get; }
+    private List<FilterArrayWrapper> FilterArrayWrappers { get; }
+    private List<FilterArrayLogicOperatorEnum> Operators { get; }
+
+    public Expression Expression { get; }
+
+    private Expression GetExpression()
+    {
+        if (FilterArray != null) return FilterArray.Expression;
+
+        var currentExpression = FilterArrayWrappers[0].Expression;
+        if (FilterArrayWrappers.Count > 1)
+            for (var i = 0; i < Operators.Count; i++)
+                switch (Operators[i])
+                {
+                    case FilterArrayLogicOperatorEnum.And:
+                        currentExpression = Expression.And(currentExpression, FilterArrayWrappers[i + 1].Expression);
+                        break;
+                    case FilterArrayLogicOperatorEnum.Or:
+                        currentExpression = Expression.Or(currentExpression, FilterArrayWrappers[i + 1].Expression);
+                        break;
+                }
+
+        return currentExpression;
+    }
+
+    private string[] Generate(int braces)
+    {
+        var left = string.Empty;
+        var right = string.Empty;
+        for (var i = 0; i < braces; i++)
+        {
+            left += ")";
+            right += "(";
+        }
+
+        var t = new List<string>();
+        t.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{left}{s}{right}"));
+        t.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{s}{right}"));
+        t.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{left}{s}"));
+        return t.ToArray();
+    }
+
+    private static int CountMaxBraces(string wrap)
+    {
+        var countMaxBraces = 0;
+        var current = 0;
+        foreach (var c in wrap)
+            if (c == '(')
+            {
+                current++;
+            }
+            else
+            {
+                if (current > countMaxBraces) countMaxBraces = current;
+                current = 0;
+            }
+
+        return countMaxBraces;
+    }
+}

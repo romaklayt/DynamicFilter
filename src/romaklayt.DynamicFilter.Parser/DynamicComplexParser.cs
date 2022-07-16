@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using romaklayt.DynamicFilter.Common.Interfaces;
-using romaklayt.DynamicFilter.Parser.Models;
+using romaklayt.DynamicFilter.Common.Models;
 
 namespace romaklayt.DynamicFilter.Parser;
 
@@ -90,95 +90,17 @@ public static class DynamicComplexParser
             model.GetType().GetProperty("Order")?.SetValue(model, order);
     }
 
-    private static string RemoveSubstring(string sourceString, string removeString)
-    {
-        var index = sourceString.IndexOf(removeString, StringComparison.InvariantCulture);
-        return index < 0
-            ? sourceString
-            : sourceString.Remove(index, removeString.Length);
-    }
-
-    internal static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
+    private static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
         Type itemType)
     {
         var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;
         if (string.IsNullOrWhiteSpace(filter)) return;
-        var temp = filter.Split(',').ToList();
-        var filterAndValues = new List<string>();
-        foreach (var f in temp)
-        {
-            var split = f.Split(Operators.GetOperators(), StringSplitOptions.RemoveEmptyEntries);
-            var property = split.First();
-            var op = RemoveSubstring(RemoveSubstring(f, split.First()), split.Last());
-            if (split.Last().StartsWith("[") && split.Last().EndsWith("]"))
-            {
-                if (split.Last().Contains("&"))
-                {
-                    var values = split.Last().Trim('[', ']')
-                        .Split(new[] {"&"}, StringSplitOptions.None);
-                    filterAndValues.AddRange(values.Select(value => $"{property}{op}{value}"));
-                    continue;
-                }
-
-                if (split.Last().Contains("||"))
-                {
-                    var values = split.Last().Trim('[', ']')
-                        .Split(new[] {"||"}, StringSplitOptions.None);
-                    filterAndValues.Add(values
-                        .Aggregate(string.Empty, (current, value) => current + $"|{property}{op}{value}")
-                        .TrimStart('|'));
-                    continue;
-                }
-            }
-
-            filterAndValues.Add(f);
-        }
+        var filterModel = new FilterArrayWrapper(filter, itemType, parameter);
 
         LambdaExpression finalExpression = null;
-        Expression currentExpression = null;
-        for (var i = 0; i < filterAndValues.Count(); i++)
-            if (filterAndValues[i].Contains("|"))
-            {
-                var options = filterAndValues[i].Split('|');
-                Expression splitExpression = null;
-                for (var j = 0; j < options.Count(); j++)
-                {
-                    var split = options[j].Split(Operators.GetOperators(), StringSplitOptions.None);
-                    var expression = GetExpression(parameter, itemType,
-                        $"{split.First()}{RemoveSubstring(RemoveSubstring(options[j], split.First()), split.Last())}{split.Last()}");
-                    if (j == 0)
-                    {
-                        splitExpression = expression;
-                    }
-                    else
-                    {
-                        if (splitExpression != null) splitExpression = Expression.Or(splitExpression, expression);
-                    }
-                }
-
-                currentExpression = currentExpression == null ? splitExpression :
-                    splitExpression == null ? currentExpression : Expression.And(currentExpression, splitExpression);
-            }
-            else
-            {
-                var expression = GetExpression(parameter, itemType, filterAndValues[i]);
-                currentExpression = currentExpression == null
-                    ? expression
-                    : Expression.And(currentExpression, expression);
-            }
-
-        if (currentExpression != null) finalExpression = Expression.Lambda(currentExpression, parameter);
+        if (filterModel.Expression != null) finalExpression = Expression.Lambda(filterModel.Expression, parameter);
 
         model.GetType().GetProperty("Filter")?.SetValue(model, finalExpression);
-    }
-
-
-    private static Expression GetExpression(ParameterExpression parameter, Type itemType, string filterAndValue)
-    {
-        var expressionType = new ExpressionParser(filterAndValue, itemType);
-
-        var expression = expressionType.GetExpression(parameter);
-        return expression;
     }
 
     private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members)
@@ -191,8 +113,8 @@ public static class DynamicComplexParser
         var parameter = Expression.Parameter(typeof(TSource), "e");
         var body = new List<MemberBinding>();
         var allMembers = members.OrderByDescending(s =>
-            s.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries).Count()).ToList();
-        var array = allMembers.Select(s => s.Trim().Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries))
+            s.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Count()).ToList();
+        var array = allMembers.Select(s => s.Trim().Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries))
             .ToList();
         foreach (var member in array)
         {
@@ -207,7 +129,7 @@ public static class DynamicComplexParser
     private static List<string> CheckRootMember(string filter, Type type)
     {
         var selectedMembers =
-            filter.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
+            filter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
         if (!selectedMembers.Contains("root")) return selectedMembers;
         selectedMembers.Remove("root");
         selectedMembers.AddRange(type.GetProperties()
@@ -250,7 +172,7 @@ public static class DynamicComplexParser
                 targetValue = BuildSelectorExpression(targetElementType, sourceElementParam,
                     membersPath, out _, depth + 1);
                 targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
-                    new[] {sourceElementType, targetElementType}, sourceMember,
+                    new[] { sourceElementType, targetElementType }, sourceMember,
                     Expression.Lambda(targetValue, sourceElementParam));
                 targetValue = Expression.Condition(
                     Expression.Equal(sourceMember,
@@ -302,14 +224,14 @@ public static class DynamicComplexParser
             return enumerable;
 
         if (memberType.IsArray)
-            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] {elementType},
+            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] { elementType },
                 enumerable);
 
         if (IsSameCollectionType(memberType, typeof(List<>), elementType)
             || IsSameCollectionType(memberType, typeof(ICollection<>), elementType)
             || IsSameCollectionType(memberType, typeof(IReadOnlyList<>), elementType)
             || IsSameCollectionType(memberType, typeof(IReadOnlyCollection<>), elementType))
-            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] {elementType},
+            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] { elementType },
                 enumerable);
 
         throw new NotImplementedException($"Not implemented transformation for type '{memberType.Name}'");

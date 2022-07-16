@@ -111,11 +111,11 @@ public static class LinqDynamicExtensions
         string method)
     {
         var parameter = Expression.Parameter(typeof(T), "item");
-        var member = memberPath.Split('.').Aggregate((Expression) parameter, Expression.PropertyOrField);
+        var member = memberPath.Split('.').Aggregate((Expression)parameter, Expression.PropertyOrField);
         var keySelector = Expression.Lambda(member, parameter);
-        var methodCall = Expression.Call(typeof(Queryable), method, new[] {parameter.Type, member.Type},
+        var methodCall = Expression.Call(typeof(Queryable), method, new[] { parameter.Type, member.Type },
             source.Expression, Expression.Quote(keySelector));
-        return (IOrderedQueryable<T>) source.Provider.CreateQuery(methodCall);
+        return (IOrderedQueryable<T>)source.Provider.CreateQuery(methodCall);
     }
 
     private static Expression<Func<TEntity, bool>> GenerateConstantExpression<TEntity, TKeyValue>(

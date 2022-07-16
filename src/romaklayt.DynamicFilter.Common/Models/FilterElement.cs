@@ -1,35 +1,36 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using romaklayt.DynamicFilter.Common.Exceptions;
-using romaklayt.DynamicFilter.Parser.Models;
 
-namespace romaklayt.DynamicFilter.Parser;
+namespace romaklayt.DynamicFilter.Common.Models;
 
-public class ExpressionParser
+public class FilterElement
 {
-    #region [ Properties ]
-
-    private List<PropertyInfo> Properties { get; set; }
-    private object Value { get; }
-    private OperatorEnum Condition { get; set; }
-    private bool IsNotExpression { get; set; }
-    private bool ApplyToEnumerable { get; set; } = true;
     private const string DefaultValue = @"\default";
 
-    #endregion
-    
-    public ExpressionParser(string filterValues, Type itemType)
+    public FilterElement(string element, Type type, ParameterExpression parameter)
     {
-        Properties = new List<PropertyInfo>();
-
-        var values = DefineOperation(filterValues, itemType);
-
-        Value = ParseValue(values[1]);
+        var split = element.Split(FilterElementContainsOperators.GetOperators(), StringSplitOptions.None);
+        Property = split.First().TrimEnd('!');
+        Properties = GetNestedProp(Property, type);
+        Value = ParseValue(split.Last());
+        var op = typeof(FilterElementContainsOperators).GetFields().First(info =>
+            info.GetValue(null).ToString() == element.GetOperator(split.First(), split.Last())).Name;
+        Operator = (FilterElementContainsOperatorEnum)Enum.Parse(typeof(FilterElementContainsOperatorEnum), op);
+        IsNegative = split.First().EndsWith("!");
+        Expression = GetExpression(parameter);
     }
+
+    private string Property { get; }
+    private List<PropertyInfo> Properties { get; }
+    private object Value { get; }
+    private FilterElementContainsOperatorEnum Operator { get; }
+    private bool IsNegative { get; }
+    private bool ApplyToEnumerable { get; set; } = true;
+    public Expression Expression { get; }
 
     private object GetDefaultValue(Type type)
     {
@@ -87,48 +88,48 @@ public class ExpressionParser
                 }
             }
 
-        switch (Condition)
+        switch (Operator)
         {
             default:
-            case OperatorEnum.Equals:
+            case FilterElementContainsOperatorEnum.Equals:
                 returnExpression = Expression.Equal(body, constantExpression);
                 break;
-            case OperatorEnum.ContainsCaseInsensitive:
-                returnExpression = GetCustomCaseInsensitiveExpression(body, "Contains");
+            case FilterElementContainsOperatorEnum.ContainsCaseInsensitive:
+                returnExpression = GetCustomCaseInsensitiveExpression(body, constantExpression, "Contains");
                 break;
-            case OperatorEnum.Contains:
+            case FilterElementContainsOperatorEnum.Contains:
                 returnExpression = GetCustomExpression(body, constantExpression, "Contains");
                 break;
-            case OperatorEnum.GreaterThan:
+            case FilterElementContainsOperatorEnum.GreaterThan:
                 returnExpression = Expression.GreaterThan(body, constantExpression);
                 break;
-            case OperatorEnum.LessThan:
+            case FilterElementContainsOperatorEnum.LessThan:
                 returnExpression = Expression.LessThan(body, constantExpression);
                 break;
-            case OperatorEnum.GreaterOrEqual:
+            case FilterElementContainsOperatorEnum.GreaterOrEqual:
                 returnExpression = Expression.GreaterThanOrEqual(body, constantExpression);
                 break;
-            case OperatorEnum.LessOrEqual:
+            case FilterElementContainsOperatorEnum.LessOrEqual:
                 returnExpression = Expression.LessThanOrEqual(body, constantExpression);
                 break;
-            case OperatorEnum.StartsWith:
+            case FilterElementContainsOperatorEnum.StartsWith:
                 returnExpression = GetCustomExpression(body, constantExpression, "StartsWith");
                 break;
-            case OperatorEnum.EndsWith:
+            case FilterElementContainsOperatorEnum.EndsWith:
                 returnExpression = GetCustomExpression(body, constantExpression, "EndsWith");
                 break;
-            case OperatorEnum.StartsWithCaseInsensitive:
-                returnExpression = GetCustomCaseInsensitiveExpression(body, "StartsWith");
+            case FilterElementContainsOperatorEnum.StartsWithCaseInsensitive:
+                returnExpression = GetCustomCaseInsensitiveExpression(body, constantExpression, "StartsWith");
                 break;
-            case OperatorEnum.EndsWithCaseInsensitive:
-                returnExpression = GetCustomCaseInsensitiveExpression(body, "EndsWith");
+            case FilterElementContainsOperatorEnum.EndsWithCaseInsensitive:
+                returnExpression = GetCustomCaseInsensitiveExpression(body, constantExpression, "EndsWith");
                 break;
-            case OperatorEnum.EqualsCaseInsensitive:
-                returnExpression = GetCustomCaseInsensitiveExpression(body, "Equals");
+            case FilterElementContainsOperatorEnum.EqualsCaseInsensitive:
+                returnExpression = GetCustomCaseInsensitiveExpression(body, constantExpression, "Equals");
                 break;
         }
 
-        if (IsNotExpression) returnExpression = Expression.Not(returnExpression);
+        if (IsNegative) returnExpression = Expression.Not(returnExpression);
 
         if (genericType == null) return returnExpression;
         var anyMethod = typeof(Enumerable)
@@ -144,10 +145,12 @@ public class ExpressionParser
         return returnExpression;
     }
 
-    private Expression GetCustomCaseInsensitiveExpression(Expression body, string methodName)
+    #endregion
+
+    private static Expression GetCustomCaseInsensitiveExpression(Expression body, ConstantExpression constantExpression,
+        string methodName)
     {
         Expression returnExpression = null;
-        var constantExpression = Expression.Constant(Value.ToString().ToLower());
 
         var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
 
@@ -155,7 +158,7 @@ public class ExpressionParser
         {
             var expression1 = Expression.Call(body, toLowerMethod);
 
-            var method = typeof(string).GetMethod(methodName, new[] {typeof(string)});
+            var method = typeof(string).GetMethod(methodName, new[] { typeof(string) });
 
             if (method is not null)
                 returnExpression = Expression.Call(expression1, method, constantExpression);
@@ -168,13 +171,11 @@ public class ExpressionParser
         string methodName)
     {
         Expression returnExpression = null;
-        var method = typeof(string).GetMethod(methodName, new[] {typeof(string)});
+        var method = typeof(string).GetMethod(methodName, new[] { typeof(string) });
 
         if (method is not null) returnExpression = Expression.Call(body, method, constantExpression);
         return returnExpression;
     }
-
-    #endregion
 
     #region [ Private Methods ]
 
@@ -199,40 +200,6 @@ public class ExpressionParser
         return converter.ConvertFrom(value);
     }
 
-
-    private string[] DefineOperation(string filterValues, Type itemType)
-    {
-        string[] values = null;
-
-        foreach (OperatorEnum operatorName in Enum.GetValues(typeof(OperatorEnum)))
-        {
-            var op = typeof(Operators).GetField(operatorName.ToString()).GetValue(new Operators()).ToString();
-            if (!filterValues.Contains(op)) continue;
-            values = filterValues.Split(new[] {op}, StringSplitOptions.RemoveEmptyEntries);
-            Condition = operatorName;
-            if (!values[0].EndsWith("!")) continue;
-            IsNotExpression = true;
-            values[0] = values[0].TrimEnd('!');
-        }
-
-        if (values == null)
-            throw new ArgumentNullException("filter");
-
-        var property = itemType.GetProperty(values[0],
-            BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty |
-            BindingFlags.Instance | BindingFlags.GetField);
-
-        if (property != null)
-            Properties.Add(property);
-        else
-            Properties = GetNestedProp(values[0], itemType);
-
-        if (Properties == null || !Properties.Any())
-            throw new PropertyNotFoundException(values[0], itemType.Name);
-
-        return values;
-    }
-
     private List<PropertyInfo> GetNestedProp(string name, Type obj)
     {
         var infos = new List<PropertyInfo>();
@@ -248,6 +215,7 @@ public class ExpressionParser
                 else
                     obj = obj.GetGenericArguments().FirstOrDefault();
             }
+
             if (obj != null)
             {
                 var info = obj.GetProperty(part,

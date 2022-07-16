@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace romaklayt.DynamicFilter.Parser.Models;
+namespace romaklayt.DynamicFilter.Common.Models;
 
 public class ExpressionDynamicFilter<TSource, TTarget>
 {

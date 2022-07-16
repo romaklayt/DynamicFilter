@@ -201,7 +201,8 @@ GET http://url?filter=name==Bruno&order=-name,firstname
 
 If you do not specify the sort type, **asc** is used by default.
 
-On your DynamicFilter object received on the endpoint, you'll get the orderType as an Enum, this way you can order by the type specified on enum.
+On your DynamicFilter object received on the endpoint, you'll get the orderType as an Enum, this way you can order by
+the type specified on enum.
 
 ```C#
 public Task<List<User>> Get([FromQuery] DynamicComplexModel filter)

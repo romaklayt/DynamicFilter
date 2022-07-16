@@ -56,7 +56,7 @@ public static class FilterExtensions
     {
         var filter = complexModel.BindFilterExpressions<T, T>();
         if (filter.Order != null)
-            source = source.DynamicOrderBy(filter.Order.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+            source = source.DynamicOrderBy(filter.Order.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => new Tuple<string, bool>(s.TrimStart('-'), s.StartsWith("-"))).ToArray());
         return source;
     }

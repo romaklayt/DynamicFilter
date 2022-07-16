@@ -14,7 +14,7 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework
             config.Routes.MapHttpRoute(
                 "DefaultApi",
                 "api/{controller}/{action}/{id}",
-                new {id = RouteParameter.Optional}
+                new { id = RouteParameter.Optional }
             );
         }
     }

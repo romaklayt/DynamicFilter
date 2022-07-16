@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace romaklayt.DynamicFilter.Parser.Models;
+namespace romaklayt.DynamicFilter.Common.Models;
 
-internal static class SupportedEnumerableProperties
+public static class SupportedEnumerableProperties
 {
     private const string Count = nameof(Count);
 
-    internal static IEnumerable<string> GetOperators()
+    public static IEnumerable<string> GetOperators()
     {
         return new[]
         {
