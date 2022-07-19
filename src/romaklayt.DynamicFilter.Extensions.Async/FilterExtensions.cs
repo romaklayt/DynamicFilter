@@ -39,7 +39,7 @@ public static class FilterExtensions
     public static IAsyncQueryable<T> ApplyFilter<T>(this IAsyncQueryable<T> source,
         IDynamicFilter complexModel) where T : class
     {
-        var filter = complexModel.BindFilterExpressions<T, T>();
+        var filter = complexModel.BindExpressions<T, T>();
         return filter.Filter != null
             ? source.AsAsyncQueryable().Where(filter.Filter)
             : source.AsAsyncQueryable();
@@ -54,7 +54,7 @@ public static class FilterExtensions
     public static IAsyncQueryable<T> ApplySorting<T>(this IAsyncQueryable<T> source,
         IDynamicFilter complexModel) where T : class
     {
-        var filter = complexModel.BindFilterExpressions<T, T>();
+        var filter = complexModel.BindExpressions<T, T>();
         if (filter.Order != null)
             source = source.DynamicOrderBy(filter.Order.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => new Tuple<string, bool>(s.TrimStart('-'), s.StartsWith("-"))).ToArray());
@@ -70,7 +70,7 @@ public static class FilterExtensions
     public static IAsyncQueryable<T> ApplySelect<T>(this IAsyncQueryable<T> source,
         IDynamicSelect complexModel) where T : class
     {
-        var filter = complexModel.BindFilterExpressions<T, T>();
+        var filter = complexModel.BindExpressions<T, T>();
         return filter.Select != null ? source.AsAsyncQueryable().Select(filter.Select) : source;
     }
 
@@ -83,7 +83,7 @@ public static class FilterExtensions
     public static IAsyncQueryable<T> ApplyPaging<T>(this IAsyncQueryable<T> source,
         IDynamicPaging complexModel) where T : class
     {
-        var filter = complexModel.BindFilterExpressions<T, T>();
+        var filter = complexModel.BindExpressions<T, T>();
         if (filter.PageSize == default && filter.Page == default)
             return source;
         if (filter.PageSize == default) filter.PageSize = 10;

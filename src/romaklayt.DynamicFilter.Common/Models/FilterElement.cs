@@ -11,12 +11,12 @@ public class FilterElement
 {
     private const string DefaultValue = @"\default";
 
-    public FilterElement(string element, Type type, ParameterExpression parameter)
+    public FilterElement(string element, Type type, Expression parameter)
     {
         var split = element.Split(FilterElementContainsOperators.GetOperators(), StringSplitOptions.None);
         Property = split.First().TrimEnd('!');
         Properties = GetNestedProp(Property, type);
-        Value = ParseValue(split.Last());
+        Value = ParseValue(split.Last(), Properties.LastOrDefault()?.PropertyType);
         var op = typeof(FilterElementContainsOperators).GetFields().First(info =>
             info.GetValue(null).ToString() == element.GetOperator(split.First(), split.Last())).Name;
         Operator = (FilterElementContainsOperatorEnum)Enum.Parse(typeof(FilterElementContainsOperatorEnum), op);
@@ -35,23 +35,13 @@ public class FilterElement
     private object GetDefaultValue(Type type)
     {
         if (type == null) throw new ArgumentNullException("type");
-
-        var e = Expression.Lambda<Func<object>>(
-            Expression.Convert(
-                Expression.Default(type), typeof(object)
-            )
-        );
-
-        return e.Compile()();
+        return Expression.Lambda<Func<object>>(Expression.Convert(Expression.Default(type), typeof(object))).Compile();
     }
 
-
-    #region [ Public methods ]
-
-    public Expression GetExpression(ParameterExpression parameter)
+    private Expression GetExpression(Expression parameter)
     {
         var constantExpression = Expression.Constant(Value);
-        Expression returnExpression = null;
+        Expression returnExpression;
         ParameterExpression subParam = null;
         Expression baseExp = null;
         Type genericType = null;
@@ -64,7 +54,7 @@ public class FilterElement
             constantExpression = Expression.Constant(Value, type);
         }
 
-        Expression body = parameter;
+        var body = parameter;
         foreach (var member in Properties)
             if (member.PropertyType.IsGenericType && member.PropertyType.GetGenericTypeDefinition().GetInterfaces()
                     .Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))) && ApplyToEnumerable)
@@ -145,8 +135,6 @@ public class FilterElement
         return returnExpression;
     }
 
-    #endregion
-
     private static Expression GetCustomCaseInsensitiveExpression(Expression body, ConstantExpression constantExpression,
         string methodName)
     {
@@ -179,25 +167,14 @@ public class FilterElement
 
     #region [ Private Methods ]
 
-    private object ParseValue(string value)
-    {
-        object parsedValue = null;
-
-        parsedValue = ChangeType(value, Properties.LastOrDefault()?.PropertyType);
-
-        return parsedValue;
-    }
-
-    private object ChangeType(string value, Type type)
+    private object ParseValue(string value, Type type)
     {
         if (string.IsNullOrWhiteSpace(value) || value == DefaultValue) return GetDefaultValue(type);
         if (type.IsEnum)
             return Enum.Parse(type, value);
         if (type == typeof(Guid))
             return Guid.Parse(value);
-        var converter = TypeDescriptor.GetConverter(type);
-
-        return converter.ConvertFrom(value);
+        return TypeDescriptor.GetConverter(type).ConvertFrom(value);
     }
 
     private List<PropertyInfo> GetNestedProp(string name, Type obj)

@@ -15,7 +15,7 @@ public static class PageExtensions
         IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
         bool applySelect = true) where T : class
     {
-        var filter = (complexModel as IDynamicPaging).BindFilterExpressions<T, T>();
+        var filter = (complexModel as IDynamicPaging).BindExpressions<T, T>();
         if (filter.PageSize == default) filter.PageSize = 10;
         if (filter.Page == default) filter.Page = 1;
         var filteredEntities =

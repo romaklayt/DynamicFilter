@@ -24,15 +24,14 @@ public class FilterArray
         var currentExpression = FilterElements[0].Expression;
         if (FilterElements.Count > 1)
             for (var i = 0; i < Operators.Count; i++)
-                switch (Operators[i])
+                currentExpression = Operators[i] switch
                 {
-                    case FilterArrayLogicOperatorEnum.And:
-                        currentExpression = Expression.And(currentExpression, FilterElements[i + 1].Expression);
-                        break;
-                    case FilterArrayLogicOperatorEnum.Or:
-                        currentExpression = Expression.Or(currentExpression, FilterElements[i + 1].Expression);
-                        break;
-                }
+                    FilterArrayLogicOperatorEnum.And => Expression.And(currentExpression,
+                        FilterElements[i + 1].Expression),
+                    FilterArrayLogicOperatorEnum.Or => Expression.Or(currentExpression,
+                        FilterElements[i + 1].Expression),
+                    _ => currentExpression
+                };
 
         return currentExpression;
     }

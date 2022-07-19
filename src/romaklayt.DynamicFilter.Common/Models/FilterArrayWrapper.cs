@@ -7,6 +7,12 @@ namespace romaklayt.DynamicFilter.Common.Models;
 
 public class FilterArrayWrapper
 {
+    private FilterArray FilterArray { get; }
+    private List<FilterArrayWrapper> FilterArrayWrappers { get; }
+    private List<FilterArrayLogicOperatorEnum> Operators { get; }
+
+    public Expression Expression { get; }
+
     public FilterArrayWrapper(string wrap, Type type, ParameterExpression parameter)
     {
         var countMaxBraces = CountMaxBraces(wrap);
@@ -41,12 +47,6 @@ public class FilterArrayWrapper
         Expression = GetExpression();
     }
 
-    private FilterArray FilterArray { get; }
-    private List<FilterArrayWrapper> FilterArrayWrappers { get; }
-    private List<FilterArrayLogicOperatorEnum> Operators { get; }
-
-    public Expression Expression { get; }
-
     private Expression GetExpression()
     {
         if (FilterArray != null) return FilterArray.Expression;
@@ -54,20 +54,19 @@ public class FilterArrayWrapper
         var currentExpression = FilterArrayWrappers[0].Expression;
         if (FilterArrayWrappers.Count > 1)
             for (var i = 0; i < Operators.Count; i++)
-                switch (Operators[i])
+                currentExpression = Operators[i] switch
                 {
-                    case FilterArrayLogicOperatorEnum.And:
-                        currentExpression = Expression.And(currentExpression, FilterArrayWrappers[i + 1].Expression);
-                        break;
-                    case FilterArrayLogicOperatorEnum.Or:
-                        currentExpression = Expression.Or(currentExpression, FilterArrayWrappers[i + 1].Expression);
-                        break;
-                }
+                    FilterArrayLogicOperatorEnum.And => Expression.And(currentExpression,
+                        FilterArrayWrappers[i + 1].Expression),
+                    FilterArrayLogicOperatorEnum.Or => Expression.Or(currentExpression,
+                        FilterArrayWrappers[i + 1].Expression),
+                    _ => currentExpression
+                };
 
         return currentExpression;
     }
 
-    private string[] Generate(int braces)
+    private static string[] Generate(int braces)
     {
         var left = string.Empty;
         var right = string.Empty;
@@ -77,11 +76,11 @@ public class FilterArrayWrapper
             right += "(";
         }
 
-        var t = new List<string>();
-        t.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{left}{s}{right}"));
-        t.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{s}{right}"));
-        t.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{left}{s}"));
-        return t.ToArray();
+        var result = new List<string>();
+        result.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{left}{s}{right}"));
+        result.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{s}{right}"));
+        result.AddRange(FilterArrayLogicOperators.GetOperators().Select(s => $"{left}{s}"));
+        return result.ToArray();
     }
 
     private static int CountMaxBraces(string wrap)
