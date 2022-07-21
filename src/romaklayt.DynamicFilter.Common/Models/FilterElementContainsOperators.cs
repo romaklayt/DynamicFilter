@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace romaklayt.DynamicFilter.Common.Models;
 
-public class FilterElementContainsOperators
+internal class FilterElementContainsOperators
 {
     public new const string Equals = "==";
     public const string Contains = "@=";
@@ -30,7 +30,7 @@ public class FilterElementContainsOperators
     }
 }
 
-public enum FilterElementContainsOperatorEnum
+internal enum FilterElementContainsOperatorEnum
 {
     Equals,
     Contains,

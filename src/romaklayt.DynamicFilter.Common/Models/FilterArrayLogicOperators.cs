@@ -2,7 +2,7 @@
 
 namespace romaklayt.DynamicFilter.Common.Models;
 
-public class FilterArrayLogicOperators
+internal class FilterArrayLogicOperators
 {
     public const string Or = "||";
     public const string And = "&&";
@@ -16,7 +16,7 @@ public class FilterArrayLogicOperators
     }
 }
 
-public enum FilterArrayLogicOperatorEnum
+internal enum FilterArrayLogicOperatorEnum
 {
     Or,
     And

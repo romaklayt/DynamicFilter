@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace romaklayt.DynamicFilter.Common.Models;
 
-public class FilterElement
+internal class FilterElement
 {
     private const string DefaultValue = @"\default";
 

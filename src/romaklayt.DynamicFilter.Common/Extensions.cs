@@ -7,7 +7,7 @@ namespace romaklayt.DynamicFilter.Common;
 
 public static class Extensions
 {
-    public static string GetOperator(this string filter, string firstElement, string secondElement)
+    internal static string GetOperator(this string filter, string firstElement, string secondElement)
     {
         return RemoveSubstring(RemoveSubstring(filter, firstElement), secondElement);
     }
@@ -20,7 +20,7 @@ public static class Extensions
             : sourceString.Remove(index, removeString.Length);
     }
 
-    public static List<FilterArrayLogicOperatorEnum> ParseOperators(string filterArray, IEnumerable<string> split)
+    internal static List<FilterArrayLogicOperatorEnum> ParseOperators(string filterArray, IEnumerable<string> split)
     {
         var op = split.Aggregate(filterArray, RemoveSubstring)
             .Where(c => c != '(' && c != ')').Select(c => c.ToString()).ToList();

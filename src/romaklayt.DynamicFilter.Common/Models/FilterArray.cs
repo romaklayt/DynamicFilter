@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace romaklayt.DynamicFilter.Common.Models;
 
-public class FilterArray
+internal class FilterArray
 {
     public FilterArray(string filterArray, Type type, ParameterExpression parameter)
     {

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace romaklayt.DynamicFilter.Common.Models;
 
-public static class SupportedEnumerableProperties
+internal static class SupportedEnumerableProperties
 {
     private const string Count = nameof(Count);
 
