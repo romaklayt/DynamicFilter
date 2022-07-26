@@ -37,7 +37,7 @@ public class UserController : ControllerBase
     [HttpGet("page")]
     public async Task<object> GetPage([FromQuery] DynamicComplexModel complexModel)
     {
-        var data = await Data.Users.ToPageModel(complexModel);
+        var data = await _myContext.Users.ToPageModel(complexModel);
         return data;
     }
 

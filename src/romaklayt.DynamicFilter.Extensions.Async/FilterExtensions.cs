@@ -22,6 +22,7 @@ public static class FilterExtensions
         IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
         bool applyPagination = true, bool applySelect = true) where T : class
     {
+        if (complexModel == null) return source;
         if (applyFiltering) source = source.ApplyFilter(complexModel);
         if (applySorting) source = source.ApplySorting(complexModel);
         if (applyPagination) source = source.ApplyPaging(complexModel);
@@ -39,6 +40,7 @@ public static class FilterExtensions
     public static IAsyncQueryable<T> ApplyFilter<T>(this IAsyncQueryable<T> source,
         IDynamicFilter complexModel) where T : class
     {
+        if (complexModel == null) return source;
         var filter = complexModel.BindExpressions<T, T>();
         return filter.Filter != null
             ? source.AsAsyncQueryable().Where(filter.Filter)
@@ -54,6 +56,7 @@ public static class FilterExtensions
     public static IAsyncQueryable<T> ApplySorting<T>(this IAsyncQueryable<T> source,
         IDynamicFilter complexModel) where T : class
     {
+        if (complexModel == null) return source;
         var filter = complexModel.BindExpressions<T, T>();
         if (filter.Order != null)
             source = source.DynamicOrderBy(filter.Order.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
@@ -70,6 +73,7 @@ public static class FilterExtensions
     public static IAsyncQueryable<T> ApplySelect<T>(this IAsyncQueryable<T> source,
         IDynamicSelect complexModel) where T : class
     {
+        if (complexModel == null) return source;
         var filter = complexModel.BindExpressions<T, T>();
         return filter.Select != null ? source.AsAsyncQueryable().Select(filter.Select) : source;
     }
@@ -83,6 +87,7 @@ public static class FilterExtensions
     public static IAsyncQueryable<T> ApplyPaging<T>(this IAsyncQueryable<T> source,
         IDynamicPaging complexModel) where T : class
     {
+        if (complexModel == null) return source;
         var filter = complexModel.BindExpressions<T, T>();
         if (filter.PageSize == default && filter.Page == default)
             return source;
