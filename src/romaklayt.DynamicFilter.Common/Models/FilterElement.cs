@@ -65,7 +65,11 @@ internal class FilterElement
             }
             else
             {
-                if (genericType?.GetGenericArguments().FirstOrDefault()?.FullName == member.DeclaringType?.FullName)
+                var genericArgumentFullName = genericType?.GetGenericArguments().FirstOrDefault()?.FullName;
+                var genericArgumentBaseTypeFullName =
+                    genericType?.GetGenericArguments().FirstOrDefault()?.BaseType?.FullName;
+                var memberFullName = member.DeclaringType?.FullName;
+                if (genericArgumentFullName == memberFullName || genericArgumentBaseTypeFullName == memberFullName)
                 {
                     subParam = Expression.Parameter(genericType?.GetGenericArguments().FirstOrDefault() ??
                                                     throw new InvalidOperationException("Generic type not found"),
