@@ -22,7 +22,7 @@ public class Startup
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<MyContext>(opt => opt.UseInMemoryDatabase("Test"));
+        services.AddDbContext<MyContext>(opt => opt.UseInMemoryDatabase("Test").EnableSensitiveDataLogging());
         services.AddScoped<MyContext>();
         services.AddAutoMapper(typeof(UserMap));
         // Register the Swagger generator, defining 1 or more Swagger documents
