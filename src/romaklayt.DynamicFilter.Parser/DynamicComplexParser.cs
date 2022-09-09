@@ -90,10 +90,8 @@ public static class DynamicComplexParser
         model.GetType().GetProperty("Filter")?.SetValue(model, finalExpression);
     }
 
-    private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members)
-    {
-        return BuildSelector<TSource, TTarget>(CheckRootMember(members, typeof(TTarget)));
-    }
+    private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members) =>
+        BuildSelector<TSource, TTarget>(CheckRootMember(members, typeof(TTarget)));
 
     private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(List<string> members)
     {
@@ -102,12 +100,11 @@ public static class DynamicComplexParser
         var allMembers = members.OrderByDescending(s =>
             s.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Count()).ToList();
         var array = allMembers.Select(s => s.Trim().Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries))
-            .ToList();
-        foreach (var member in array)
-        {
-            BuildSelectorExpression(typeof(TTarget), parameter, member, out var list);
-            body.AddRange(list);
-        }
+            .OrderByDescending(strings => strings.Length).ToList();
+        var groups = array.GroupBy(strings => strings[0]);
+        BuildSelectorExpression(typeof(TTarget), parameter, groups, out var list);
+        body.AddRange(list);
+
 
         return Expression.Lambda<Func<TSource, TTarget>>(
             Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
@@ -132,32 +129,52 @@ public static class DynamicComplexParser
         return char.ToLower(str[0]) + str.Substring(1);
     }
 
-    private static bool IsSimple(Type type)
-    {
-        return type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
-    }
+    private static bool IsSimple(Type type) =>
+        type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
 
     private static Expression BuildSelectorExpression(Type targetType, Expression source,
-        IReadOnlyList<string> membersPath, out List<MemberBinding> bindings, int depth = 0)
+        IEnumerable<IGrouping<string, string[]>> groups, out List<MemberBinding> bindings, int depth = 0)
     {
         bindings = new List<MemberBinding>();
-        var memberName = membersPath[depth];
-        var target = Expression.Constant(null, targetType);
-        var targetMember = Expression.PropertyOrField(target, memberName);
-        var sourceMember = Expression.PropertyOrField(source, memberName);
-        if (membersPath.Count == depth + 1)
+        foreach (var membersPaths in groups)
         {
-            bindings.Add(Expression.Bind(targetMember.Member, sourceMember));
-        }
-        else
-        {
+            var target = Expression.Constant(null, targetType);
+            var targetMember = Expression.PropertyOrField(target, membersPaths.Key);
+            var sourceMember = Expression.PropertyOrField(source, membersPaths.Key);
+
+            var rootMembers = membersPaths.Where(strings => strings.Length == depth + 1);
+            var destinationMembers = membersPaths.Where(strings => strings.Length > depth + 1).ToList();
+            foreach (var rootMember in rootMembers.Distinct())
+            {
+                var member = Expression.PropertyOrField(target, rootMember.Last());
+                if (IsSimple(member.Type))
+                {
+                    bindings.Add(
+                        Expression.Bind(member.Member, sourceMember));
+                }
+                else
+                {
+                    var rootMembersForType = GetTypeSimpleProperties(
+                        IsEnumerableType(targetMember.Type, out var sourceType)
+                            ? sourceType
+                            : member.Type);
+
+                    destinationMembers = destinationMembers
+                        .Union(rootMembersForType.Select(s => rootMember.Union(new[] { s }).ToArray()))
+                        .ToList();
+                }
+            }
+
+            destinationMembers = destinationMembers.Distinct(new CustomEnumerableComparer<string>())
+                .Select(enumerable => enumerable.ToArray()).ToList();
+            if (!destinationMembers.Any()) continue;
             Expression targetValue;
             if (IsEnumerableType(targetMember.Type, out var sourceElementType) &&
                 IsEnumerableType(targetMember.Type, out var targetElementType))
             {
                 var sourceElementParam = Expression.Parameter(sourceElementType, "e");
                 targetValue = BuildSelectorExpression(targetElementType, sourceElementParam,
-                    membersPath, out _, depth + 1);
+                    destinationMembers.GroupBy(strings => strings[depth + 1]), out _, depth + 1);
                 targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
                     new[] { sourceElementType, targetElementType }, sourceMember,
                     Expression.Lambda(targetValue, sourceElementParam));
@@ -175,15 +192,18 @@ public static class DynamicComplexParser
                         Expression.Constant(null, sourceMember.Type)),
                     Expression.Constant(null, sourceMember.Type), BuildSelectorExpression(targetMember.Type,
                         sourceMember,
-                        membersPath, out _, depth + 1));
+                        destinationMembers.GroupBy(strings => strings[depth + 1]), out _, depth + 1));
             }
 
             bindings.Add(Expression.Bind(targetMember.Member, targetValue));
         }
 
-
         return Expression.MemberInit(Expression.New(targetType), bindings);
     }
+
+    private static IEnumerable<string> GetTypeSimpleProperties(Type type) =>
+        type.GetProperties()
+            .Where(info => IsSimple(info.PropertyType)).Select(info => FirstCharToLowerCase(info.Name));
 
 
     private static bool IsEnumerableType(Type type, out Type elementType)
