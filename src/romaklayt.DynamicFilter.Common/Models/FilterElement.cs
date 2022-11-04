@@ -35,7 +35,7 @@ internal class FilterElement
     private object GetDefaultValue(Type type)
     {
         if (type == null) throw new ArgumentNullException("type");
-        return Expression.Lambda<Func<object>>(Expression.Convert(Expression.Default(type), typeof(object))).Compile();
+        return type.IsValueType ? Activator.CreateInstance(type) : null;
     }
 
     private Expression GetExpression(Expression parameter)
