@@ -208,15 +208,8 @@ public static class DynamicComplexParser
 
     private static bool IsEnumerableType(Type type, out Type elementType)
     {
-        foreach (var intf in type.GetInterfaces())
-            if (intf.IsGenericType && intf.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            {
-                elementType = intf.GetGenericArguments()[0];
-                return true;
-            }
-
-        elementType = null;
-        return false;
+        elementType = type.GetGenericArguments().FirstOrDefault();
+        return elementType != null;
     }
 
     private static bool IsSameCollectionType(Type type, Type genericType, Type elementType)

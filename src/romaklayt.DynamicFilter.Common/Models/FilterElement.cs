@@ -132,7 +132,7 @@ internal class FilterElement
             ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
 
 
-        if (constantExpression.Value != null && anyMethod is not null && returnExpression is not null)
+        if (anyMethod is not null && returnExpression is not null)
             returnExpression =
                 Expression.Call(anyMethod, baseExp, Expression.Lambda(returnExpression, subParam));
 
