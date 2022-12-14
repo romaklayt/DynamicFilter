@@ -131,7 +131,7 @@ jobs:
        echo "BranchName: ${{ steps.gitversion.outputs.branchName }}"
      
     - name: Setup MSBuild Path
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v1.3
        
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.1.1
