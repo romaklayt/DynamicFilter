@@ -33,11 +33,11 @@ public class DynamicComplexBinder : IModelBinder
         if (!string.IsNullOrWhiteSpace(page))
             model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
 
-        if (!string.IsNullOrWhiteSpace(pageSize))
-            model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
+        model.GetType().GetProperty("PageSize")
+            ?.SetValue(model, !string.IsNullOrWhiteSpace(pageSize) ? int.Parse(pageSize) : 20);
     }
 
-    private protected static void ExtractSelect(object model, ModelBindingContext bindingContext)
+    private static void ExtractSelect(object model, ModelBindingContext bindingContext)
     {
         var select = bindingContext.ValueProvider.GetValue("select").FirstValue ?? "root";
 
@@ -52,7 +52,7 @@ public class DynamicComplexBinder : IModelBinder
         if (!string.IsNullOrWhiteSpace(order)) model.GetType().GetProperty("Order")?.SetValue(model, order);
     }
 
-    private protected static void ExtractFilters(object model, ModelBindingContext bindingContext)
+    private static void ExtractFilters(object model, ModelBindingContext bindingContext)
     {
         var filter = bindingContext.ValueProvider.GetValue("filter").FirstValue ??
                      bindingContext.ValueProvider.GetValue("query").FirstValue;
