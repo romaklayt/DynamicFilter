@@ -104,8 +104,6 @@ public static class DynamicComplexParser
         var groups = array.GroupBy(strings => strings[0]);
         BuildSelectorExpression(typeof(TTarget), parameter, groups, out var list);
         body.AddRange(list);
-
-
         return Expression.Lambda<Func<TSource, TTarget>>(
             Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
     }
@@ -223,16 +221,24 @@ public static class DynamicComplexParser
         if (memberType == enumerable.Type)
             return enumerable;
 
-        if (memberType.IsArray)
-            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] { elementType },
-                enumerable);
+        Type[] collectionTypes =
+        {
+            typeof(List<>),
+            typeof(IList<>),
+            typeof(IEnumerable<>),
+            typeof(ICollection<>),
+            typeof(IReadOnlyList<>),
+            typeof(IReadOnlyCollection<>)
+        };
 
-        if (IsSameCollectionType(memberType, typeof(List<>), elementType)
-            || IsSameCollectionType(memberType, typeof(ICollection<>), elementType)
-            || IsSameCollectionType(memberType, typeof(IReadOnlyList<>), elementType)
-            || IsSameCollectionType(memberType, typeof(IReadOnlyCollection<>), elementType))
-            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] { elementType },
-                enumerable);
+        foreach (var collectionType in collectionTypes)
+            if (IsSameCollectionType(memberType, collectionType, elementType))
+            {
+                var methodName = memberType == typeof(IReadOnlyCollection<>)
+                    ? nameof(Enumerable.ToList)
+                    : nameof(Enumerable.ToArray);
+                return Expression.Call(typeof(Enumerable), methodName, new[] { elementType }, enumerable);
+            }
 
         throw new NotImplementedException($"Not implemented transformation for type '{memberType.Name}'");
     }

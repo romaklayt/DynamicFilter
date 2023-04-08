@@ -16,8 +16,6 @@ public class MyContext : DbContext
     public DbSet<Address> Addresses { get; set; }
     public DbSet<Zip> Zips { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
         optionsBuilder.LogTo(Console.WriteLine);
-    }
 }

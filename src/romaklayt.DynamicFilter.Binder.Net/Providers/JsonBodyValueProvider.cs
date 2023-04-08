@@ -30,10 +30,7 @@ public class JsonBodyValueProvider : IValueProvider
         }
     }
 
-    public bool ContainsPrefix(string prefix)
-    {
-        return _dictionary.ContainsKey(prefix);
-    }
+    public bool ContainsPrefix(string prefix) => _dictionary.ContainsKey(prefix);
 
     public ValueProviderResult GetValue(string key)
     {

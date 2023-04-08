@@ -19,15 +19,13 @@ internal class FilterElementContainsOperators
     public const string EndsWithCaseInsensitive = "_-=*";
     public const string EqualsCaseInsensitive = "==*";
 
-    public static string[] GetOperators()
-    {
-        return new[]
+    public static string[] GetOperators() =>
+        new[]
         {
             Equals, Contains, EndsWith, GreaterThan, LessThan, GreaterOrEqual, LessOrEqual, StartsWith,
             ContainsCaseInsensitive,
             StartsWithCaseInsensitive, EndsWithCaseInsensitive, EqualsCaseInsensitive
         }.Reverse().ToArray();
-    }
 }
 
 internal enum FilterElementContainsOperatorEnum

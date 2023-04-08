@@ -6,8 +6,6 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Factories;
 
 public class JsonBodyValueProviderFactory : ValueProviderFactory
 {
-    public override IValueProvider GetValueProvider(HttpActionContext actionContext)
-    {
-        return new JsonBodyValueProvider(actionContext);
-    }
+    public override IValueProvider GetValueProvider(HttpActionContext actionContext) =>
+        new JsonBodyValueProvider(actionContext);
 }

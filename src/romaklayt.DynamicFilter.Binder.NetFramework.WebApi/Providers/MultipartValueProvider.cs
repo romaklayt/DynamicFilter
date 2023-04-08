@@ -21,10 +21,7 @@ public class MultipartValueProvider : IValueProvider
             _values = actionContext.Request.Content.ReadAsMultipartAsync().Result.Contents;
     }
 
-    public bool ContainsPrefix(string prefix)
-    {
-        return _values.Any(content => content.Headers.Contains(prefix));
-    }
+    public bool ContainsPrefix(string prefix) => _values.Any(content => content.Headers.Contains(prefix));
 
     public ValueProviderResult GetValue(string key)
     {

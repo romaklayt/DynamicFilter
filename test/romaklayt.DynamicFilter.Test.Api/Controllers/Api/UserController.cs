@@ -23,42 +23,24 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<User> GetList([FromQuery] DynamicComplexModel complexModelModel)
-    {
-        return Data.Users.Apply(complexModelModel);
-    }
+    public IEnumerable<User> GetList([FromQuery] DynamicComplexModel complexModelModel) =>
+        Data.Users.Apply(complexModelModel);
 
     [HttpPost]
-    public IEnumerable<User> GetPostList(DynamicComplexModel complexModelModel)
-    {
-        return Data.Users.Apply(complexModelModel);
-    }
-
-    [HttpGet("page")]
-    public async Task<object> GetPage([FromQuery] DynamicComplexModel complexModel)
-    {
-        var data = await _myContext.Users.ToPageModel(complexModel);
-        return data;
-    }
+    public IEnumerable<User> GetPostList(DynamicComplexModel complexModelModel) => Data.Users.Apply(complexModelModel);
 
     [HttpGet("context")]
     [ProducesResponseType(typeof(UserViewModel), 200)]
-    public object GetContextList([FromQuery] DynamicComplexModel complexModelModel)
-    {
-        return _myContext.Users.Apply(complexModelModel);
-    }
+    public object GetContextList([FromQuery] DynamicComplexModel complexModelModel) =>
+        _myContext.Users.Apply(complexModelModel);
 
     [HttpGet("count")]
     [ProducesResponseType(typeof(int), 200)]
-    public object Count([FromQuery] DynamicFilterModel filterModelModel)
-    {
-        return _myContext.Users.ApplyFilter(filterModelModel);
-    }
+    public object Count([FromQuery] DynamicFilterModel filterModelModel) =>
+        _myContext.Users.ApplyFilter(filterModelModel);
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(User), 200)]
-    public async Task<object> GetById([FromQuery] DynamicSelectModel dynamicSelectModel, Guid id)
-    {
-        return await _myContext.Users.ApplySelect(dynamicSelectModel).DynamicFirstOfDefault("Id", id);
-    }
+    public async Task<object> GetById([FromQuery] DynamicSelectModel dynamicSelectModel, Guid id) =>
+        await _myContext.Users.ApplySelect(dynamicSelectModel).DynamicFirstOfDefault("Id", id);
 }

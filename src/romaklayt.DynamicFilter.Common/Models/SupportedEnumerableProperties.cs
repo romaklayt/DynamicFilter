@@ -7,11 +7,9 @@ internal static class SupportedEnumerableProperties
 {
     private const string Count = nameof(Count);
 
-    public static IEnumerable<string> GetOperators()
-    {
-        return new[]
+    public static IEnumerable<string> GetOperators() =>
+        new[]
         {
             Count
         }.Select(s => s.ToLower());
-    }
 }

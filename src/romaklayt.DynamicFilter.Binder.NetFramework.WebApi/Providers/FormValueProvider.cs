@@ -21,10 +21,7 @@ public class FormValueProvider : IValueProvider
             _values = actionContext.Request.Content.ReadAsFormDataAsync().Result;
     }
 
-    public bool ContainsPrefix(string prefix)
-    {
-        return _values.AllKeys.Contains(prefix);
-    }
+    public bool ContainsPrefix(string prefix) => _values.AllKeys.Contains(prefix);
 
     public ValueProviderResult GetValue(string key)
     {

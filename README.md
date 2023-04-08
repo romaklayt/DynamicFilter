@@ -157,7 +157,8 @@ You can nest multiple parentheses to create complex expressions.
 GET http://url?filter=((name==Bruno&&lastname@=r)||(age>=27))&&roles.name==Admin
 ```
 
-## Attention! 
+## Attention!
+
 For correct parsing of the filter, when using brackets, enclose all logical elements in brackets, for example:
 
 ### Not correct
@@ -165,6 +166,7 @@ For correct parsing of the filter, when using brackets, enclose all logical elem
 ```http
 GET http://url?filter=((name==Bruno&&lastname@=r)||age>=27)&&roles.name==Admin
 ```
+
 ### Correct (age>=27 in brackets)
 
 ```http
@@ -287,19 +289,19 @@ public async Task<object> GetById([FromQuery] IDynamicSelect dynamicSelectModel,
 
 # Filter operator support
 
-| Operator   | Meaning                  |
-|------------|--------------------------|
-| `==`       | Equals                   |
-| `>`        | Greater than             |
-| `<`        | Less than                |
-| `>=`       | Greater than or equal to |
-| `<=`       | Less than or equal to    |
-| `@=`       | Contains                 |
-| `_=`       | Starts with              |
-| `_-=`      | Ends with                |
-| `@=*`      | Case-insensitive string Contains |
-| `_=*`      | Case-insensitive string Starts with |
-| `_-=*`     | Case-insensitive string Ends with |
-| `==*`      | Case-insensitive string Equals |
+| Operator | Meaning                             |
+|----------|-------------------------------------|
+| `==`     | Equals                              |
+| `>`      | Greater than                        |
+| `<`      | Less than                           |
+| `>=`     | Greater than or equal to            |
+| `<=`     | Less than or equal to               |
+| `@=`     | Contains                            |
+| `_=`     | Starts with                         |
+| `_-=`    | Ends with                           |
+| `@=*`    | Case-insensitive string Contains    |
+| `_=*`    | Case-insensitive string Starts with |
+| `_-=*`   | Case-insensitive string Ends with   |
+| `==*`    | Case-insensitive string Equals      |
 
 ### All operators support negation, you need to put **"!"** before the operator (e.g. **!==** for Equals) 

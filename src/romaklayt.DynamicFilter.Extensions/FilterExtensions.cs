@@ -12,10 +12,8 @@ public static class FilterExtensions
 {
     public static IEnumerable<T> Apply<T>(this IEnumerable<T> source,
         IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
-        bool applyPagination = true, bool applySelect = true) where T : class
-    {
-        return source.AsQueryable().Apply(complexModel, applyFiltering, applySorting, applyPagination, applySelect);
-    }
+        bool applyPagination = true, bool applySelect = true) where T : class =>
+        source.AsQueryable().Apply(complexModel, applyFiltering, applySorting, applyPagination, applySelect);
 
     public static IQueryable<T> Apply<T>(this IQueryable<T> source,
         IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
@@ -31,10 +29,8 @@ public static class FilterExtensions
     }
 
     public static IEnumerable<T> ApplyFilter<T>(this IEnumerable<T> source,
-        IDynamicFilter complexModel) where T : class
-    {
-        return source.AsQueryable().ApplyFilter(complexModel);
-    }
+        IDynamicFilter complexModel) where T : class =>
+        source.AsQueryable().ApplyFilter(complexModel);
 
     public static IQueryable<T> ApplyFilter<T>(this IQueryable<T> source,
         IDynamicFilter complexModel) where T : class
@@ -47,10 +43,8 @@ public static class FilterExtensions
     }
 
     public static IEnumerable<T> ApplySorting<T>(this IEnumerable<T> source,
-        IDynamicSorting complexModel) where T : class
-    {
-        return source.AsQueryable().ApplySorting(complexModel);
-    }
+        IDynamicSorting complexModel) where T : class =>
+        source.AsQueryable().ApplySorting(complexModel);
 
     public static IQueryable<T> ApplySorting<T>(this IQueryable<T> source,
         IDynamicSorting complexModel) where T : class
@@ -64,10 +58,8 @@ public static class FilterExtensions
     }
 
     public static IEnumerable<T> ApplySelect<T>(this IEnumerable<T> source,
-        IDynamicSelect complexModel) where T : class
-    {
-        return source.AsQueryable().ApplySelect(complexModel);
-    }
+        IDynamicSelect complexModel) where T : class =>
+        source.AsQueryable().ApplySelect(complexModel);
 
     public static IQueryable<T> ApplySelect<T>(this IQueryable<T> source,
         IDynamicSelect complexModel) where T : class
@@ -78,10 +70,8 @@ public static class FilterExtensions
     }
 
     public static IEnumerable<T> ApplyPaging<T>(this IEnumerable<T> source,
-        IDynamicPaging complexModel) where T : class
-    {
-        return source.AsQueryable().ApplyPaging(complexModel);
-    }
+        IDynamicPaging complexModel) where T : class =>
+        source.AsQueryable().ApplyPaging(complexModel);
 
     public static IQueryable<T> ApplyPaging<T>(this IQueryable<T> source,
         IDynamicPaging complexModel) where T : class

@@ -7,12 +7,6 @@ namespace romaklayt.DynamicFilter.Common.Models;
 
 public class FilterArrayWrapper
 {
-    private FilterArray FilterArray { get; }
-    private List<FilterArrayWrapper> FilterArrayWrappers { get; }
-    private List<FilterArrayLogicOperatorEnum> Operators { get; }
-
-    public Expression Expression { get; }
-
     public FilterArrayWrapper(string wrap, Type type, ParameterExpression parameter)
     {
         var countMaxBraces = CountMaxBraces(wrap);
@@ -46,6 +40,12 @@ public class FilterArrayWrapper
 
         Expression = GetExpression();
     }
+
+    private FilterArray FilterArray { get; }
+    private List<FilterArrayWrapper> FilterArrayWrappers { get; }
+    private List<FilterArrayLogicOperatorEnum> Operators { get; }
+
+    public Expression Expression { get; }
 
     private Expression GetExpression()
     {

@@ -7,10 +7,8 @@ namespace romaklayt.DynamicFilter.Common;
 
 public static class Extensions
 {
-    internal static string GetOperator(this string filter, string firstElement, string secondElement)
-    {
-        return RemoveSubstring(RemoveSubstring(filter, firstElement), secondElement);
-    }
+    internal static string GetOperator(this string filter, string firstElement, string secondElement) =>
+        RemoveSubstring(RemoveSubstring(filter, firstElement), secondElement);
 
     private static string RemoveSubstring(string sourceString, string removeString)
     {

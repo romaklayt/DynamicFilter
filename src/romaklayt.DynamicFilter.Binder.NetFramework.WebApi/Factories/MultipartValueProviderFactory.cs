@@ -6,8 +6,6 @@ namespace romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Factories;
 
 public class MultipartValueProviderFactory : ValueProviderFactory
 {
-    public override IValueProvider GetValueProvider(HttpActionContext actionContext)
-    {
-        return new MultipartValueProvider(actionContext);
-    }
+    public override IValueProvider GetValueProvider(HttpActionContext actionContext) =>
+        new MultipartValueProvider(actionContext);
 }

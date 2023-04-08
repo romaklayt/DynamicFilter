@@ -5,8 +5,5 @@ namespace romaklayt.DynamicFilter.Test.Api;
 
 public class UserMap : Profile
 {
-    public UserMap()
-    {
-        CreateMap<User, UserViewModel>();
-    }
+    public UserMap() => CreateMap<User, UserViewModel>();
 }

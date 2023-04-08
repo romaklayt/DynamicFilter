@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace romaklayt.DynamicFilter.Extensions;
@@ -10,52 +11,36 @@ namespace romaklayt.DynamicFilter.Extensions;
 public static class LinqDynamicExtensions
 {
     public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IQueryable<TEntity> source,
-        string propertyName, TKeyValue keyValue)
-    {
-        return await Task.FromResult(source.FirstOrDefault(GenerateConstantExpression(source, propertyName, keyValue)));
-    }
+        string propertyName, TKeyValue keyValue) =>
+        await Task.FromResult(source.FirstOrDefault(GenerateConstantExpression(source, propertyName, keyValue)));
 
     public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
-        string propertyName, TKeyValue keyValue)
-    {
-        return await DynamicFirstOfDefault(source.AsQueryable(), propertyName, keyValue);
-    }
+        string propertyName, TKeyValue keyValue) =>
+        await DynamicFirstOfDefault(source.AsQueryable(), propertyName, keyValue);
 
     public static async Task<TEntity> DynamicFirst<TEntity, TKeyValue>(this IQueryable<TEntity> source,
-        string propertyName, TKeyValue keyValue)
-    {
-        return await Task.FromResult(source.First(GenerateConstantExpression(source, propertyName, keyValue)));
-    }
+        string propertyName, TKeyValue keyValue) =>
+        await Task.FromResult(source.First(GenerateConstantExpression(source, propertyName, keyValue)));
 
     public static async Task<TEntity> DynamicFirst<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
-        string propertyName, TKeyValue keyValue)
-    {
-        return await DynamicFirstOfDefault(source.AsQueryable(), propertyName, keyValue);
-    }
+        string propertyName, TKeyValue keyValue) =>
+        await DynamicFirstOfDefault(source.AsQueryable(), propertyName, keyValue);
 
     public static async Task<TEntity> DynamicLastOfDefault<TEntity, TKeyValue>(this IQueryable<TEntity> source,
-        string propertyName, TKeyValue keyValue)
-    {
-        return await Task.FromResult(source.LastOrDefault(GenerateConstantExpression(source, propertyName, keyValue)));
-    }
+        string propertyName, TKeyValue keyValue) =>
+        await Task.FromResult(source.LastOrDefault(GenerateConstantExpression(source, propertyName, keyValue)));
 
     public static async Task<TEntity> DynamicLastOfDefault<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
-        string propertyName, TKeyValue keyValue)
-    {
-        return await DynamicLastOfDefault(source.AsQueryable(), propertyName, keyValue);
-    }
+        string propertyName, TKeyValue keyValue) =>
+        await DynamicLastOfDefault(source.AsQueryable(), propertyName, keyValue);
 
     public static async Task<TEntity> DynamicLast<TEntity, TKeyValue>(this IQueryable<TEntity> source,
-        string propertyName, TKeyValue keyValue)
-    {
-        return await Task.FromResult(source.Last(GenerateConstantExpression(source, propertyName, keyValue)));
-    }
+        string propertyName, TKeyValue keyValue) =>
+        await Task.FromResult(source.Last(GenerateConstantExpression(source, propertyName, keyValue)));
 
     public static async Task<TEntity> DynamicLast<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
-        string propertyName, TKeyValue keyValue)
-    {
-        return await DynamicLastOfDefault(source.AsQueryable(), propertyName, keyValue);
-    }
+        string propertyName, TKeyValue keyValue) =>
+        await DynamicLastOfDefault(source.AsQueryable(), propertyName, keyValue);
 
     public static IQueryable<TEntity> DynamicOrderBy<TEntity>(this IQueryable<TEntity> source,
         params Tuple<string, bool>[] order)
@@ -77,36 +62,26 @@ public static class LinqDynamicExtensions
         return orderExpression ?? source;
     }
 
-    public static IOrderedQueryable<T> DynamicOrderByMember<T>(this IQueryable<T> source, string memberPath)
-    {
-        return source.OrderByMemberUsing(memberPath, "OrderBy");
-    }
+    public static IOrderedQueryable<T> DynamicOrderByMember<T>(this IQueryable<T> source, string memberPath) =>
+        source.OrderByMemberUsing(memberPath, "OrderBy");
 
-    public static IOrderedQueryable<T> DynamicOrderByMemberDescending<T>(this IQueryable<T> source, string memberPath)
-    {
-        return source.OrderByMemberUsing(memberPath, "OrderByDescending");
-    }
+    public static IOrderedQueryable<T>
+        DynamicOrderByMemberDescending<T>(this IQueryable<T> source, string memberPath) =>
+        source.OrderByMemberUsing(memberPath, "OrderByDescending");
 
-    public static IOrderedQueryable<T> DynamicThenByMember<T>(this IOrderedQueryable<T> source, string memberPath)
-    {
-        return source.OrderByMemberUsing(memberPath, "ThenBy");
-    }
+    public static IOrderedQueryable<T> DynamicThenByMember<T>(this IOrderedQueryable<T> source, string memberPath) =>
+        source.OrderByMemberUsing(memberPath, "ThenBy");
 
     public static IOrderedQueryable<T> DynamicThenByMemberDescending<T>(this IOrderedQueryable<T> source,
-        string memberPath)
-    {
-        return source.OrderByMemberUsing(memberPath, "ThenByDescending");
-    }
+        string memberPath) =>
+        source.OrderByMemberUsing(memberPath, "ThenByDescending");
 
-    public static IOrderedQueryable<T> DynamicOrderByMember<T>(this IEnumerable<T> source, string memberPath)
-    {
-        return source.AsQueryable().OrderByMemberUsing(memberPath, "OrderBy");
-    }
+    public static IOrderedQueryable<T> DynamicOrderByMember<T>(this IEnumerable<T> source, string memberPath) =>
+        source.AsQueryable().OrderByMemberUsing(memberPath, "OrderBy");
 
-    public static IOrderedQueryable<T> DynamicOrderByMemberDescending<T>(this IEnumerable<T> source, string memberPath)
-    {
-        return source.AsQueryable().OrderByMemberUsing(memberPath, "OrderByDescending");
-    }
+    public static IOrderedQueryable<T>
+        DynamicOrderByMemberDescending<T>(this IEnumerable<T> source, string memberPath) =>
+        source.AsQueryable().OrderByMemberUsing(memberPath, "OrderByDescending");
 
     private static IOrderedQueryable<T> OrderByMemberUsing<T>(this IQueryable<T> source, string memberPath,
         string method)
