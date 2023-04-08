@@ -226,16 +226,48 @@ public Task<List<User>> Get([FromQuery] IDynamicComplex filter)
 
 # Pagging
 
-If you don't specify a page size in the request, the library will set it to the default value of 20.
-
-```C#
-result = result.Apply(filter);
+```http
+GET http://url?filter=name@=*b&order=name&page=1&pagesize=10
 ```
 
-You can also disable pagination by forcibly calling:
+In romaklayt.DynamicFilter.Extensions.* there is a method of expanding the **ToPageModel** which returns *PageModel*
+with *info about page* and your *filtered data*.
+
+```C#
+var page = users.ToPageModel(filterModel);
+```
+
+The PageModel is built on top of the List<T> so to add page information to the server response you need to add an
+AddPageInfoFilter which will write the page information to the headers.
+
+```C#
+services.AddControllers(options =>
+        {
+            options.Filters.Add(new PageInfoWriter());
+        });
+```
+
+If you no need page info, you simply needs to add the parameters page and pagesize on your get request.
+
+```C#
+result = result.ApplyFilter(filter); #page mode without additional info
+```
+
+If you specify the page number and size in the filter model, pagination is disabled when using **ApplyFilter**. You can
+also disable pagination by forcibly calling:
 
 ```C#
 result = result.ApplyFilter(filter, false); #only filtering without pagination
+```
+
+Example:
+
+```C#
+[HttpGet("page")]
+public async Task<PageModel<User>> GetPage([FromQuery] IDynamicComplex filterModel)
+{
+    return Data.Users.ToPageModel(filterModel);
+}
 ```
 
 # Select

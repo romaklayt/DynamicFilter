@@ -10,7 +10,7 @@ public static class LinqDynamicExtensions
 {
     public static async Task<TEntity> DynamicFirstOfDefaultAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
-        await source.FirstOrDefaultAsync(GenerateConstantExpression(source, propertyName, keyValue));
+        await source.FirstOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicFirstOfDefaultAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
@@ -18,7 +18,7 @@ public static class LinqDynamicExtensions
 
     public static async Task<TEntity> DynamicFirstAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
-        await source.FirstAsync(GenerateConstantExpression(source, propertyName, keyValue));
+        await source.FirstAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicFirstAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
@@ -26,7 +26,7 @@ public static class LinqDynamicExtensions
 
     public static async Task<TEntity> DynamicLastOfDefaultAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
-        await source.LastOrDefaultAsync(GenerateConstantExpression(source, propertyName, keyValue));
+        await source.LastOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicLastOfDefaultAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
@@ -34,7 +34,7 @@ public static class LinqDynamicExtensions
 
     public static async Task<TEntity> DynamicLastAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
-        await source.LastAsync(GenerateConstantExpression(source, propertyName, keyValue));
+        await source.LastAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicLastAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
@@ -96,7 +96,7 @@ public static class LinqDynamicExtensions
     }
 
     private static Expression<Func<TEntity, bool>> GenerateConstantExpression<TEntity, TKeyValue>(
-        IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
+        string propertyName, TKeyValue keyValue)
     {
         var parameter = Expression.Parameter(typeof(TEntity), "c");
         var property = Expression.PropertyOrField(parameter, propertyName);

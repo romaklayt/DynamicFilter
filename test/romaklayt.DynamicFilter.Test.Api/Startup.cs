@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using romaklayt.DynamicFilter.Binder.Net.Binders;
 using romaklayt.DynamicFilter.Binder.Net.Factories;
+using romaklayt.DynamicFilter.Binder.Net.Filters;
 
 namespace romaklayt.DynamicFilter.Test.Api;
 
@@ -40,7 +41,11 @@ public class Startup
                 }
             });
         });
-        services.AddControllers(options => options.ValueProviderFactories.Add(new JsonBodyValueProviderFactory()));
+        services.AddControllers(options =>
+        {
+            options.Filters.Add(new PageInfoWriter());
+            options.ValueProviderFactories.Add(new JsonBodyValueProviderFactory());
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

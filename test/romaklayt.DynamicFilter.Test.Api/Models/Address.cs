@@ -18,6 +18,5 @@ public class Address
     public Guid Id { get; set; } = new();
     public string Street { get; set; }
     public int? Number { get; set; }
-    public DateTime? Valid { get; set; } = DateTime.Now;
     public Zip Zip { get; set; }
 }

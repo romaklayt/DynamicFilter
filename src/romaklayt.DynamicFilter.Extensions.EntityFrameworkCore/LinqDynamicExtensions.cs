@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-// ReSharper disable MemberCanBePrivate.Global
-
-namespace romaklayt.DynamicFilter.Extensions;
+namespace romaklayt.DynamicFilter.Extensions.EntityFrameworkCore;
 
 public static class LinqDynamicExtensions
 {
     public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
-        await Task.FromResult(source.FirstOrDefault(GenerateConstantExpression(source, propertyName, keyValue)));
+        await source.FirstOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
@@ -20,7 +19,7 @@ public static class LinqDynamicExtensions
 
     public static async Task<TEntity> DynamicFirst<TEntity, TKeyValue>(this IQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
-        await Task.FromResult(source.First(GenerateConstantExpression(source, propertyName, keyValue)));
+        await source.FirstAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicFirst<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
@@ -28,7 +27,7 @@ public static class LinqDynamicExtensions
 
     public static async Task<TEntity> DynamicLastOfDefault<TEntity, TKeyValue>(this IQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
-        await Task.FromResult(source.LastOrDefault(GenerateConstantExpression(source, propertyName, keyValue)));
+        await source.LastOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicLastOfDefault<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
@@ -36,7 +35,7 @@ public static class LinqDynamicExtensions
 
     public static async Task<TEntity> DynamicLast<TEntity, TKeyValue>(this IQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
-        await Task.FromResult(source.Last(GenerateConstantExpression(source, propertyName, keyValue)));
+        await source.LastAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicLast<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
@@ -95,7 +94,7 @@ public static class LinqDynamicExtensions
     }
 
     private static Expression<Func<TEntity, bool>> GenerateConstantExpression<TEntity, TKeyValue>(
-        IQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
+        string propertyName, TKeyValue keyValue)
     {
         var parameter = Expression.Parameter(typeof(TEntity), "x");
         var property = Expression.PropertyOrField(parameter, propertyName);

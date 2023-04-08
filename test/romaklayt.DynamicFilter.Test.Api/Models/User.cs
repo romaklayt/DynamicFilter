@@ -22,7 +22,7 @@ public class User
     public string LastName { get; set; }
     public int Age { get; set; }
     public Address Address { get; set; }
-    public List<Role> Roles { get; set; } = new();
+    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
 
     public DateTime BirthDate { get; set; } = DateTime.Now.AddMonths(-new Random().Next(0, 20));
 }

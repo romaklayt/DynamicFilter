@@ -33,8 +33,8 @@ public class DynamicComplexBinder : IModelBinder
         if (!string.IsNullOrWhiteSpace(page))
             model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
 
-        model.GetType().GetProperty("PageSize")
-            ?.SetValue(model, !string.IsNullOrWhiteSpace(pageSize) ? int.Parse(pageSize) : 20);
+        if (!string.IsNullOrWhiteSpace(pageSize))
+            model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
     }
 
     private static void ExtractSelect(object model, ModelBindingContext bindingContext)

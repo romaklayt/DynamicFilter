@@ -17,5 +17,4 @@ public class Role
     public Guid Id { get; set; } = new();
     public string Name { get; set; }
     public Address Address { get; set; }
-    public DateTime? Valid { get; set; } = DateTime.Now;
 }

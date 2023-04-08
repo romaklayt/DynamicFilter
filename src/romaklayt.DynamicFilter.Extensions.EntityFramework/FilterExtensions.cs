@@ -5,7 +5,7 @@ using System.Linq;
 using romaklayt.DynamicFilter.Common.Interfaces;
 using romaklayt.DynamicFilter.Parser;
 
-namespace romaklayt.DynamicFilter.Extensions;
+namespace romaklayt.DynamicFilter.Extensions.EntityFramework;
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public static class FilterExtensions
@@ -78,7 +78,7 @@ public static class FilterExtensions
     {
         if (complexModel == null) return source;
         var filter = complexModel.BindExpressions<T, T>();
-        if (filter.PageSize == default && filter.Page == default)
+        if (filter.PageSize == -1 && filter.Page == default)
             return source;
         if (filter.PageSize == default) filter.PageSize = 10;
         if (filter.Page == default) filter.Page = 1;

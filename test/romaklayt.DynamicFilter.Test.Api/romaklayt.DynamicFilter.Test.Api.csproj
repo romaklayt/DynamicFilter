@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Binder.Net\romaklayt.DynamicFilter.Binder.Net.csproj"/>
-        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Extensions\romaklayt.DynamicFilter.Extensions.csproj"/>
+        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Extensions.EntityFrameworkCore\romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj"/>
         <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
     </ItemGroup>
 
