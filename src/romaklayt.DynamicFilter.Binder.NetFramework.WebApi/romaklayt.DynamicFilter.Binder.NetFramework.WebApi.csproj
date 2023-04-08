@@ -8,7 +8,7 @@
         <PackageProjectUrl>https://github.com/romaklayt/DynamicFilter</PackageProjectUrl>
         <PackageTags>odata, orm, webapi, filter, dynamic, LINQ, query</PackageTags>
         <RootNamespace>romaklayt.DynamicFilter.Binder.NetFramework.WebApi</RootNamespace>
-        <TargetFramework>net461</TargetFramework>
+        <TargetFramework>net462</TargetFramework>
         <RepositoryUrl>https://github.com/romaklayt/DynamicFilter</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>package-icon.png</PackageIcon>

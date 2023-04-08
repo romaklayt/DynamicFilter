@@ -20,7 +20,7 @@ POST request support (providers for form-data, x-www-form-urlencoded work them b
 services.AddControllers(options => options.ValueProviderFactories.Add(new JsonBodyValueProviderFactory()));
 ```
 
-# .Net Framework (>=4.6.1)
+# .Net Framework (>=4.6.2)
 
 First, download the packages into your project from nuget
 
