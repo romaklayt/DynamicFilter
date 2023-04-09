@@ -58,8 +58,11 @@ jobs:
     - name: Build romaklayt.DynamicFilter.Common
       run: dotnet build src/romaklayt.DynamicFilter.Common/romaklayt.DynamicFilter.Common.csproj --configuration Release --no-restore
 
-    - name: Build romaklayt.DynamicFilter.Extensions
-      run: dotnet build src/romaklayt.DynamicFilter.Extensions/romaklayt.DynamicFilter.Extensions.csproj --configuration Release --no-restore
+    - name: Build romaklayt.DynamicFilter.Extensions.EntityFramework
+      run: dotnet build src/romaklayt.DynamicFilter.Extensions.EntityFramework/romaklayt.DynamicFilter.Extensions.EntityFramework.csproj --configuration Release --no-restore
+
+    - name: Build romaklayt.DynamicFilter.Extensions.EntityFrameworkCore
+      run: dotnet build src/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj --configuration Release --no-restore
 
     - name: Build romaklayt.DynamicFilter.Extensions.Async
       run: dotnet build src/romaklayt.DynamicFilter.Extensions.Async/romaklayt.DynamicFilter.Extensions.Async.csproj --configuration Release --no-restore

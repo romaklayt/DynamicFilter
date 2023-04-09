@@ -49,9 +49,12 @@ jobs:
     - name: Pack romaklayt.DynamicFilter.Common
       run: dotnet pack src/romaklayt.DynamicFilter.Common/romaklayt.DynamicFilter.Common.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
     
-    - name: Pack romaklayt.DynamicFilter.Extensions
-      run: dotnet pack src/romaklayt.DynamicFilter.Extensions/romaklayt.DynamicFilter.Extensions.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
-    
+    - name: Pack romaklayt.DynamicFilter.Extensions.EntityFrameworkCore
+      run: dotnet pack src/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
+
+    - name: Pack romaklayt.DynamicFilter.Extensions.EntityFramework
+      run: dotnet pack src/romaklayt.DynamicFilter.Extensions.EntityFramework/romaklayt.DynamicFilter.Extensions.EntityFramework.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
+
     - name: Pack romaklayt.DynamicFilter.Extensions.Async
       run: dotnet pack src/romaklayt.DynamicFilter.Extensions.Async/romaklayt.DynamicFilter.Extensions.Async.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
     
