@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using romaklayt.DynamicFilter.Binder.Net.Models;
+using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Extensions.EntityFrameworkCore;
 using romaklayt.DynamicFilter.Test.Api.Models;
 
@@ -33,7 +34,7 @@ public class UserController : ControllerBase
     public async Task<object> GetPage([FromQuery] DynamicComplexModel complexModel)
     {
         var data = await _myContext.Users.ToPageModel(complexModel);
-        return data;
+        return _mapper.Map<PageModel<UserViewModel>>(data);
     }
 
     [HttpGet("context")]

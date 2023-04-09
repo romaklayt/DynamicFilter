@@ -8,9 +8,9 @@ namespace romaklayt.DynamicFilter.Binder.Net.Filters;
 
 public class PageInfoWriter : IAsyncActionFilter
 {
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext _, ActionExecutionDelegate next)
     {
-        await next();
+        var context = await next();
         if (context.Result is not ObjectResult { Value: IPageInfo pageInfo }) return;
         context.HttpContext.Response.Headers.Add(PageInfoHeaders.PageSize,
             pageInfo.PageSize.ToString());
