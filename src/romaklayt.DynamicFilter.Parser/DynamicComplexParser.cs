@@ -116,8 +116,7 @@ public static class DynamicComplexParser
             filter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
         if (!selectedMembers.Contains("root")) return selectedMembers;
         selectedMembers.Remove("root");
-        selectedMembers.AddRange(type.GetProperties()
-            .Where(info => IsSimple(info.PropertyType)).Select(info => FirstCharToLowerCase(info.Name)));
+        selectedMembers.AddRange(GetTypeSimpleProperties(type));
         return selectedMembers;
     }
 
@@ -203,7 +202,8 @@ public static class DynamicComplexParser
 
     private static IEnumerable<string> GetTypeSimpleProperties(Type type) =>
         type.GetProperties()
-            .Where(info => IsSimple(info.PropertyType)).Select(info => FirstCharToLowerCase(info.Name));
+            .Where(info => IsSimple(info.PropertyType) && (info.GetSetMethod(true)?.IsPublic ?? false))
+            .Select(info => FirstCharToLowerCase(info.Name));
 
 
     private static bool IsEnumerableType(Type type, out Type elementType)

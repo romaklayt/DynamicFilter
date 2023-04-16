@@ -23,6 +23,7 @@ public class User
     public int Age { get; set; }
     public Address Address { get; set; }
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
+    public bool IsAddress => Address != null;
 
     public DateTime BirthDate { get; set; } = DateTime.Now.AddMonths(-new Random().Next(0, 20));
 }
