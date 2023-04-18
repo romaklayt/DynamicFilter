@@ -4,11 +4,21 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using romaklayt.DynamicFilter.Common.Interfaces;
+using romaklayt.DynamicFilter.Parser;
 
 namespace romaklayt.DynamicFilter.Extensions.EntityFramework;
 
 public static class LinqDynamicExtensions
 {
+    public static async Task<int> CountAsync<TEntity>(this IQueryable<TEntity> source,
+        IDynamicFilter dynamicFilter) =>
+        await source.CountAsync(dynamicFilter.BindExpressions<TEntity, TEntity>()?.Filter ?? (x => true));
+
+    public static async Task<int> CountAsync<TEntity>(this IEnumerable<TEntity> source,
+        IDynamicFilter dynamicFilter) =>
+        await source.AsQueryable().CountAsync(dynamicFilter);
+
     public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
         await source.FirstOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));

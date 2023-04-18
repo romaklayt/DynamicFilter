@@ -3,11 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using romaklayt.DynamicFilter.Common.Interfaces;
+using romaklayt.DynamicFilter.Parser;
 
 namespace romaklayt.DynamicFilter.Extensions.Async;
 
 public static class LinqDynamicExtensions
 {
+    public static async Task<int> CountAsync<TEntity>(this IAsyncQueryable<TEntity> source,
+        IDynamicFilter dynamicFilter) =>
+        await source.CountAsync(dynamicFilter.BindExpressions<TEntity, TEntity>()?.Filter ?? (x => true));
+
+    public static async Task<int> CountAsync<TEntity>(this IAsyncEnumerable<TEntity> source,
+        IDynamicFilter dynamicFilter) =>
+        await source.AsAsyncQueryable().CountAsync(dynamicFilter);
+
     public static async Task<TEntity> DynamicFirstOfDefaultAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source,
         string propertyName, TKeyValue keyValue) =>
         await source.FirstOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
