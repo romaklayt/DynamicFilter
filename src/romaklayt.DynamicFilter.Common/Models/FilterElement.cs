@@ -16,11 +16,12 @@ internal class FilterElement
         var split = element.Split(FilterElementContainsOperators.GetOperators(), StringSplitOptions.None);
         Property = split.First().TrimEnd('!');
         Properties = GetNestedProp(Property, type);
-        Value = ParseValue(split.Last(), Properties.LastOrDefault()?.PropertyType);
+        Value = ParseValue(split.Last().TrimStart('='), Properties.LastOrDefault()?.PropertyType);
         var op = typeof(FilterElementContainsOperators).GetFields().First(info =>
             info.GetValue(null).ToString() == element.GetOperator(split.First(), split.Last())).Name;
         Operator = (FilterElementContainsOperatorEnum)Enum.Parse(typeof(FilterElementContainsOperatorEnum), op);
         IsNegative = split.First().EndsWith("!");
+        UseAllFilterTypeForList = split.Last().StartsWith("=");
         Expression = GetExpression(parameter);
     }
 
@@ -29,6 +30,7 @@ internal class FilterElement
     private object Value { get; }
     private FilterElementContainsOperatorEnum Operator { get; }
     private bool IsNegative { get; }
+    private bool UseAllFilterTypeForList { get; }
     private bool ApplyToEnumerable { get; set; } = true;
     public Expression Expression { get; }
 
@@ -126,15 +128,20 @@ internal class FilterElement
         if (IsNegative) returnExpression = Expression.Not(returnExpression);
 
         if (genericType == null) return returnExpression;
-        var anyMethod = typeof(Enumerable)
-            .GetMethods()
-            .FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Count() == 2)
-            ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
+        var listMethod = UseAllFilterTypeForList
+            ? typeof(Enumerable)
+                .GetMethods()
+                .FirstOrDefault(m => m.Name == "All" && m.GetParameters().Count() == 2)
+                ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault())
+            : typeof(Enumerable)
+                .GetMethods()
+                .FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Count() == 2)
+                ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
 
 
-        if (anyMethod is not null && returnExpression is not null)
+        if (listMethod is not null && returnExpression is not null)
             returnExpression =
-                Expression.Call(anyMethod, baseExp, Expression.Lambda(returnExpression, subParam));
+                Expression.Call(listMethod, baseExp, Expression.Lambda(returnExpression, subParam));
 
         return returnExpression;
     }

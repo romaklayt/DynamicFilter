@@ -118,6 +118,18 @@ Your request will be converted to:
 users.Where(x => x.Roles.Any(y => y.Name == "admin"))
 ```
 
+If the standard behavior for arrays and lists using the **Any** method does not suit you, you can add the '=' sign after the comparison operator, after which the system will use the **All** method for arrays:
+
+```http
+GET http://url?filter=roles.name===admin
+```
+
+Your request will be converted to:
+
+```C#
+users.Where(x => x.Roles.All(y => y.Name == "admin"))
+```
+
 The parser supports the count property for the collection, you can use it as a regular collection property:
 
 ```http
