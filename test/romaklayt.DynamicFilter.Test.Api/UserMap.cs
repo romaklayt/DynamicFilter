@@ -11,14 +11,15 @@ public class UserMap : Profile
     public UserMap()
     {
         CreateMap<User, UserViewModel>();
-        CreateMap(typeof(PageModel<>), typeof(PageModel<>)).ConvertUsing(typeof(Converter<,>));
+        CreateMap(typeof(PageModel<>), typeof(PageModel<>));
+        CreateMap(typeof(PageFlatModel<>), typeof(PageFlatModel<>)).ConvertUsing(typeof(Converter<,>));
     }
 }
 
-internal class Converter<TSource, TDest> : ITypeConverter<PageModel<TSource>, PageModel<TDest>>
+internal class Converter<TSource, TDest> : ITypeConverter<PageFlatModel<TSource>, PageFlatModel<TDest>>
 {
-    public PageModel<TDest>
-        Convert(PageModel<TSource> source, PageModel<TDest> destination, ResolutionContext context) =>
+    public PageFlatModel<TDest>
+        Convert(PageFlatModel<TSource> source, PageFlatModel<TDest> destination, ResolutionContext context) =>
         new(context.Mapper.Map<List<TDest>>(source.ToList()), source.TotalCount,
             source.CurrentPage, source.PageSize);
 }

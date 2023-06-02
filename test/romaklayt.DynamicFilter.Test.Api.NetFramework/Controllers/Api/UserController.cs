@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using romaklayt.DynamicFilter.Binder.NetFramework.WebApi.Models;
 using romaklayt.DynamicFilter.Common;
-using romaklayt.DynamicFilter.Common.Models;
 using romaklayt.DynamicFilter.Extensions.EntityFramework;
 using romaklayt.DynamicFilter.Test.Api.NetFramework.Models;
 
@@ -26,6 +25,14 @@ namespace romaklayt.DynamicFilter.Test.Api.NetFramework.Controllers.Api
         {
             var filteredUsers = Data.Users.Apply(complexModel);
             return await filteredUsers.ToPageModel(complexModel);
+        }
+
+        [HttpGet]
+        [ActionName("Pageflat")]
+        public async Task<PageFlatModel<User>> GetFlatPage(DynamicComplexModel complexModel)
+        {
+            var filteredUsers = Data.Users.Apply(complexModel);
+            return await filteredUsers.ToPageFlatModel(complexModel);
         }
     }
 }

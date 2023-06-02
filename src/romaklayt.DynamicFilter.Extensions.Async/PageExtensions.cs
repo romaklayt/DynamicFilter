@@ -28,4 +28,12 @@ public static class PageExtensions
         IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
         bool applySelect = true) where T : class =>
         await source.AsAsyncQueryable().ToPageModel(complexModel, applyFiltering, applySorting, applySelect);
+
+    public static async Task<PageFlatModel<T>> ToPageFlatModel<T>(this IAsyncEnumerable<T> source,
+        IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
+        bool applySelect = true) where T : class
+    {
+        var page = await source.AsAsyncQueryable().ToPageModel(complexModel, applyFiltering, applySorting, applySelect);
+        return page.ToFlatModel();
+    }
 }

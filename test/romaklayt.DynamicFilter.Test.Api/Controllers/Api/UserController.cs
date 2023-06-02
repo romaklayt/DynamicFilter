@@ -37,6 +37,13 @@ public class UserController : ControllerBase
         return _mapper.Map<PageModel<UserViewModel>>(data);
     }
 
+    [HttpGet("pageflat")]
+    public async Task<object> GetFlatPage([FromQuery] DynamicComplexModel complexModel)
+    {
+        var data = await _myContext.Users.ToPageFlatModel(complexModel);
+        return _mapper.Map<PageFlatModel<UserViewModel>>(data);
+    }
+
     [HttpGet("context")]
     [ProducesResponseType(typeof(UserViewModel), 200)]
     public object GetContextList([FromQuery] DynamicComplexModel complexModelModel) =>

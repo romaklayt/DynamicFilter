@@ -27,4 +27,12 @@ public static class PageExtensions
             .ToListAsync();
         return new PageModel<T>(items, count, page.Page, page.PageSize);
     }
+
+    public static async Task<PageFlatModel<T>> ToPageFlatModel<T>(this IEnumerable<T> source,
+        IDynamicComplex complexModel, bool applyFiltering = true, bool applySorting = true,
+        bool applySelect = true) where T : class
+    {
+        var page = await source.AsQueryable().ToPageModel(complexModel, applyFiltering, applySorting, applySelect);
+        return page.ToFlatModel();
+    }
 }

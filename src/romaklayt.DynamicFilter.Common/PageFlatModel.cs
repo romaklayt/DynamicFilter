@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using romaklayt.DynamicFilter.Common.Exceptions;
 using romaklayt.DynamicFilter.Common.Interfaces;
 
 namespace romaklayt.DynamicFilter.Common;
 
 [Serializable]
-public class PageModel<T> : IPageInfo
+public class PageFlatModel<T> : List<T>, IPageInfo
 {
-    public PageModel()
+    public PageFlatModel()
     {
     }
 
-    public PageModel(IEnumerable<T> items, int count, int pageNumber, int pageSize)
+    public PageFlatModel(List<T> items, int count, int pageNumber, int pageSize)
     {
         if (pageNumber < 1)
             throw new PageNumberOutOfRangeException($"The {nameof(pageNumber)} value cannot be less than 1");
@@ -24,10 +23,9 @@ public class PageModel<T> : IPageInfo
         CurrentPage = pageNumber;
         TotalPages = (int)Math.Ceiling(count / (double)pageSize);
         if (pageNumber > TotalPages && TotalCount > 0) throw new PageNumberOutOfRangeException("Page not found");
-        Items = items.ToList();
+        AddRange(items);
     }
 
-    public List<T> Items { get; set; }
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }
     public int PageSize { get; set; }

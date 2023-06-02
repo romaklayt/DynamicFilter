@@ -20,9 +20,9 @@ public class UserController : Controller
     public IEnumerable<User> GetPostList(DynamicComplexModel complexModelModel) => Data.Users.Apply(complexModelModel);
 
     [HttpGet("page")]
-    public async Task<PageModel<User>> GetPage([FromQuery] DynamicComplexModel complexModel)
+    public async Task<PageFlatModel<User>> GetPage([FromQuery] DynamicComplexModel complexModel)
     {
         var filteredUsers = Data.Users.Apply(complexModel);
-        return await filteredUsers.ToPageModel(complexModel);
+        return await filteredUsers.ToPageFlatModel(complexModel);
     }
 }
