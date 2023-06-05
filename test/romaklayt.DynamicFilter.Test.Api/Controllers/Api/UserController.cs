@@ -37,6 +37,13 @@ public class UserController : ControllerBase
         return _mapper.Map<PageModel<UserViewModel>>(data);
     }
 
+    [HttpGet("page/filter")]
+    public async Task<object> GetPageWithoutSelect([FromQuery] DynamicPagingModel dynamicPagingModel)
+    {
+        var data = await _myContext.Users.ToPageModel(dynamicPagingModel);
+        return _mapper.Map<PageModel<UserViewModel>>(data);
+    }
+
     [HttpGet("pageflat")]
     public async Task<object> GetFlatPage([FromQuery] DynamicComplexModel complexModel)
     {
@@ -51,8 +58,8 @@ public class UserController : ControllerBase
 
     [HttpGet("count")]
     [ProducesResponseType(typeof(int), 200)]
-    public object Count([FromQuery] DynamicFilterModel filterModelModel) =>
-        _myContext.Users.ApplyFilter(filterModelModel);
+    public async Task<object> Count([FromQuery] DynamicFilterModel filterModelModel) =>
+        await _myContext.Users.CountAsync(filterModelModel);
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(User), 200)]

@@ -52,20 +52,11 @@ jobs:
     - name: Pack romaklayt.DynamicFilter.Extensions.EntityFrameworkCore
       run: dotnet pack src/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
 
-    - name: Pack romaklayt.DynamicFilter.Extensions.EntityFramework
-      run: dotnet pack src/romaklayt.DynamicFilter.Extensions.EntityFramework/romaklayt.DynamicFilter.Extensions.EntityFramework.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
-
     - name: Pack romaklayt.DynamicFilter.Extensions.Async
       run: dotnet pack src/romaklayt.DynamicFilter.Extensions.Async/romaklayt.DynamicFilter.Extensions.Async.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
     
     - name: Pack romaklayt.DynamicFilter.Parser
       run: dotnet pack src/romaklayt.DynamicFilter.Parser/romaklayt.DynamicFilter.Parser.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
-    
-    - name: Pack romaklayt.DynamicFilter.Binder.NetFramework.Mvc
-      run: dotnet pack src/romaklayt.DynamicFilter.Binder.NetFramework.Mvc/romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
-    
-    - name: Pack romaklayt.DynamicFilter.Binder.NetFramework.WebApi
-      run: dotnet pack src/romaklayt.DynamicFilter.Binder.NetFramework.WebApi/romaklayt.DynamicFilter.Binder.NetFramework.WebApi.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
     
     - name: Push to nuget
       run: dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

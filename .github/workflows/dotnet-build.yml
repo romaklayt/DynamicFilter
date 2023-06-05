@@ -49,17 +49,8 @@ jobs:
     - name: Build romaklayt.DynamicFilter.Binder.Net
       run: dotnet build src/romaklayt.DynamicFilter.Binder.Net/romaklayt.DynamicFilter.Binder.Net.csproj --configuration Release --no-restore
 
-    - name: Build romaklayt.DynamicFilter.Binder.NetFramework.Mvc
-      run: dotnet build src/romaklayt.DynamicFilter.Binder.NetFramework.Mvc/romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj --configuration Release --no-restore
-
-    - name: Build romaklayt.DynamicFilter.Binder.NetFramework.WebApi
-      run: dotnet build src/romaklayt.DynamicFilter.Binder.NetFramework.WebApi/romaklayt.DynamicFilter.Binder.NetFramework.WebApi.csproj --configuration Release --no-restore
-
     - name: Build romaklayt.DynamicFilter.Common
       run: dotnet build src/romaklayt.DynamicFilter.Common/romaklayt.DynamicFilter.Common.csproj --configuration Release --no-restore
-
-    - name: Build romaklayt.DynamicFilter.Extensions.EntityFramework
-      run: dotnet build src/romaklayt.DynamicFilter.Extensions.EntityFramework/romaklayt.DynamicFilter.Extensions.EntityFramework.csproj --configuration Release --no-restore
 
     - name: Build romaklayt.DynamicFilter.Extensions.EntityFrameworkCore
       run: dotnet build src/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj --configuration Release --no-restore

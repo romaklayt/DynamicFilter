@@ -18,14 +18,6 @@ public static class DynamicComplexParser
         var itemType = typeof(ExpressionDynamicFilter<TSource, TTarget>).GenericTypeArguments[0];
         var parameter = Expression.Parameter(itemType, "x");
         ExtractFilters(model, complexModel, parameter, itemType);
-        return model as ExpressionDynamicFilter<TSource, TTarget>;
-    }
-
-    public static ExpressionDynamicFilter<TSource, TTarget> BindExpressions<TSource, TTarget>(
-        this IDynamicSorting complexModel)
-    {
-        if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
-        var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
         ExtractOrder(model, complexModel);
         return model as ExpressionDynamicFilter<TSource, TTarget>;
     }

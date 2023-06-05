@@ -5,38 +5,37 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using romaklayt.DynamicFilter.Common.Interfaces;
-using romaklayt.DynamicFilter.Parser;
 
 namespace romaklayt.DynamicFilter.Extensions.EntityFramework;
 
 public static class LinqDynamicExtensions
 {
     public static async Task<int> CountAsync<TEntity>(this IQueryable<TEntity> source,
-        IDynamicFilter dynamicFilter) =>
-        await source.CountAsync(dynamicFilter.BindExpressions<TEntity, TEntity>()?.Filter ?? (x => true));
+        IDynamicFilter dynamicFilter) where TEntity : class =>
+        await source.ApplyFilter(dynamicFilter).CountAsync();
 
     public static async Task<int> CountAsync<TEntity>(this IEnumerable<TEntity> source,
-        IDynamicFilter dynamicFilter) =>
+        IDynamicFilter dynamicFilter) where TEntity : class =>
         await source.AsQueryable().CountAsync(dynamicFilter);
 
     public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IQueryable<TEntity> source,
-        string propertyName, TKeyValue keyValue) =>
+        string propertyName, TKeyValue keyValue) where TEntity : class =>
         await source.FirstOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicFirstOfDefault<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
-        string propertyName, TKeyValue keyValue) =>
+        string propertyName, TKeyValue keyValue) where TEntity : class =>
         await DynamicFirstOfDefault(source.AsQueryable(), propertyName, keyValue);
 
     public static async Task<TEntity> DynamicFirst<TEntity, TKeyValue>(this IQueryable<TEntity> source,
-        string propertyName, TKeyValue keyValue) =>
+        string propertyName, TKeyValue keyValue) where TEntity : class =>
         await source.FirstAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
 
     public static async Task<TEntity> DynamicFirst<TEntity, TKeyValue>(this IEnumerable<TEntity> source,
-        string propertyName, TKeyValue keyValue) =>
+        string propertyName, TKeyValue keyValue) where TEntity : class =>
         await DynamicFirstOfDefault(source.AsQueryable(), propertyName, keyValue);
 
     public static IQueryable<TEntity> DynamicOrderBy<TEntity>(this IQueryable<TEntity> source,
-        params Tuple<string, bool>[] order)
+        params Tuple<string, bool>[] order) where TEntity : class
     {
         IOrderedQueryable<TEntity> orderExpression = null;
         for (var index = 0; index < order.Length; index++)

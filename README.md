@@ -9,7 +9,7 @@ It provides ways to query, order and page your webapi and mvc.
 First, download the packages into your project from nuget
 
 ```batch
-nuget install romaklayt.DynamicFilter.Extensions
+nuget install romaklayt.DynamicFilter.Extensions.EntityFrameworkCore
 nuget install romaklayt.DynamicFilter.Binder.Net
 ```
 
@@ -18,40 +18,6 @@ POST request support (providers for form-data, x-www-form-urlencoded work them b
 
 ```C#
 services.AddControllers(options => options.ValueProviderFactories.Add(new JsonBodyValueProviderFactory()));
-```
-
-# .Net Framework (>=4.6.2)
-
-First, download the packages into your project from nuget
-
-```batch
-nuget install romaklayt.DynamicFilter.Extensions
-```
-
-If you need to add a filter to the **web api** controller use the package
-
-```batch
-nuget install romaklayt.DynamicFilter.Binder.NetFramework.WebApi
-```
-
-and, if you need, add to your **WebApiConfig** class for register value providers (form-data, x-www-form-urlencoded and
-JSON) for body POST request
-
-```C#
-config.AddDynamicFilterProviders();
-```
-
-If you need to add a filter to the **MVC** controller use the package
-
-```batch
-nuget install romaklayt.DynamicFilter.Binder.NetFramework.Mvc
-```
-
-and, if you need, add to your *Application_Start* **Global.asax.cs** class for register value providers (form-data,
-x-www-form-urlencoded and JSON) for body POST request
-
-```C#
-DynamicFilterProviders.AddProviders();
 ```
 
 If you need to use DynamicFilter with IAsyncEnumerable or IAsyncQueryable use the package
@@ -65,7 +31,7 @@ parameter.
 
 ```C#
 [HttpGet]
-public Task<List<User>> Get([FromQuery] IDynamicComplex filter)
+public Task<List<User>> Get([FromQuery] DynamicComplex filter)
 ```
 
 Now you can query your endpoint with the DynamicFilter properties. Check *"tests"* folder on the Api projects for
@@ -73,7 +39,7 @@ examples.
 
 ```C#
 [HttpGet]
-public Task<List<User>> Get([FromQuery] IDynamicComplex filter)
+public Task<List<User>> Get([FromQuery] DynamicComplex filter)
 {
     return users.Apply(filter).ToList();
 }
@@ -88,7 +54,7 @@ You can use a **DynamicComplexModel** model for filtering. A **DynamicFilterMode
 is also available.
 
 ```C#
-public Task<List<User>> Get([FromQuery] IDynamicComplex filter) #or DynamicFilterModel
+public Task<List<User>> Get([FromQuery] DynamicComplex filter) #or DynamicFilterModel
 {
     return users.Apply(filter).ToList(); #ApplyFilter for DynamicFilterModel
 }
@@ -230,7 +196,7 @@ On your DynamicFilter object received on the endpoint, you'll get the orderType 
 the type specified on enum.
 
 ```C#
-public Task<List<User>> Get([FromQuery] IDynamicComplex filter)
+public Task<List<User>> Get([FromQuery] DynamicComplex filter)
 {
     return users.Apply(filter).ToList();
 }
@@ -276,7 +242,7 @@ Example:
 
 ```C#
 [HttpGet("page")]
-public async Task<PageModel<User>> GetPage([FromQuery] IDynamicComplex filterModel)
+public async Task<PageModel<User>> GetPage([FromQuery] DynamicComplex filterModel)
 {
     return Data.Users.ToPageModel(filterModel);
 }
@@ -303,7 +269,7 @@ ApplyFilter**.
 
 ```C#
 [HttpGet("{id}")]
-public async Task<object> GetById([FromQuery] IDynamicSelect dynamicSelectModel, Guid id)
+public async Task<object> GetById([FromQuery] DynamicSelect dynamicSelectModel, Guid id)
 {
     return await Data.Users.ApplySelect(dynamicSelectModel).DynamicFirstOfDefault("Id", id);
 }
