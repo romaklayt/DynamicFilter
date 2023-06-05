@@ -40,7 +40,7 @@ public static class Extensions
 
     public static PageFlatModel<T> ToFlatModel<T>(this PageModel<T> pageModel) => new(pageModel.Items,
         pageModel.TotalCount, pageModel.CurrentPage, pageModel.PageSize);
-    
+
     public static PageModel<T> ToNormalModel<T>(this PageFlatModel<T> pageModel) => new(pageModel,
         pageModel.TotalCount, pageModel.CurrentPage, pageModel.PageSize);
 }

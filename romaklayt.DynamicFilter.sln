@@ -11,17 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Bin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Test.Api", "test\romaklayt.DynamicFilter.Test.Api\romaklayt.DynamicFilter.Test.Api.csproj", "{71D59FEA-EC8A-4F27-9641-C3ECE863318C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Test.Api.NetFramework", "test\romaklayt.DynamicFilter.Test.Api.NetFramework\romaklayt.DynamicFilter.Test.Api.NetFramework.csproj", "{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B5583F9D-43F7-499A-ACA1-FE8E912710BB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Common", "src\romaklayt.DynamicFilter.Common\romaklayt.DynamicFilter.Common.csproj", "{1CB836B8-0E37-498C-9184-14B6524E98ED}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Extensions.EntityFramework", "src\romaklayt.DynamicFilter.Extensions.EntityFramework\romaklayt.DynamicFilter.Extensions.EntityFramework.csproj", "{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "romaklayt.DynamicFilter.Binder.NetFramework.WebApi", "src\romaklayt.DynamicFilter.Binder.NetFramework.WebApi\romaklayt.DynamicFilter.Binder.NetFramework.WebApi.csproj", "{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Binder.NetFramework.Mvc", "src\romaklayt.DynamicFilter.Binder.NetFramework.Mvc\romaklayt.DynamicFilter.Binder.NetFramework.Mvc.csproj", "{7498A23A-6527-40C4-8A58-96FA1952013A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "romaklayt.DynamicFilter.Extensions.Async", "src\romaklayt.DynamicFilter.Extensions.Async\romaklayt.DynamicFilter.Extensions.Async.csproj", "{A6B18E0A-7DAC-4445-8E65-136CB3DA7B0B}"
 EndProject
@@ -49,22 +41,6 @@ Global
 		{1CB836B8-0E37-498C-9184-14B6524E98ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CB836B8-0E37-498C-9184-14B6524E98ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CB836B8-0E37-498C-9184-14B6524E98ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7498A23A-6527-40C4-8A58-96FA1952013A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7498A23A-6527-40C4-8A58-96FA1952013A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7498A23A-6527-40C4-8A58-96FA1952013A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7498A23A-6527-40C4-8A58-96FA1952013A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6B18E0A-7DAC-4445-8E65-136CB3DA7B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6B18E0A-7DAC-4445-8E65-136CB3DA7B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6B18E0A-7DAC-4445-8E65-136CB3DA7B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -82,10 +58,6 @@ Global
 		{45B4DC10-2338-450F-8EEA-617A8918E616} = {C17C8C7D-1760-4156-BB69-3730E7839518}
 		{71D59FEA-EC8A-4F27-9641-C3ECE863318C} = {B5583F9D-43F7-499A-ACA1-FE8E912710BB}
 		{1CB836B8-0E37-498C-9184-14B6524E98ED} = {C17C8C7D-1760-4156-BB69-3730E7839518}
-		{7C90A9FB-CD1E-44FE-9EAB-A1E92A949881} = {C17C8C7D-1760-4156-BB69-3730E7839518}
-		{1C4B3664-E4AA-4DAE-A06A-74CB6DD289E8} = {C17C8C7D-1760-4156-BB69-3730E7839518}
-		{E65C01A5-DF20-47B9-B464-EA7FA8E4B68F} = {B5583F9D-43F7-499A-ACA1-FE8E912710BB}
-		{7498A23A-6527-40C4-8A58-96FA1952013A} = {C17C8C7D-1760-4156-BB69-3730E7839518}
 		{A6B18E0A-7DAC-4445-8E65-136CB3DA7B0B} = {C17C8C7D-1760-4156-BB69-3730E7839518}
 		{9D0E742E-C672-4FAB-9C57-646181C9A521} = {C17C8C7D-1760-4156-BB69-3730E7839518}
 	EndGlobalSection

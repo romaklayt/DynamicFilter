@@ -8,7 +8,6 @@ using romaklayt.DynamicFilter.Parser;
 
 namespace romaklayt.DynamicFilter.Extensions.Async;
 
-[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public static class PageExtensions
 {
     public static async Task<PageModel<T>> ToPageModel<T>(this IAsyncEnumerable<T> source,

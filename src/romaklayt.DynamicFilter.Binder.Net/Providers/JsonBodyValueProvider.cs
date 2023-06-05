@@ -4,9 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
 using romaklayt.DynamicFilter.Binder.Net.Models;
 
 namespace romaklayt.DynamicFilter.Binder.Net.Providers;
@@ -44,9 +44,9 @@ public class JsonBodyValueProvider : IValueProvider
     {
         try
         {
-            var obj = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings
+            var obj = JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
             {
-                TypeNameHandling = TypeNameHandling.Auto
+                PropertyNameCaseInsensitive = true
             });
             return obj;
         }

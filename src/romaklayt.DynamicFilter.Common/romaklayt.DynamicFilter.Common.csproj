@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <LangVersion>default</LangVersion>
-        <TargetFrameworks>net462;netstandard2.0;netstandard2.1</TargetFrameworks>
         <Description>Shared resources for romaklayt.DynamicFilter</Description>
         <Copyright>romaklayt</Copyright>
         <Authors>Roman Kolyago</Authors>
@@ -12,6 +11,7 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>package-icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath="" />
-        <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="../../README.md" Pack="true" Visible="false" PackagePath=""/>
     </ItemGroup>
 </Project>
