@@ -28,8 +28,8 @@ public static class PageExtensions
         bool applySelect = true) where T : class
     {
         var page = await GetPageInfo(source, complexModel);
-        source = source.ApplyPaging(complexModel);
         if (applyFiltering) source = source.ApplyFilter(complexModel);
+        source = source.ApplyPaging(complexModel);
         if (applySelect) source = source.ApplySelect(complexModel);
         return new PageModel<T>(await source.ToListAsync(), page.count, page.page, page.pageSize);
     }
@@ -38,8 +38,8 @@ public static class PageExtensions
         IDynamicPaging complexModel, bool applyFiltering = true) where T : class
     {
         var page = await GetPageInfo(source, complexModel);
-        source = source.ApplyPaging(complexModel);
         if (applyFiltering) source = source.ApplyFilter(complexModel);
+        source = source.ApplyPaging(complexModel);
         return new PageModel<T>(await source.ToListAsync(), page.count, page.page, page.pageSize);
     }
 
