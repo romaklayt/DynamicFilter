@@ -49,7 +49,7 @@ public static class DynamicComplexParser
     private static void ExtractSelect<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model,
         IDynamicSelect bindingContext)
     {
-        var select = bindingContext.Select
+        var select = string.IsNullOrWhiteSpace(bindingContext.Select) ? new List<string>() : bindingContext.Select
             .Split(new[] { ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
         var rootProperties = GetTypeSimpleProperties(typeof(TTarget));
         if (!select.Intersect(rootProperties).Any()) select.AddRange(rootProperties);
