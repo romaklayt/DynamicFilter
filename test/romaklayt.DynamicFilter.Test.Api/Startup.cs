@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using romaklayt.DynamicFilter.Binder.Net.Binders;
 using romaklayt.DynamicFilter.Binder.Net.Factories;
 using romaklayt.DynamicFilter.Binder.Net.Filters;
+using romaklayt.DynamicFilter.Parser;
 
 namespace romaklayt.DynamicFilter.Test.Api;
 
 public class Startup
 {
-    private readonly string _appVersion = typeof(DynamicComplexBinder).Assembly
+    private readonly string _appVersion = typeof(DynamicComplexParser).Assembly
         .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
         ?.InformationalVersion.Split('+').First();
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using romaklayt.DynamicFilter.Common.Interfaces;
 using romaklayt.DynamicFilter.Parser;
@@ -27,18 +26,19 @@ public static class FilterExtensions
     }
 
     public static IAsyncEnumerable<T> ApplyFilter<T>(this IAsyncEnumerable<T> source,
-        IDynamicFilter complexModel) where T : class =>
-        source.AsAsyncQueryable().ApplyFilter(complexModel);
+        IDynamicFilter complexModel, bool applySorting = true) where T : class =>
+        source.AsAsyncQueryable().ApplyFilter(complexModel, applySorting);
 
     public static IAsyncQueryable<T> ApplyFilter<T>(this IAsyncQueryable<T> source,
-        IDynamicFilter complexModel) where T : class
+        IDynamicFilter complexModel, bool applySorting = true) where T : class
     {
         if (complexModel == null) return source;
         var filter = complexModel.BindExpressions<T, T>();
         if (filter.Filter != null)
             source = source.Where(filter.Filter);
-        if (filter.Order != null)
-            source = source.DynamicOrderBy(filter.Order.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+        if (filter.Order != null && applySorting)
+            source = source.DynamicOrderBy(filter.Order
+                .Split(new[] { ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => new Tuple<string, bool>(s.TrimStart('-'), s.StartsWith("-"))).ToArray());
         return source;
     }

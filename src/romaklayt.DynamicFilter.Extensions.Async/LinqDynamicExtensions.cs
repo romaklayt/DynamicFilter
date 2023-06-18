@@ -11,7 +11,7 @@ public static class LinqDynamicExtensions
 {
     public static async Task<int> CountAsync<TEntity>(this IAsyncQueryable<TEntity> source,
         IDynamicFilter dynamicFilter) where TEntity : class =>
-        await source.ApplyFilter(dynamicFilter).CountAsync();
+        await source.ApplyFilter(dynamicFilter, false).CountAsync();
 
     public static async Task<int> CountAsync<TEntity>(this IAsyncEnumerable<TEntity> source,
         IDynamicFilter dynamicFilter) where TEntity : class =>
@@ -96,7 +96,7 @@ public static class LinqDynamicExtensions
     private static IOrderedAsyncQueryable<T> OrderByMemberUsing<T>(this IAsyncQueryable<T> source, string memberPath,
         string method)
     {
-        var parameter = Expression.Parameter(typeof(T), "o");
+        var parameter = Expression.Parameter(typeof(T), $"DF_order_{typeof(T).Name}");
         var member = memberPath.Split('.').Aggregate((Expression)parameter, Expression.PropertyOrField);
         var keySelector = Expression.Lambda(member, parameter);
         var methodCall = Expression.Call(typeof(AsyncQueryable), method, new[] { parameter.Type, member.Type },
@@ -107,7 +107,7 @@ public static class LinqDynamicExtensions
     private static Expression<Func<TEntity, bool>> GenerateConstantExpression<TEntity, TKeyValue>(
         string propertyName, TKeyValue keyValue)
     {
-        var parameter = Expression.Parameter(typeof(TEntity), "c");
+        var parameter = Expression.Parameter(typeof(TEntity), $"DF_ext_{typeof(TEntity).Name}");
         var property = Expression.PropertyOrField(parameter, propertyName);
         var equal = Expression.Equal(property, Expression.Constant(keyValue));
         var lambda = Expression.Lambda<Func<TEntity, bool>>(equal, parameter);

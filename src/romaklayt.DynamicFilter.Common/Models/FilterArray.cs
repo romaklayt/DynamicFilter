@@ -7,9 +7,10 @@ namespace romaklayt.DynamicFilter.Common.Models;
 
 internal class FilterArray
 {
-    public FilterArray(string filterArray, Type type, ParameterExpression parameter)
+    public FilterArray(string filterArray, Type type, Expression parameter)
     {
-        var split = filterArray.Split(FilterArrayLogicOperators.GetOperators(), StringSplitOptions.RemoveEmptyEntries);
+        var split = filterArray.Split(FilterArrayLogicOperators.GetOperators(),
+            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         FilterElements = split.Select(s => new FilterElement(s.Trim('(', ')'), type, parameter)).ToList();
         Operators = Extensions.ParseOperators(filterArray, split);
         Expression = GetExpression();

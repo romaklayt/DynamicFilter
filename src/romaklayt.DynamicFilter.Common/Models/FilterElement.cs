@@ -75,7 +75,7 @@ internal class FilterElement
                 {
                     subParam = Expression.Parameter(genericType?.GetGenericArguments().FirstOrDefault() ??
                                                     throw new InvalidOperationException("Generic type not found"),
-                        "y");
+                        $"DF_sub_filter_{memberFullName}");
                     body = Expression.Property(subParam, member);
                 }
                 else
@@ -146,7 +146,7 @@ internal class FilterElement
         return returnExpression;
     }
 
-    private static Expression GetCustomCaseInsensitiveExpression(Expression body, ConstantExpression constantExpression,
+    private static Expression GetCustomCaseInsensitiveExpression(Expression body, Expression constantExpression,
         string methodName)
     {
         Expression returnExpression = null;
@@ -155,18 +155,18 @@ internal class FilterElement
 
         if (toLowerMethod is not null)
         {
-            var expression1 = Expression.Call(body, toLowerMethod);
-
+            var bodyLowerExpression = Expression.Call(body, toLowerMethod);
+            var constantLowerExpression = Expression.Call(constantExpression, toLowerMethod);
             var method = typeof(string).GetMethod(methodName, new[] { typeof(string) });
 
             if (method is not null)
-                returnExpression = Expression.Call(expression1, method, constantExpression);
+                returnExpression = Expression.Call(bodyLowerExpression, method, constantLowerExpression);
         }
 
         return returnExpression;
     }
 
-    private static Expression GetCustomExpression(Expression body, ConstantExpression constantExpression,
+    private static Expression GetCustomExpression(Expression body, Expression constantExpression,
         string methodName)
     {
         Expression returnExpression = null;

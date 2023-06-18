@@ -10,7 +10,8 @@ public class FilterArrayWrapper
     public FilterArrayWrapper(string wrap, Type type, ParameterExpression parameter)
     {
         var countMaxBraces = CountMaxBraces(wrap);
-        var split = wrap.Split(Generate(countMaxBraces), StringSplitOptions.RemoveEmptyEntries);
+        var split = wrap.Split(Generate(countMaxBraces),
+            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         if (split.Length > 1 && countMaxBraces != 0)
         {
             FilterArrayWrappers = split.Select(s => new FilterArrayWrapper(s, type, countMaxBraces - 1, parameter))
@@ -27,7 +28,7 @@ public class FilterArrayWrapper
 
     public FilterArrayWrapper(string wrap, Type type, int depth, ParameterExpression parameter)
     {
-        var split = wrap.Split(Generate(depth), StringSplitOptions.RemoveEmptyEntries);
+        var split = wrap.Split(Generate(depth), StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         if (split.Length > 1 && depth != 0)
         {
             FilterArrayWrappers = split.Select(s => new FilterArrayWrapper(s, type, depth - 1, parameter)).ToList();

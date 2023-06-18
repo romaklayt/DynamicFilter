@@ -14,87 +14,73 @@ public static class DynamicComplexParser
         this IDynamicFilter complexModel)
     {
         if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
-        var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
-        var itemType = typeof(ExpressionDynamicFilter<TSource, TTarget>).GenericTypeArguments[0];
-        var parameter = Expression.Parameter(itemType, "x");
-        ExtractFilters(model, complexModel, parameter, itemType);
+        var model = new ExpressionDynamicFilter<TSource, TTarget>();
+        var parameter = Expression.Parameter(typeof(TSource), $"DF_{typeof(TSource).Name}");
+        ExtractFilters(model, complexModel, parameter, typeof(TSource));
         ExtractOrder(model, complexModel);
-        return model as ExpressionDynamicFilter<TSource, TTarget>;
+        return model;
     }
 
     public static ExpressionDynamicFilter<TSource, TTarget> BindExpressions<TSource, TTarget>(
         this IDynamicSelect complexModel)
     {
         if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
-        var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
-        ExtractSelect<TSource, TTarget>(model, complexModel);
-        return model as ExpressionDynamicFilter<TSource, TTarget>;
+        var model = new ExpressionDynamicFilter<TSource, TTarget>();
+        ExtractSelect(model, complexModel);
+        return model;
     }
 
     public static ExpressionDynamicFilter<TSource, TTarget> BindExpressions<TSource, TTarget>(
         this IDynamicPaging complexModel)
     {
         if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
-        var model = Activator.CreateInstance(typeof(ExpressionDynamicFilter<TSource, TTarget>));
+        var model = new ExpressionDynamicFilter<TSource, TTarget>();
         ExtractPagination(model, complexModel);
-        return model as ExpressionDynamicFilter<TSource, TTarget>;
+        return model;
     }
 
-    private static void ExtractPagination(object model, object bindingContext)
+    private static void ExtractPagination<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model,
+        IDynamicPaging bindingContext)
     {
-        var page = bindingContext.GetType().GetProperty("Page")?.GetValue(bindingContext, null).ToString();
-        var pageSize = bindingContext.GetType().GetProperty("PageSize")?.GetValue(bindingContext, null).ToString();
-
-        if (!string.IsNullOrWhiteSpace(page))
-            model.GetType().GetProperty("Page")?.SetValue(model, int.Parse(page));
-
-        if (!string.IsNullOrWhiteSpace(pageSize))
-            model.GetType().GetProperty("PageSize")?.SetValue(model, int.Parse(pageSize));
+        model.Page = bindingContext.Page;
+        model.PageSize = bindingContext.PageSize;
     }
 
-    private static void ExtractSelect<TSource, TTarget>(object model, object bindingContext)
+    private static void ExtractSelect<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model,
+        IDynamicSelect bindingContext)
     {
-        var select = bindingContext.GetType().GetProperty("Select")?.GetValue(bindingContext, null) as string;
-
-        if (!string.IsNullOrWhiteSpace(select))
-            model.GetType().GetProperty("Select")
-                ?.SetValue(model, BuildSelector<TSource, TTarget>(select));
+        var select = bindingContext.Select
+            .Split(new[] { ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+        var rootProperties = GetTypeSimpleProperties(typeof(TTarget));
+        if (!select.Intersect(rootProperties).Any()) select.AddRange(rootProperties);
+        model.Select = BuildSelector<TSource, TTarget>(select.Distinct().ToList());
     }
 
-    private static void ExtractOrder(object model, object bindingContext)
-    {
-        var order = bindingContext.GetType().GetProperty("Order")?.GetValue(bindingContext, null) as string;
+    private static void ExtractOrder<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model,
+        IDynamicFilter bindingContext) => model.Order = bindingContext.Order;
 
-        if (!string.IsNullOrWhiteSpace(order))
-            model.GetType().GetProperty("Order")?.SetValue(model, order);
-    }
-
-    private static void ExtractFilters(object model, object bindingContext, ParameterExpression parameter,
+    private static void ExtractFilters<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model,
+        IDynamicFilter bindingContext, ParameterExpression parameter,
         Type itemType)
     {
-        var filter = bindingContext.GetType().GetProperty("Filter")?.GetValue(bindingContext, null) as string;
+        var filter = bindingContext.Filter;
         if (string.IsNullOrWhiteSpace(filter)) return;
         var filterModel = new FilterArrayWrapper(filter, itemType, parameter);
 
-        LambdaExpression finalExpression = null;
+        Expression finalExpression = null;
         if (filterModel.Expression != null) finalExpression = Expression.Lambda(filterModel.Expression, parameter);
 
-        model.GetType().GetProperty("Filter")?.SetValue(model, finalExpression);
+        model.Filter = finalExpression as Expression<Func<TSource, bool>>;
     }
-
-    private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(string members) =>
-        BuildSelector<TSource, TTarget>(CheckRootMember(members, typeof(TTarget)));
 
     private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(List<string> members)
     {
-        var parameter = Expression.Parameter(typeof(TSource), "e");
+        var parameter = Expression.Parameter(typeof(TSource), $"DF_selector_{typeof(TSource).Name}");
         var body = new List<MemberBinding>();
-        var allMembers = members.OrderByDescending(s =>
-            s.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Count()).ToList();
-        var array = allMembers.Select(s => s.Trim().Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries))
-            .OrderByDescending(strings => strings.Length).ToList();
-        var groups = array.GroupBy(strings => strings[0]);
-        BuildSelectorExpression(typeof(TTarget), parameter, groups, out var list);
+        var allMembers = members
+            .Select(s => s.Split(new[] { '.' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            .OrderByDescending(strings => strings.Length).GroupBy(strings => strings[0]);
+        BuildSelectorExpression(typeof(TTarget), parameter, allMembers, out var list);
         body.AddRange(list);
 
 
@@ -102,22 +88,12 @@ public static class DynamicComplexParser
             Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
     }
 
-    private static List<string> CheckRootMember(string filter, Type type)
-    {
-        var selectedMembers =
-            filter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-        if (!selectedMembers.Contains("root")) return selectedMembers;
-        selectedMembers.Remove("root");
-        selectedMembers.AddRange(GetTypeSimpleProperties(type));
-        return selectedMembers;
-    }
-
     private static string FirstCharToLowerCase(string str)
     {
         if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
             return str;
 
-        return char.ToLower(str[0]) + str.Substring(1);
+        return char.ToLower(str[0]) + str[1..];
     }
 
     private static bool IsSimple(Type type) =>
@@ -163,7 +139,8 @@ public static class DynamicComplexParser
             if (IsEnumerableType(targetMember.Type, out var sourceElementType) &&
                 IsEnumerableType(targetMember.Type, out var targetElementType))
             {
-                var sourceElementParam = Expression.Parameter(sourceElementType, "e");
+                var sourceElementParam = Expression.Parameter(sourceElementType,
+                    $"DF_list_selector_{sourceElementType?.GetType().Name}");
                 targetValue = BuildSelectorExpression(targetElementType, sourceElementParam,
                     destinationMembers.GroupBy(strings => strings[depth + 1]), out _, depth + 1);
                 targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select),
@@ -182,8 +159,7 @@ public static class DynamicComplexParser
                     Expression.Equal(sourceMember,
                         Expression.Constant(null, sourceMember.Type)),
                     Expression.Constant(null, sourceMember.Type), BuildSelectorExpression(targetMember.Type,
-                        sourceMember,
-                        destinationMembers.GroupBy(strings => strings[depth + 1]), out _, depth + 1));
+                        sourceMember, destinationMembers.GroupBy(strings => strings[depth + 1]), out _, depth + 1));
             }
 
             bindings.Add(Expression.Bind(targetMember.Member, targetValue));
@@ -192,10 +168,10 @@ public static class DynamicComplexParser
         return Expression.MemberInit(Expression.New(targetType), bindings);
     }
 
-    private static IEnumerable<string> GetTypeSimpleProperties(Type type) =>
+    private static List<string> GetTypeSimpleProperties(Type type) =>
         type.GetProperties()
             .Where(info => IsSimple(info.PropertyType) && (info.GetSetMethod(true)?.IsPublic ?? false))
-            .Select(info => FirstCharToLowerCase(info.Name));
+            .Select(info => FirstCharToLowerCase(info.Name)).ToList();
 
 
     private static bool IsEnumerableType(Type type, out Type elementType)

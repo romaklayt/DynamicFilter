@@ -25,18 +25,19 @@ public static class FilterExtensions
     }
 
     public static IEnumerable<T> ApplyFilter<T>(this IEnumerable<T> source,
-        IDynamicFilter complexModel) where T : class =>
-        source.AsQueryable().ApplyFilter(complexModel);
+        IDynamicFilter complexModel, bool applySorting = true) where T : class =>
+        source.AsQueryable().ApplyFilter(complexModel, applySorting);
 
     public static IQueryable<T> ApplyFilter<T>(this IQueryable<T> source,
-        IDynamicFilter complexModel) where T : class
+        IDynamicFilter complexModel, bool applySorting = true) where T : class
     {
         if (complexModel == null) return source;
         var filter = complexModel.BindExpressions<T, T>();
         if (filter.Filter != null)
             source = source.AsQueryable().Where(filter.Filter);
-        if (filter.Order != null)
-            source = source.DynamicOrderBy(filter.Order.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+        if (filter.Order != null && applySorting)
+            source = source.DynamicOrderBy(filter.Order
+                .Split(new[] { ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => new Tuple<string, bool>(s.TrimStart('-'), s.StartsWith("-"))).ToArray());
         return source;
     }
