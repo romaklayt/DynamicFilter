@@ -11,15 +11,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Binder.Net\romaklayt.DynamicFilter.Binder.Net.csproj"/>
-        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Extensions.EntityFrameworkCore\romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj"/>
-        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
+        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Binder.Net\romaklayt.DynamicFilter.Binder.Net.csproj" />
+        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Extensions.EntityFrameworkCore\romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj" />
+        <ProjectReference Include="..\..\src\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.7"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.8" />
+        <PackageReference Include="NSwag.AspNetCore" Version="13.19.0" />
     </ItemGroup>
 
 </Project>

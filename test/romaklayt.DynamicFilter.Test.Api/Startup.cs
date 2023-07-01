@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using romaklayt.DynamicFilter.Binder.Net.Factories;
 using romaklayt.DynamicFilter.Binder.Net.Filters;
 using romaklayt.DynamicFilter.Parser;
@@ -27,20 +26,7 @@ public class Startup
         services.AddScoped<MyContext>();
         services.AddAutoMapper(typeof(UserMap));
         // Register the Swagger generator, defining 1 or more Swagger documents
-        services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Version = _appVersion,
-                Title = "Test Manager",
-                Contact = new OpenApiContact
-                {
-                    Name = "Roman Kolyago",
-                    Email = "romakolyago18@gmail.com",
-                    Url = new Uri("https://github.com/romaklayt")
-                }
-            });
-        });
+        services.AddOpenApiDocument();
         services.AddControllers(options =>
         {
             options.Filters.Add(new PageInfoWriter());
@@ -53,12 +39,8 @@ public class Startup
     {
         if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
         AddTestData(context);
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            c.RoutePrefix = "";
-        });
+        app.UseOpenApi();
+        app.UseSwaggerUi3();
         app.UseRouting();
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

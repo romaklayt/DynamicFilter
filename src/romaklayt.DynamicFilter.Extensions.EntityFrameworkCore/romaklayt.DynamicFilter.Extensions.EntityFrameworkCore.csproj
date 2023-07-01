@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj"/>
+        <ProjectReference Include="..\romaklayt.DynamicFilter.Parser\romaklayt.DynamicFilter.Parser.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -23,12 +23,12 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.7"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath=""/>
-        <None Include="../../README.md" Pack="true" Visible="false" PackagePath=""/>
+        <None Include="../../package-icon.png" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
     </ItemGroup>
 
 </Project>

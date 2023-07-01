@@ -45,6 +45,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("pageflat")]
+    [ProducesResponseType(typeof(List<UserViewModel>), 200)]
     public async Task<object> GetFlatPage([FromQuery] DynamicComplexModel complexModel)
     {
         var data = await _myContext.Users.ToPageFlatModel(complexModel);
