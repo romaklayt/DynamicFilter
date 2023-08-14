@@ -171,12 +171,10 @@ internal class FilterElement
 
     private object ParseValue(string value, Type type)
     {
-        if (string.IsNullOrWhiteSpace(value) || value == DefaultValue) return GetDefaultValue(type);
+        if (value == DefaultValue) return GetDefaultValue(type);
         if (type.IsEnum)
             return Enum.Parse(type, value);
-        if (type == typeof(Guid))
-            return Guid.Parse(value);
-        return TypeDescriptor.GetConverter(type).ConvertFrom(value);
+        return type == typeof(Guid) ? Guid.Parse(value) : TypeDescriptor.GetConverter(type).ConvertFrom(value);
     }
 
     private List<PropertyInfo> GetNestedProp(string name, Type obj)
