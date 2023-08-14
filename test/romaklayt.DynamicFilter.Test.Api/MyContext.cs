@@ -6,8 +6,7 @@ namespace romaklayt.DynamicFilter.Test.Api;
 
 public class MyContext : DbContext
 {
-    public MyContext(DbContextOptions<MyContext> options)
-        : base(options)
+    public MyContext(DbContextOptions<MyContext> options) : base(options)
     {
     }
 
@@ -16,6 +15,5 @@ public class MyContext : DbContext
     public DbSet<Address> Addresses { get; set; }
     public DbSet<Zip> Zips { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
-        optionsBuilder.LogTo(Console.WriteLine);
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.LogTo(Console.WriteLine);
 }

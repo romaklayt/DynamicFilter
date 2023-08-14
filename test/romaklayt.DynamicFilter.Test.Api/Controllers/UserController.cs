@@ -13,8 +13,7 @@ namespace romaklayt.DynamicFilter.Test.Api.Controllers;
 public class UserController : Controller
 {
     [HttpGet]
-    public IEnumerable<User> GetList([FromQuery] DynamicComplexModel complexModelModel) =>
-        Data.Users.Apply(complexModelModel);
+    public IEnumerable<User> GetList([FromQuery] DynamicComplexModel complexModelModel) => Data.Users.Apply(complexModelModel);
 
     [HttpPost]
     public IEnumerable<User> GetPostList(DynamicComplexModel complexModelModel) => Data.Users.Apply(complexModelModel);

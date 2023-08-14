@@ -44,10 +44,7 @@ public class JsonBodyValueProvider : IValueProvider
     {
         try
         {
-            var obj = JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var obj = JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             return obj;
         }
         catch (Exception)

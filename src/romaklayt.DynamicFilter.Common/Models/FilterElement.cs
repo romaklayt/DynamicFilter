@@ -17,8 +17,7 @@ internal class FilterElement
         Property = split.First().TrimEnd('!');
         Properties = GetNestedProp(Property, type);
         Value = ParseValue(split.Last().TrimStart('='), Properties.LastOrDefault()?.PropertyType);
-        var op = typeof(FilterElementContainsOperators).GetFields().First(info =>
-            info.GetValue(null).ToString() == element.GetOperator(split.First(), split.Last())).Name;
+        var op = typeof(FilterElementContainsOperators).GetFields().First(info => info.GetValue(null)?.ToString() == element.GetOperator(split.First(), split.Last())).Name;
         Operator = (FilterElementContainsOperatorEnum)Enum.Parse(typeof(FilterElementContainsOperatorEnum), op);
         IsNegative = split.First().EndsWith("!");
         UseAllFilterTypeForList = split.Last().StartsWith("=");
@@ -51,15 +50,14 @@ internal class FilterElement
         var propertyType = Properties.LastOrDefault()?.PropertyType;
         if (propertyType != null && Nullable.GetUnderlyingType(propertyType) != null)
         {
-            var type = typeof(Nullable<>).MakeGenericType(
-                Nullable.GetUnderlyingType(propertyType));
+            var type = typeof(Nullable<>).MakeGenericType(Nullable.GetUnderlyingType(propertyType));
             constantExpression = Expression.Constant(Value, type);
         }
 
         var body = parameter;
         foreach (var member in Properties)
-            if (member.PropertyType.IsGenericType && member.PropertyType.GetGenericTypeDefinition().GetInterfaces()
-                    .Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))) && ApplyToEnumerable)
+            if (member.PropertyType.IsGenericType && member.PropertyType.GetGenericTypeDefinition().GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))) &&
+                ApplyToEnumerable)
             {
                 genericType = member.PropertyType;
                 baseExp = Expression.Property(body, member);
@@ -68,13 +66,11 @@ internal class FilterElement
             else
             {
                 var genericArgumentFullName = genericType?.GetGenericArguments().FirstOrDefault()?.FullName;
-                var genericArgumentBaseTypeFullName =
-                    genericType?.GetGenericArguments().FirstOrDefault()?.BaseType?.FullName;
+                var genericArgumentBaseTypeFullName = genericType?.GetGenericArguments().FirstOrDefault()?.BaseType?.FullName;
                 var memberFullName = member.DeclaringType?.FullName;
                 if (genericArgumentFullName == memberFullName || genericArgumentBaseTypeFullName == memberFullName)
                 {
-                    subParam = Expression.Parameter(genericType?.GetGenericArguments().FirstOrDefault() ??
-                                                    throw new InvalidOperationException("Generic type not found"),
+                    subParam = Expression.Parameter(genericType?.GetGenericArguments().FirstOrDefault() ?? throw new InvalidOperationException("Generic type not found"),
                         $"DF_sub_filter_{memberFullName}");
                     body = Expression.Property(subParam, member);
                 }
@@ -129,25 +125,21 @@ internal class FilterElement
 
         if (genericType == null) return returnExpression;
         var listMethod = UseAllFilterTypeForList
-            ? typeof(Enumerable)
-                .GetMethods()
+            ? typeof(Enumerable).GetMethods()
                 .FirstOrDefault(m => m.Name == "All" && m.GetParameters().Count() == 2)
                 ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault())
-            : typeof(Enumerable)
-                .GetMethods()
+            : typeof(Enumerable).GetMethods()
                 .FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Count() == 2)
                 ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
 
 
         if (listMethod is not null && returnExpression is not null)
-            returnExpression =
-                Expression.Call(listMethod, baseExp, Expression.Lambda(returnExpression, subParam));
+            returnExpression = Expression.Call(listMethod, baseExp, Expression.Lambda(returnExpression, subParam));
 
         return returnExpression;
     }
 
-    private static Expression GetCustomCaseInsensitiveExpression(Expression body, Expression constantExpression,
-        string methodName)
+    private static Expression GetCustomCaseInsensitiveExpression(Expression body, Expression constantExpression, string methodName)
     {
         Expression returnExpression = null;
 
@@ -166,8 +158,7 @@ internal class FilterElement
         return returnExpression;
     }
 
-    private static Expression GetCustomExpression(Expression body, Expression constantExpression,
-        string methodName)
+    private static Expression GetCustomExpression(Expression body, Expression constantExpression, string methodName)
     {
         Expression returnExpression = null;
         var method = typeof(string).GetMethod(methodName, new[] { typeof(string) });
@@ -195,8 +186,7 @@ internal class FilterElement
         {
             if (obj == null) return null;
 
-            if (obj.IsGenericType && obj.GetGenericTypeDefinition().GetInterfaces()
-                    .Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))))
+            if (obj.IsGenericType && obj.GetGenericTypeDefinition().GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))))
             {
                 if (SupportedEnumerableProperties.GetOperators().Contains(part.ToLower()))
                     ApplyToEnumerable = false;
@@ -207,9 +197,7 @@ internal class FilterElement
             if (obj != null)
             {
                 var info = obj.GetProperty(part,
-                    BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic |
-                    BindingFlags.GetProperty |
-                    BindingFlags.Instance | BindingFlags.GetField);
+                    BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.GetField);
                 if (info == null) return infos;
 
                 obj = info.PropertyType;

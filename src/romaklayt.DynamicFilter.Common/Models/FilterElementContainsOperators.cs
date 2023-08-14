@@ -21,11 +21,11 @@ internal class FilterElementContainsOperators
 
     public static string[] GetOperators() =>
         new[]
-        {
-            Equals, Contains, EndsWith, GreaterThan, LessThan, GreaterOrEqual, LessOrEqual, StartsWith,
-            ContainsCaseInsensitive,
-            StartsWithCaseInsensitive, EndsWithCaseInsensitive, EqualsCaseInsensitive
-        }.Reverse().ToArray();
+            {
+                Equals, Contains, EndsWith, GreaterThan, LessThan, GreaterOrEqual, LessOrEqual, StartsWith, ContainsCaseInsensitive, StartsWithCaseInsensitive,
+                EndsWithCaseInsensitive, EqualsCaseInsensitive
+            }.Reverse()
+            .ToArray();
 }
 
 internal enum FilterElementContainsOperatorEnum

@@ -10,22 +10,19 @@ namespace romaklayt.DynamicFilter.Extensions.EntityFrameworkCore;
 
 public static class PageExtensions
 {
-    public static async Task<PageModel<T>> ToPageModel<T>(this IEnumerable<T> source,
-        IDynamicComplex complexModel, bool applyFiltering = true,
-        bool applySelect = true) where T : class =>
+    public static async Task<PageModel<T>> ToPageModel<T>(this IEnumerable<T> source, IDynamicComplex complexModel, bool applyFiltering = true, bool applySelect = true)
+        where T : class =>
         await source.AsQueryable().ToPageModel(complexModel, applyFiltering, applySelect);
 
-    public static async Task<PageFlatModel<T>> ToPageFlatModel<T>(this IEnumerable<T> source,
-        IDynamicComplex complexModel, bool applyFiltering = true,
-        bool applySelect = true) where T : class
+    public static async Task<PageFlatModel<T>> ToPageFlatModel<T>(this IEnumerable<T> source, IDynamicComplex complexModel, bool applyFiltering = true, bool applySelect = true)
+        where T : class
     {
         var page = await source.AsQueryable().ToPageModel(complexModel, applyFiltering, applySelect);
         return page.ToFlatModel();
     }
 
-    public static async Task<PageModel<T>> ToPageModel<T>(this IQueryable<T> source,
-        IDynamicComplex complexModel, bool applyFiltering = true,
-        bool applySelect = true) where T : class
+    public static async Task<PageModel<T>> ToPageModel<T>(this IQueryable<T> source, IDynamicComplex complexModel, bool applyFiltering = true, bool applySelect = true)
+        where T : class
     {
         var page = await GetPageInfo(source, complexModel);
         if (applyFiltering) source = source.ApplyFilter(complexModel);
@@ -34,8 +31,7 @@ public static class PageExtensions
         return new PageModel<T>(await source.ToListAsync(), page.count, page.page, page.pageSize);
     }
 
-    public static async Task<PageModel<T>> ToPageModel<T>(this IQueryable<T> source,
-        IDynamicPaging complexModel, bool applyFiltering = true) where T : class
+    public static async Task<PageModel<T>> ToPageModel<T>(this IQueryable<T> source, IDynamicPaging complexModel, bool applyFiltering = true) where T : class
     {
         var page = await GetPageInfo(source, complexModel);
         if (applyFiltering) source = source.ApplyFilter(complexModel);
@@ -43,8 +39,7 @@ public static class PageExtensions
         return new PageModel<T>(await source.ToListAsync(), page.count, page.page, page.pageSize);
     }
 
-    private static async Task<(int page, int pageSize, int count)> GetPageInfo<T>(IQueryable<T> source,
-        IDynamicPaging complexModel) where T : class
+    private static async Task<(int page, int pageSize, int count)> GetPageInfo<T>(IQueryable<T> source, IDynamicPaging complexModel) where T : class
     {
         var page = complexModel.BindExpressions<T, T>();
         if (page.PageSize == default) page.PageSize = 10;
@@ -53,12 +48,10 @@ public static class PageExtensions
         return (page.Page, page.PageSize, count);
     }
 
-    public static async Task<PageModel<T>> ToPageModel<T>(this IEnumerable<T> source,
-        IDynamicPaging complexModel, bool applyFiltering = true) where T : class =>
+    public static async Task<PageModel<T>> ToPageModel<T>(this IEnumerable<T> source, IDynamicPaging complexModel, bool applyFiltering = true) where T : class =>
         await source.AsQueryable().ToPageModel(complexModel, applyFiltering);
 
-    public static async Task<PageFlatModel<T>> ToPageFlatModel<T>(this IEnumerable<T> source,
-        IDynamicPaging complexModel, bool applyFiltering = true) where T : class
+    public static async Task<PageFlatModel<T>> ToPageFlatModel<T>(this IEnumerable<T> source, IDynamicPaging complexModel, bool applyFiltering = true) where T : class
     {
         var page = await source.AsQueryable().ToPageModel(complexModel, applyFiltering);
         return page.ToFlatModel();

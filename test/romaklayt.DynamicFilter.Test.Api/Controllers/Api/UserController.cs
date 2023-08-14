@@ -24,8 +24,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<User> GetList([FromQuery] DynamicComplexModel complexModelModel) =>
-        Data.Users.Apply(complexModelModel);
+    public IEnumerable<User> GetList([FromQuery] DynamicComplexModel complexModelModel) => Data.Users.Apply(complexModelModel);
 
     [HttpPost]
     public IEnumerable<User> GetPostList(DynamicComplexModel complexModelModel) => Data.Users.Apply(complexModelModel);
@@ -54,13 +53,11 @@ public class UserController : ControllerBase
 
     [HttpGet("context")]
     [ProducesResponseType(typeof(UserViewModel), 200)]
-    public object GetContextList([FromQuery] DynamicComplexModel complexModelModel) =>
-        _myContext.Users.Apply(complexModelModel);
+    public object GetContextList([FromQuery] DynamicComplexModel complexModelModel) => _myContext.Users.Apply(complexModelModel);
 
     [HttpGet("count")]
     [ProducesResponseType(typeof(int), 200)]
-    public async Task<object> Count([FromQuery] DynamicFilterModel filterModelModel) =>
-        await _myContext.Users.CountAsync(filterModelModel);
+    public async Task<object> Count([FromQuery] DynamicFilterModel filterModelModel) => await _myContext.Users.CountAsync(filterModelModel);
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(User), 200)]

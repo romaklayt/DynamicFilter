@@ -10,12 +10,10 @@ public class FilterArrayWrapper
     public FilterArrayWrapper(string wrap, Type type, ParameterExpression parameter)
     {
         var countMaxBraces = CountMaxBraces(wrap);
-        var split = wrap.Split(Generate(countMaxBraces),
-            StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var split = wrap.Split(Generate(countMaxBraces), StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         if (split.Length > 1 && countMaxBraces != 0)
         {
-            FilterArrayWrappers = split.Select(s => new FilterArrayWrapper(s, type, countMaxBraces - 1, parameter))
-                .ToList();
+            FilterArrayWrappers = split.Select(s => new FilterArrayWrapper(s, type, countMaxBraces - 1, parameter)).ToList();
             Operators = Extensions.ParseOperators(wrap, split);
         }
         else
@@ -57,10 +55,8 @@ public class FilterArrayWrapper
             for (var i = 0; i < Operators.Count; i++)
                 currentExpression = Operators[i] switch
                 {
-                    FilterArrayLogicOperatorEnum.And => Expression.And(currentExpression,
-                        FilterArrayWrappers[i + 1].Expression),
-                    FilterArrayLogicOperatorEnum.Or => Expression.Or(currentExpression,
-                        FilterArrayWrappers[i + 1].Expression),
+                    FilterArrayLogicOperatorEnum.And => Expression.And(currentExpression, FilterArrayWrappers[i + 1].Expression),
+                    FilterArrayLogicOperatorEnum.Or => Expression.Or(currentExpression, FilterArrayWrappers[i + 1].Expression),
                     _ => currentExpression
                 };
 

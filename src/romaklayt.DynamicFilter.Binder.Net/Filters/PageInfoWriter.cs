@@ -12,17 +12,11 @@ public class PageInfoWriter : IAsyncActionFilter
     {
         var context = await next();
         if (context.Result is not ObjectResult { Value: IPageInfo pageInfo }) return;
-        context.HttpContext.Response.Headers.Add(PageInfoHeaders.PageSize,
-            pageInfo.PageSize.ToString());
-        context.HttpContext.Response.Headers.Add(PageInfoHeaders.CurrentPage,
-            pageInfo.CurrentPage.ToString());
-        context.HttpContext.Response.Headers.Add(PageInfoHeaders.TotalPages,
-            pageInfo.TotalPages.ToString());
-        context.HttpContext.Response.Headers.Add(PageInfoHeaders.HasNext,
-            pageInfo.HasNext.ToString());
-        context.HttpContext.Response.Headers.Add(PageInfoHeaders.HasPrevious,
-            pageInfo.HasPrevious.ToString());
-        context.HttpContext.Response.Headers.Add(PageInfoHeaders.TotalCount,
-            pageInfo.TotalCount.ToString());
+        context.HttpContext.Response.Headers.Add(PageInfoHeaders.PageSize, pageInfo.PageSize.ToString());
+        context.HttpContext.Response.Headers.Add(PageInfoHeaders.CurrentPage, pageInfo.CurrentPage.ToString());
+        context.HttpContext.Response.Headers.Add(PageInfoHeaders.TotalPages, pageInfo.TotalPages.ToString());
+        context.HttpContext.Response.Headers.Add(PageInfoHeaders.HasNext, pageInfo.HasNext.ToString());
+        context.HttpContext.Response.Headers.Add(PageInfoHeaders.HasPrevious, pageInfo.HasPrevious.ToString());
+        context.HttpContext.Response.Headers.Add(PageInfoHeaders.TotalCount, pageInfo.TotalCount.ToString());
     }
 }

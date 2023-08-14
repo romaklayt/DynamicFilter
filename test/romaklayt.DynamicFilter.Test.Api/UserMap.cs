@@ -18,8 +18,6 @@ public class UserMap : Profile
 
 internal class Converter<TSource, TDest> : ITypeConverter<PageFlatModel<TSource>, PageFlatModel<TDest>>
 {
-    public PageFlatModel<TDest>
-        Convert(PageFlatModel<TSource> source, PageFlatModel<TDest> destination, ResolutionContext context) =>
-        new(context.Mapper.Map<List<TDest>>(source.ToList()), source.TotalCount,
-            source.CurrentPage, source.PageSize);
+    public PageFlatModel<TDest> Convert(PageFlatModel<TSource> source, PageFlatModel<TDest> destination, ResolutionContext context) =>
+        new(context.Mapper.Map<List<TDest>>(source.ToList()), source.TotalCount, source.CurrentPage, source.PageSize);
 }
