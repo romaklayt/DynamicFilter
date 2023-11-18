@@ -13,11 +13,6 @@ namespace romaklayt.DynamicFilter.Test.Api;
 
 public class Startup
 {
-    private readonly string _appVersion = typeof(DynamicComplexParser).Assembly
-        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-        ?.InformationalVersion.Split('+')
-        .First();
-
     // This method gets called by the runtime. Use this method to add services to the container.
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     public void ConfigureServices(IServiceCollection services)
@@ -40,7 +35,7 @@ public class Startup
         if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
         AddTestData(context);
         app.UseOpenApi();
-        app.UseSwaggerUi3();
+        app.UseSwaggerUi();
         app.UseRouting();
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
