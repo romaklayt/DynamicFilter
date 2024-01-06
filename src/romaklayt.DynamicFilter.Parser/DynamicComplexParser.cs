@@ -10,6 +10,9 @@ namespace romaklayt.DynamicFilter.Parser;
 
 public static class DynamicComplexParser
 {
+    private static readonly char[] MemberSeparator = ['.'];
+    private static readonly char[] PathSeparator = [','];
+
     public static ExpressionDynamicFilter<TSource, TTarget> BindExpressions<TSource, TTarget>(this IDynamicFilter complexModel)
     {
         if (complexModel == null) throw new ArgumentNullException(nameof(complexModel));
@@ -45,8 +48,8 @@ public static class DynamicComplexParser
     private static void ExtractSelect<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model, IDynamicSelect bindingContext)
     {
         var select = string.IsNullOrWhiteSpace(bindingContext.Select)
-            ? new List<string>()
-            : bindingContext.Select.Split(new[] { ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+            ? []
+            : bindingContext.Select.Split(PathSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
         var rootProperties = GetTypeSimpleProperties(typeof(TTarget));
         if (!select.Intersect(rootProperties).Any()) select.AddRange(rootProperties);
         model.Select = BuildSelector<TSource, TTarget>(select.Distinct().ToList());
@@ -67,11 +70,11 @@ public static class DynamicComplexParser
         model.Filter = finalExpression as Expression<Func<TSource, bool>>;
     }
 
-    private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(List<string> members)
+    private static Expression<Func<TSource, TTarget>> BuildSelector<TSource, TTarget>(IEnumerable<string> members)
     {
         var parameter = Expression.Parameter(typeof(TSource), $"DF_selector_{typeof(TSource).Name}");
         var body = new List<MemberBinding>();
-        var allMembers = members.Select(s => s.Split(new[] { '.' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+        var allMembers = members.Select(s => s.Split(MemberSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
             .OrderByDescending(strings => strings.Length)
             .GroupBy(strings => strings[0]);
         BuildSelectorExpression(typeof(TTarget), parameter, allMembers, out var list);
@@ -91,10 +94,10 @@ public static class DynamicComplexParser
 
     private static bool IsSimple(Type type) => type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
 
-    private static Expression BuildSelectorExpression(Type targetType, Expression source, IEnumerable<IGrouping<string, string[]>> groups, out List<MemberBinding> bindings,
-        int depth = 0)
+    private static MemberInitExpression BuildSelectorExpression(Type targetType, Expression source, IEnumerable<IGrouping<string, string[]>> groups,
+        out List<MemberBinding> bindings, int depth = 0)
     {
-        bindings = new List<MemberBinding>();
+        bindings = [];
         foreach (var membersPaths in groups)
         {
             var target = Expression.Constant(null, targetType);
@@ -119,13 +122,13 @@ public static class DynamicComplexParser
             }
 
             destinationMembers = destinationMembers.Distinct(new CustomEnumerableComparer<string>()).Select(enumerable => enumerable.ToArray()).ToList();
-            if (!destinationMembers.Any()) continue;
+            if (destinationMembers.Count == 0) continue;
             Expression targetValue;
             if (IsEnumerableType(targetMember.Type, out var sourceElementType) && IsEnumerableType(targetMember.Type, out var targetElementType))
             {
                 var sourceElementParam = Expression.Parameter(sourceElementType, $"DF_list_selector_{sourceElementType?.GetType().Name}");
                 targetValue = BuildSelectorExpression(targetElementType, sourceElementParam, destinationMembers.GroupBy(strings => strings[depth + 1]), out _, depth + 1);
-                targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select), new[] { sourceElementType, targetElementType }, sourceMember,
+                targetValue = Expression.Call(typeof(Enumerable), nameof(Enumerable.Select), [sourceElementType, targetElementType], sourceMember,
                     Expression.Lambda(targetValue, sourceElementParam));
                 targetValue = Expression.Condition(Expression.Equal(sourceMember, Expression.Constant(null, sourceMember.Type)), Expression.Constant(null, sourceMember.Type),
                     CorrectEnumerableResult(targetValue, targetElementType, targetMember.Type), sourceMember.Type);
@@ -164,11 +167,11 @@ public static class DynamicComplexParser
             return enumerable;
 
         if (memberType.IsArray)
-            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), new[] { elementType }, enumerable);
+            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToArray), [elementType], enumerable);
 
         if (IsSameCollectionType(memberType, typeof(List<>), elementType) || IsSameCollectionType(memberType, typeof(ICollection<>), elementType) ||
             IsSameCollectionType(memberType, typeof(IReadOnlyList<>), elementType) || IsSameCollectionType(memberType, typeof(IReadOnlyCollection<>), elementType))
-            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), new[] { elementType }, enumerable);
+            return Expression.Call(typeof(Enumerable), nameof(Enumerable.ToList), [elementType], enumerable);
 
         throw new NotImplementedException($"Not implemented transformation for type '{memberType.Name}'");
     }

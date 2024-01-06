@@ -75,7 +75,7 @@ public static class LinqDynamicExtensions
         var parameter = Expression.Parameter(typeof(T), $"DF_order_{typeof(T).Name}");
         var member = memberPath.Split('.').Aggregate((Expression)parameter, Expression.PropertyOrField);
         var keySelector = Expression.Lambda(member, parameter);
-        var methodCall = Expression.Call(typeof(Queryable), method, new[] { parameter.Type, member.Type }, source.Expression, Expression.Quote(keySelector));
+        var methodCall = Expression.Call(typeof(Queryable), method, [parameter.Type, member.Type], source.Expression, Expression.Quote(keySelector));
         return (IOrderedQueryable<T>)source.Provider.CreateQuery(methodCall);
     }
 

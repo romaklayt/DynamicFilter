@@ -19,8 +19,8 @@ internal class FilterElement
         Value = ParseValue(split.Last().TrimStart('='), Properties.LastOrDefault()?.PropertyType);
         var op = typeof(FilterElementContainsOperators).GetFields().First(info => info.GetValue(null)?.ToString() == element.GetOperator(split.First(), split.Last())).Name;
         Operator = (FilterElementContainsOperatorEnum)Enum.Parse(typeof(FilterElementContainsOperatorEnum), op);
-        IsNegative = split.First().EndsWith("!");
-        UseAllFilterTypeForList = split.Last().StartsWith("=");
+        IsNegative = split.First().EndsWith('!');
+        UseAllFilterTypeForList = split.Last().StartsWith('=');
         Expression = GetExpression(parameter);
     }
 
@@ -33,9 +33,9 @@ internal class FilterElement
     private bool ApplyToEnumerable { get; set; } = true;
     public Expression Expression { get; }
 
-    private object GetDefaultValue(Type type)
+    private static object GetDefaultValue(Type type)
     {
-        if (type == null) throw new ArgumentNullException("type");
+        if (type == null) throw new ArgumentNullException(nameof(type));
         return type.IsValueType ? Activator.CreateInstance(type) : null;
     }
 
@@ -125,12 +125,8 @@ internal class FilterElement
 
         if (genericType == null) return returnExpression;
         var listMethod = UseAllFilterTypeForList
-            ? typeof(Enumerable).GetMethods()
-                .FirstOrDefault(m => m.Name == "All" && m.GetParameters().Count() == 2)
-                ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault())
-            : typeof(Enumerable).GetMethods()
-                .FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Count() == 2)
-                ?.MakeGenericMethod(genericType.GetGenericArguments().FirstOrDefault());
+            ? typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == "All" && m.GetParameters().Length == 2)?.MakeGenericMethod(genericType.GetGenericArguments().First())
+            : typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Length == 2)?.MakeGenericMethod(genericType.GetGenericArguments().First());
 
 
         if (listMethod is not null && returnExpression is not null)
@@ -149,7 +145,7 @@ internal class FilterElement
         {
             var bodyLowerExpression = Expression.Call(body, toLowerMethod);
             var constantLowerExpression = Expression.Call(constantExpression, toLowerMethod);
-            var method = typeof(string).GetMethod(methodName, new[] { typeof(string) });
+            var method = typeof(string).GetMethod(methodName, [typeof(string)]);
 
             if (method is not null)
                 returnExpression = Expression.Call(bodyLowerExpression, method, constantLowerExpression);
@@ -161,7 +157,7 @@ internal class FilterElement
     private static Expression GetCustomExpression(Expression body, Expression constantExpression, string methodName)
     {
         Expression returnExpression = null;
-        var method = typeof(string).GetMethod(methodName, new[] { typeof(string) });
+        var method = typeof(string).GetMethod(methodName, [typeof(string)]);
 
         if (method is not null) returnExpression = Expression.Call(body, method, constantExpression);
         return returnExpression;
@@ -169,7 +165,7 @@ internal class FilterElement
 
     #region [ Private Methods ]
 
-    private object ParseValue(string value, Type type)
+    private static object ParseValue(string value, Type type)
     {
         if (value == DefaultValue) return GetDefaultValue(type);
         if (type.IsEnum)
