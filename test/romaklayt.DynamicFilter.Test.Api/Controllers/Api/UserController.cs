@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using romaklayt.DynamicFilter.Binder.Net.Models;
 using romaklayt.DynamicFilter.Common;
+using romaklayt.DynamicFilter.Common.Models;
 using romaklayt.DynamicFilter.Extensions.EntityFrameworkCore;
 using romaklayt.DynamicFilter.Test.Api.Models;
 

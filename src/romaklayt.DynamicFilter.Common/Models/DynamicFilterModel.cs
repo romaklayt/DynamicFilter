@@ -1,6 +1,6 @@
 using romaklayt.DynamicFilter.Common.Interfaces;
 
-namespace romaklayt.DynamicFilter.Binder.Net.Models;
+namespace romaklayt.DynamicFilter.Common.Models;
 
 public class DynamicFilterModel : IDynamicFilter
 {

@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using romaklayt.DynamicFilter.Binder.Net.Models;
+using romaklayt.DynamicFilter.Common.Models;
 
 namespace romaklayt.DynamicFilter.Binder.Net.Providers;
 
