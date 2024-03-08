@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Common.Interfaces;
 
 namespace romaklayt.DynamicFilter.Extensions.EntityFrameworkCore;
@@ -83,8 +84,8 @@ public static class LinqDynamicExtensions
     {
         var parameter = Expression.Parameter(typeof(TEntity), $"DF_ext_{typeof(TEntity).Name.ToLower()}");
         var property = Expression.PropertyOrField(parameter, propertyName);
-        var equal = Expression.Equal(property, Expression.Constant(keyValue));
-        var lambda = Expression.Lambda<Func<TEntity, bool>>(equal, parameter);
-        return lambda;
+        var value = property.Type == typeof(TKeyValue) ? keyValue : property.Type.ParseValue(keyValue?.ToString());
+        var equal = Expression.Equal(property, Expression.Constant(value, property.Type));
+        return Expression.Lambda<Func<TEntity, bool>>(equal, parameter);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using romaklayt.DynamicFilter.Common;
 using romaklayt.DynamicFilter.Common.Interfaces;
 
 namespace romaklayt.DynamicFilter.Extensions.Async;
@@ -85,10 +86,10 @@ public static class LinqDynamicExtensions
 
     private static Expression<Func<TEntity, bool>> GenerateConstantExpression<TEntity, TKeyValue>(string propertyName, TKeyValue keyValue)
     {
-        var parameter = Expression.Parameter(typeof(TEntity), $"DF_ext_{typeof(TEntity).Name}");
+        var parameter = Expression.Parameter(typeof(TEntity), $"DF_ext_{typeof(TEntity).Name.ToLower()}");
         var property = Expression.PropertyOrField(parameter, propertyName);
-        var equal = Expression.Equal(property, Expression.Constant(keyValue));
-        var lambda = Expression.Lambda<Func<TEntity, bool>>(equal, parameter);
-        return lambda;
+        var value = property.Type == typeof(TKeyValue) ? keyValue : property.Type.ParseValue(keyValue?.ToString());
+        var equal = Expression.Equal(property, Expression.Constant(value, property.Type));
+        return Expression.Lambda<Func<TEntity, bool>>(equal, parameter);
     }
 }

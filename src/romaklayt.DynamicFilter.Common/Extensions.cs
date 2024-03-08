@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using romaklayt.DynamicFilter.Common.Models;
 
@@ -7,6 +8,8 @@ namespace romaklayt.DynamicFilter.Common;
 
 public static class Extensions
 {
+    private const string DefaultValue = @"\default";
+
     internal static string GetOperator(this string filter, string firstElement, string secondElement) => RemoveSubstring(RemoveSubstring(filter, firstElement), secondElement);
 
     private static string RemoveSubstring(string sourceString, string removeString)
@@ -36,4 +39,18 @@ public static class Extensions
     public static PageFlatModel<T> ToFlatModel<T>(this PageModel<T> pageModel) => new(pageModel.Items, pageModel.TotalCount, pageModel.CurrentPage, pageModel.PageSize);
 
     public static PageModel<T> ToNormalModel<T>(this PageFlatModel<T> pageModel) => new(pageModel, pageModel.TotalCount, pageModel.CurrentPage, pageModel.PageSize);
+
+    public static object ParseValue(this Type type, string value)
+    {
+        if (value is DefaultValue or null) return GetDefaultValue(type);
+        if (type.IsEnum)
+            return Enum.Parse(type, value);
+        return type == typeof(Guid) ? Guid.Parse(value) : TypeDescriptor.GetConverter(type).ConvertFrom(value);
+    }
+
+    private static object GetDefaultValue(Type type)
+    {
+        if (type == null) throw new ArgumentNullException(nameof(type));
+        return type.IsValueType ? Activator.CreateInstance(type) : null;
+    }
 }

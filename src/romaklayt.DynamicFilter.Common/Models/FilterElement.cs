@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -9,14 +8,12 @@ namespace romaklayt.DynamicFilter.Common.Models;
 
 internal class FilterElement
 {
-    private const string DefaultValue = @"\default";
-
     public FilterElement(string element, Type type, Expression parameter)
     {
         var split = element.Split(FilterElementContainsOperators.GetOperators(), StringSplitOptions.None);
         Property = split.First().TrimEnd('!');
         Properties = GetNestedProp(Property, type);
-        Value = ParseValue(split.Last().TrimStart('='), Properties.LastOrDefault()?.PropertyType);
+        Value = Properties.LastOrDefault()?.PropertyType.ParseValue(split.Last().TrimStart('='));
         var op = typeof(FilterElementContainsOperators).GetFields().First(info => info.GetValue(null)?.ToString() == element.GetOperator(split.First(), split.Last())).Name;
         Operator = (FilterElementContainsOperatorEnum)Enum.Parse(typeof(FilterElementContainsOperatorEnum), op);
         IsNegative = split.First().EndsWith('!');
@@ -32,12 +29,6 @@ internal class FilterElement
     private bool UseAllFilterTypeForList { get; }
     private bool ApplyToEnumerable { get; set; } = true;
     public Expression Expression { get; }
-
-    private static object GetDefaultValue(Type type)
-    {
-        if (type == null) throw new ArgumentNullException(nameof(type));
-        return type.IsValueType ? Activator.CreateInstance(type) : null;
-    }
 
     private Expression GetExpression(Expression parameter)
     {
@@ -164,14 +155,6 @@ internal class FilterElement
     }
 
     #region [ Private Methods ]
-
-    private static object ParseValue(string value, Type type)
-    {
-        if (value == DefaultValue) return GetDefaultValue(type);
-        if (type.IsEnum)
-            return Enum.Parse(type, value);
-        return type == typeof(Guid) ? Guid.Parse(value) : TypeDescriptor.GetConverter(type).ConvertFrom(value);
-    }
 
     private List<PropertyInfo> GetNestedProp(string name, Type obj)
     {
