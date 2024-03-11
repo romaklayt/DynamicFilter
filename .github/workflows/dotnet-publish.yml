@@ -63,7 +63,7 @@ jobs:
       working-directory: nuget-packages
 
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         body: ${{ steps.github_release.outputs.changelog }}
         token: ${{ secrets._GITHUB_TOKEN }}
