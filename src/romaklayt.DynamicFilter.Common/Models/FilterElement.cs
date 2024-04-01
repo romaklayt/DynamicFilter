@@ -39,10 +39,14 @@ internal class FilterElement
         Type genericType = null;
 
         var propertyType = Properties.LastOrDefault()?.PropertyType;
-        if (propertyType != null && Nullable.GetUnderlyingType(propertyType) != null)
+        if (propertyType != null)
         {
-            var type = typeof(Nullable<>).MakeGenericType(Nullable.GetUnderlyingType(propertyType));
-            constantExpression = Expression.Constant(Value, type);
+            var nullableType = Nullable.GetUnderlyingType(propertyType);
+            if (nullableType != null)
+            {
+                var type = typeof(Nullable<>).MakeGenericType(nullableType);
+                constantExpression = Expression.Constant(Value, type);
+            }
         }
 
         var body = parameter;
@@ -56,12 +60,10 @@ internal class FilterElement
             }
             else
             {
-                var genericArgumentFullName = genericType?.GetGenericArguments().FirstOrDefault()?.FullName;
-                var genericArgumentBaseTypeFullName = genericType?.GetGenericArguments().FirstOrDefault()?.BaseType?.FullName;
-                var memberFullName = member.DeclaringType?.FullName;
-                if (genericArgumentFullName == memberFullName || genericArgumentBaseTypeFullName == memberFullName)
+                var memberFullName = member.ReflectedType?.FullName ?? $"DF_{member.Name}";
+                if (genericType != null)
                 {
-                    subParam = Expression.Parameter(genericType?.GetGenericArguments().FirstOrDefault() ?? throw new InvalidOperationException("Generic type not found"),
+                    subParam = Expression.Parameter(genericType.GetGenericArguments().FirstOrDefault() ?? throw new InvalidOperationException("Generic type not found"),
                         $"DF_sub_filter_{memberFullName}");
                     body = Expression.Property(subParam, member);
                 }
