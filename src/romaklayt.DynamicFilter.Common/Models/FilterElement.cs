@@ -50,6 +50,7 @@ internal class FilterElement
         }
 
         var body = parameter;
+        var addSubParam = false;
         foreach (var member in Properties)
             if (member.PropertyType.IsGenericType && member.PropertyType.GetGenericTypeDefinition().GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))) &&
                 ApplyToEnumerable)
@@ -57,15 +58,17 @@ internal class FilterElement
                 genericType = member.PropertyType;
                 baseExp = Expression.Property(body, member);
                 body = Expression.Property(body, member);
+                addSubParam = true;
             }
             else
             {
-                var memberFullName = member.ReflectedType?.FullName ?? $"DF_{member.Name}";
-                if (genericType != null)
+                var memberFullName = $"sub_{member.Name}";
+                if (addSubParam)
                 {
                     subParam = Expression.Parameter(genericType.GetGenericArguments().FirstOrDefault() ?? throw new InvalidOperationException("Generic type not found"),
                         $"DF_sub_filter_{memberFullName}");
                     body = Expression.Property(subParam, member);
+                    addSubParam = false;
                 }
                 else
                 {
