@@ -26,15 +26,18 @@ public class JsonBodyValueProvider : IValueProvider
             if (model != null)
                 _dictionary = model.GetType()
                     .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                    .ToDictionary(prop => prop.Name.ToLower(), prop => prop.GetValue(model, null) as string);
+                    .ToDictionary(prop => prop.Name.ToUpper(), prop => prop.GetValue(model, null) as string);
         }
     }
 
-    public bool ContainsPrefix(string prefix) => _dictionary.ContainsKey(prefix);
+    public bool ContainsPrefix(string prefix)
+    {
+        return _dictionary.ContainsKey(prefix);
+    }
 
     public ValueProviderResult GetValue(string key)
     {
-        if (_dictionary.TryGetValue(key.ToLower(), out var value))
+        if (_dictionary.TryGetValue(key.ToUpper(), out var value))
             if (!string.IsNullOrEmpty(value))
                 return new ValueProviderResult(value, CultureInfo.InvariantCulture);
         return new ValueProviderResult();

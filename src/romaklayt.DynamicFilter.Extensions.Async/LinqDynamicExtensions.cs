@@ -10,39 +10,59 @@ namespace romaklayt.DynamicFilter.Extensions.Async;
 
 public static class LinqDynamicExtensions
 {
-    public static async Task<int> CountAsync<TEntity>(this IAsyncQueryable<TEntity> source, IDynamicFilter dynamicFilter) where TEntity : class =>
-        await source.ApplyFilter(dynamicFilter, false).CountAsync();
+    public static async Task<int> CountAsync<TEntity>(this IAsyncQueryable<TEntity> source, IDynamicFilter dynamicFilter) where TEntity : class
+    {
+        return await source.ApplyFilter(dynamicFilter, false).CountAsync();
+    }
 
-    public static async Task<int> CountAsync<TEntity>(this IAsyncEnumerable<TEntity> source, IDynamicFilter dynamicFilter) where TEntity : class =>
-        await source.AsAsyncQueryable().CountAsync(dynamicFilter);
+    public static async Task<int> CountAsync<TEntity>(this IAsyncEnumerable<TEntity> source, IDynamicFilter dynamicFilter) where TEntity : class
+    {
+        return await source.AsAsyncQueryable().CountAsync(dynamicFilter);
+    }
 
     public static async Task<TEntity> DynamicFirstOfDefaultAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
-        where TEntity : class =>
-        await source.FirstOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
+        where TEntity : class
+    {
+        return await source.FirstOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
+    }
 
     public static async Task<TEntity> DynamicFirstOfDefaultAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source, string propertyName, TKeyValue keyValue)
-        where TEntity : class =>
-        await DynamicFirstOfDefaultAsync(source.AsAsyncQueryable(), propertyName, keyValue);
+        where TEntity : class
+    {
+        return await DynamicFirstOfDefaultAsync(source.AsAsyncQueryable(), propertyName, keyValue);
+    }
 
-    public static async Task<TEntity> DynamicFirstAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue) where TEntity : class =>
-        await source.FirstAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
+    public static async Task<TEntity> DynamicFirstAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue) where TEntity : class
+    {
+        return await source.FirstAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
+    }
 
-    public static async Task<TEntity> DynamicFirstAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source, string propertyName, TKeyValue keyValue) where TEntity : class =>
-        await DynamicFirstOfDefaultAsync(source.AsAsyncQueryable(), propertyName, keyValue);
+    public static async Task<TEntity> DynamicFirstAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source, string propertyName, TKeyValue keyValue) where TEntity : class
+    {
+        return await DynamicFirstOfDefaultAsync(source.AsAsyncQueryable(), propertyName, keyValue);
+    }
 
     public static async Task<TEntity> DynamicLastOfDefaultAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue)
-        where TEntity : class =>
-        await source.LastOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
+        where TEntity : class
+    {
+        return await source.LastOrDefaultAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
+    }
 
     public static async Task<TEntity> DynamicLastOfDefaultAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source, string propertyName, TKeyValue keyValue)
-        where TEntity : class =>
-        await DynamicLastOfDefaultAsync(source.AsAsyncQueryable(), propertyName, keyValue);
+        where TEntity : class
+    {
+        return await DynamicLastOfDefaultAsync(source.AsAsyncQueryable(), propertyName, keyValue);
+    }
 
-    public static async Task<TEntity> DynamicLastAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue) where TEntity : class =>
-        await source.LastAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
+    public static async Task<TEntity> DynamicLastAsync<TEntity, TKeyValue>(IAsyncQueryable<TEntity> source, string propertyName, TKeyValue keyValue) where TEntity : class
+    {
+        return await source.LastAsync(GenerateConstantExpression<TEntity, TKeyValue>(propertyName, keyValue));
+    }
 
-    public static async Task<TEntity> DynamicLastAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source, string propertyName, TKeyValue keyValue) where TEntity : class =>
-        await DynamicLastOfDefaultAsync(source.AsAsyncQueryable(), propertyName, keyValue);
+    public static async Task<TEntity> DynamicLastAsync<TEntity, TKeyValue>(IAsyncEnumerable<TEntity> source, string propertyName, TKeyValue keyValue) where TEntity : class
+    {
+        return await DynamicLastOfDefaultAsync(source.AsAsyncQueryable(), propertyName, keyValue);
+    }
 
     public static IAsyncQueryable<TEntity> DynamicOrderBy<TEntity>(this IAsyncQueryable<TEntity> source, params Tuple<string, bool>[] order)
     {
@@ -59,21 +79,35 @@ public static class LinqDynamicExtensions
         return orderExpression ?? source;
     }
 
-    public static IOrderedAsyncQueryable<T> DynamicOrderByMember<T>(this IAsyncQueryable<T> source, string memberPath) => source.OrderByMemberUsing(memberPath, "OrderBy");
+    public static IOrderedAsyncQueryable<T> DynamicOrderByMember<T>(this IAsyncQueryable<T> source, string memberPath)
+    {
+        return source.OrderByMemberUsing(memberPath, "OrderBy");
+    }
 
-    public static IOrderedAsyncQueryable<T> DynamicOrderByMemberDescending<T>(this IAsyncQueryable<T> source, string memberPath) =>
-        source.OrderByMemberUsing(memberPath, "OrderByDescending");
+    public static IOrderedAsyncQueryable<T> DynamicOrderByMemberDescending<T>(this IAsyncQueryable<T> source, string memberPath)
+    {
+        return source.OrderByMemberUsing(memberPath, "OrderByDescending");
+    }
 
-    public static IOrderedAsyncQueryable<T> DynamicThenByMember<T>(this IOrderedAsyncQueryable<T> source, string memberPath) => source.OrderByMemberUsing(memberPath, "ThenBy");
+    public static IOrderedAsyncQueryable<T> DynamicThenByMember<T>(this IOrderedAsyncQueryable<T> source, string memberPath)
+    {
+        return source.OrderByMemberUsing(memberPath, "ThenBy");
+    }
 
-    public static IOrderedAsyncQueryable<T> DynamicThenByMemberDescending<T>(this IOrderedAsyncQueryable<T> source, string memberPath) =>
-        source.OrderByMemberUsing(memberPath, "ThenByDescending");
+    public static IOrderedAsyncQueryable<T> DynamicThenByMemberDescending<T>(this IOrderedAsyncQueryable<T> source, string memberPath)
+    {
+        return source.OrderByMemberUsing(memberPath, "ThenByDescending");
+    }
 
-    public static IOrderedAsyncQueryable<T> DynamicOrderByMember<T>(this IOrderedAsyncEnumerable<T> source, string memberPath) =>
-        source.AsAsyncQueryable().OrderByMemberUsing(memberPath, "OrderBy");
+    public static IOrderedAsyncQueryable<T> DynamicOrderByMember<T>(this IOrderedAsyncEnumerable<T> source, string memberPath)
+    {
+        return source.AsAsyncQueryable().OrderByMemberUsing(memberPath, "OrderBy");
+    }
 
-    public static IOrderedAsyncQueryable<T> DynamicOrderByMemberDescending<T>(this IOrderedAsyncEnumerable<T> source, string memberPath) =>
-        source.AsAsyncQueryable().OrderByMemberUsing(memberPath, "OrderByDescending");
+    public static IOrderedAsyncQueryable<T> DynamicOrderByMemberDescending<T>(this IOrderedAsyncEnumerable<T> source, string memberPath)
+    {
+        return source.AsAsyncQueryable().OrderByMemberUsing(memberPath, "OrderByDescending");
+    }
 
     private static IOrderedAsyncQueryable<T> OrderByMemberUsing<T>(this IAsyncQueryable<T> source, string memberPath, string method)
     {
@@ -86,7 +120,7 @@ public static class LinqDynamicExtensions
 
     private static Expression<Func<TEntity, bool>> GenerateConstantExpression<TEntity, TKeyValue>(string propertyName, TKeyValue keyValue)
     {
-        var parameter = Expression.Parameter(typeof(TEntity), $"DF_ext_{typeof(TEntity).Name.ToLower()}");
+        var parameter = Expression.Parameter(typeof(TEntity), $"DF_ext_{typeof(TEntity).Name.ToUpper()}");
         var property = Expression.PropertyOrField(parameter, propertyName);
         var value = property.Type == typeof(TKeyValue) ? keyValue : property.Type.ParseValue(keyValue?.ToString());
         var equal = Expression.Equal(property, Expression.Constant(value, property.Type));

@@ -55,7 +55,10 @@ public static class DynamicComplexParser
         model.Select = BuildSelector<TSource, TTarget>(select.Distinct().ToList());
     }
 
-    private static void ExtractOrder<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model, IDynamicFilter bindingContext) => model.Order = bindingContext.Order;
+    private static void ExtractOrder<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model, IDynamicFilter bindingContext)
+    {
+        model.Order = bindingContext.Order;
+    }
 
     private static void ExtractFilters<TSource, TTarget>(ExpressionDynamicFilter<TSource, TTarget> model, IDynamicFilter bindingContext, ParameterExpression parameter,
         Type itemType)
@@ -84,15 +87,10 @@ public static class DynamicComplexParser
         return Expression.Lambda<Func<TSource, TTarget>>(Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
     }
 
-    private static string FirstCharToLowerCase(string str)
+    private static bool IsSimple(Type type)
     {
-        if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
-            return str;
-
-        return char.ToLower(str[0]) + str[1..];
+        return type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
     }
-
-    private static bool IsSimple(Type type) => type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
 
     private static MemberInitExpression BuildSelectorExpression(Type targetType, Expression source, IEnumerable<IGrouping<string, string[]>> groups,
         out List<MemberBinding> bindings, int depth = 0)
@@ -116,7 +114,6 @@ public static class DynamicComplexParser
                 else
                 {
                     var rootMembersForType = GetTypeSimpleProperties(IsEnumerableType(targetMember.Type, out var sourceType) ? sourceType : member.Type);
-
                     destinationMembers = destinationMembers.Union(rootMembersForType.Select(s => rootMember.Union(new[] { s }).ToArray())).ToList();
                 }
             }
@@ -145,8 +142,12 @@ public static class DynamicComplexParser
         return Expression.MemberInit(Expression.New(targetType), bindings);
     }
 
-    private static List<string> GetTypeSimpleProperties(Type type) =>
-        type.GetProperties().Where(info => IsSimple(info.PropertyType) && (info.GetSetMethod(true)?.IsPublic ?? false)).Select(info => FirstCharToLowerCase(info.Name)).ToList();
+    private static List<string> GetTypeSimpleProperties(Type type)
+    {
+        return type.GetProperties().Where(info => IsSimple(info.PropertyType) && (info.GetSetMethod(true)?.IsPublic ?? false))
+            .Select(info => info.Name)
+            .ToList();
+    }
 
 
     private static bool IsEnumerableType(Type type, out Type elementType)

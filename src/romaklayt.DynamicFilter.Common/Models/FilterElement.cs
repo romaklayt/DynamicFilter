@@ -30,6 +30,17 @@ internal class FilterElement
     private bool ApplyToEnumerable { get; set; } = true;
     public Expression Expression { get; }
 
+    private static MethodInfo GetEnumerableAllMethod => typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == "All" && m.GetParameters().Length == 2);
+
+    private static MethodInfo GetEnumerableAnyMethod => typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Length == 2);
+
+    private MethodInfo GetEnumerableMethod(Type genericType)
+    {
+        return UseAllFilterTypeForList
+            ? GetEnumerableAllMethod?.MakeGenericMethod(genericType.GetGenericArguments().First())
+            : GetEnumerableAnyMethod?.MakeGenericMethod(genericType.GetGenericArguments().First());
+    }
+
     private Expression GetExpression(Expression parameter)
     {
         var constantExpression = Expression.Constant(Value);
@@ -49,24 +60,38 @@ internal class FilterElement
             }
         }
 
+        var enumerableLayers = new List<(MethodInfo, Expression, ParameterExpression)>();
         var body = parameter;
         var addSubParam = false;
         foreach (var member in Properties)
             if (member.PropertyType.IsGenericType && member.PropertyType.GetGenericTypeDefinition().GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))) &&
                 ApplyToEnumerable)
             {
+                if (addSubParam)
+                {
+                    var genericTypeArgument = genericType.GetGenericArguments().First();
+                    subParam = Expression.Parameter(genericTypeArgument, $"DF_col_sub_{genericTypeArgument.Name}_{member.Name}");
+                    body = Expression.Property(subParam, member);
+
+                    var method = GetEnumerableMethod(genericType);
+                    if (method is not null) enumerableLayers.Add((method, baseExp, subParam));
+                    baseExp = Expression.Property(subParam, member);
+                }
+                else
+                {
+                    baseExp = Expression.Property(body, member);
+                    body = Expression.Property(body, member);
+                }
+
                 genericType = member.PropertyType;
-                baseExp = Expression.Property(body, member);
-                body = Expression.Property(body, member);
                 addSubParam = true;
             }
             else
             {
-                var memberFullName = $"sub_{member.Name}";
                 if (addSubParam)
                 {
-                    subParam = Expression.Parameter(genericType.GetGenericArguments().FirstOrDefault() ?? throw new InvalidOperationException("Generic type not found"),
-                        $"DF_sub_filter_{memberFullName}");
+                    var genericTypeArgument = member.PropertyType.GetGenericArguments().FirstOrDefault() ?? genericType.GetGenericArguments().First();
+                    subParam = Expression.Parameter(genericTypeArgument, $"DF_sub_{genericTypeArgument.Name}_{member.Name}");
                     body = Expression.Property(subParam, member);
                     addSubParam = false;
                 }
@@ -76,6 +101,21 @@ internal class FilterElement
                 }
             }
 
+        returnExpression = GetOperatorExpression(body, constantExpression);
+
+        if (genericType == null) return returnExpression;
+        var listMethod = GetEnumerableMethod(genericType);
+
+        if (listMethod is not null && returnExpression is not null && subParam is not null)
+            returnExpression = Expression.Call(listMethod, baseExp, Expression.Lambda(returnExpression, subParam));
+
+        enumerableLayers.Reverse();
+        return enumerableLayers.Aggregate(returnExpression, (current, tuple) => Expression.Call(tuple.Item1, tuple.Item2, Expression.Lambda(current, tuple.Item3)));
+    }
+
+    private Expression GetOperatorExpression(Expression body, ConstantExpression constantExpression)
+    {
+        Expression returnExpression;
         switch (Operator)
         {
             default:
@@ -118,16 +158,6 @@ internal class FilterElement
         }
 
         if (IsNegative) returnExpression = Expression.Not(returnExpression);
-
-        if (genericType == null) return returnExpression;
-        var listMethod = UseAllFilterTypeForList
-            ? typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == "All" && m.GetParameters().Length == 2)?.MakeGenericMethod(genericType.GetGenericArguments().First())
-            : typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Length == 2)?.MakeGenericMethod(genericType.GetGenericArguments().First());
-
-
-        if (listMethod is not null && returnExpression is not null)
-            returnExpression = Expression.Call(listMethod, baseExp, Expression.Lambda(returnExpression, subParam));
-
         return returnExpression;
     }
 
@@ -135,16 +165,16 @@ internal class FilterElement
     {
         Expression returnExpression = null;
 
-        var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
+        var normalizeMethod = typeof(string).GetMethod("ToUpper", Type.EmptyTypes);
 
-        if (toLowerMethod is not null)
+        if (normalizeMethod is not null)
         {
-            var bodyLowerExpression = Expression.Call(body, toLowerMethod);
-            var constantLowerExpression = Expression.Call(constantExpression, toLowerMethod);
+            var bodyNormalizeExpression = Expression.Call(body, normalizeMethod);
+            var constantNormalizeExpression = Expression.Call(constantExpression, normalizeMethod);
             var method = typeof(string).GetMethod(methodName, [typeof(string)]);
 
             if (method is not null)
-                returnExpression = Expression.Call(bodyLowerExpression, method, constantLowerExpression);
+                returnExpression = Expression.Call(bodyNormalizeExpression, method, constantNormalizeExpression);
         }
 
         return returnExpression;
@@ -170,7 +200,7 @@ internal class FilterElement
 
             if (obj.IsGenericType && obj.GetGenericTypeDefinition().GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))))
             {
-                if (SupportedEnumerableProperties.GetOperators().Contains(part.ToLower()))
+                if (SupportedEnumerableProperties.GetOperators().Contains(part, StringComparer.OrdinalIgnoreCase))
                     ApplyToEnumerable = false;
                 else
                     obj = obj.GetGenericArguments().FirstOrDefault();
