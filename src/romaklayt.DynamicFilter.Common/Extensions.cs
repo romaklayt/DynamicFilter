@@ -10,17 +10,17 @@ public static class Extensions
 {
     private const string DefaultValue = @"\default";
 
-    internal static string GetOperator(this string filter, string firstElement, string secondElement) => RemoveSubstring(RemoveSubstring(filter, firstElement), secondElement);
+    internal static string GetOperator(this string filter, string firstElement, string secondElement) => RemoveSubstring(RemoveSubstring(filter, firstElement), secondElement, true);
 
-    private static string RemoveSubstring(string sourceString, string removeString)
+    private static string RemoveSubstring(string sourceString, string removeString, bool reverse = false)
     {
-        var index = sourceString.IndexOf(removeString, StringComparison.InvariantCulture);
+        var index = reverse ? sourceString.LastIndexOf(removeString, StringComparison.Ordinal) : sourceString.IndexOf(removeString, StringComparison.Ordinal);
         return index < 0 ? sourceString : sourceString.Remove(index, removeString.Length);
     }
 
     internal static List<FilterArrayLogicOperatorEnum> ParseOperators(string filterArray, IEnumerable<string> split)
     {
-        var op = split.Aggregate(filterArray, RemoveSubstring).Where(c => c != '(' && c != ')' && c != ' ').Select(c => c.ToString()).ToList();
+        var op = split.Aggregate(filterArray, (s, s1) => RemoveSubstring(s, s1)).Where(c => c != '(' && c != ')' && c != ' ').Select(c => c.ToString()).ToList();
         var operatorTemp = string.Empty;
         var operators = new List<FilterArrayLogicOperatorEnum>();
         foreach (var s in op)
