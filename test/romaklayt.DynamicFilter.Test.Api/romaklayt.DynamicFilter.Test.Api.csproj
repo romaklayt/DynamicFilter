@@ -18,7 +18,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.7" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.0.8" />
     </ItemGroup>
 
