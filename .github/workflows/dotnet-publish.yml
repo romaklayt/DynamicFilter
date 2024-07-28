@@ -19,7 +19,7 @@ jobs:
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v3.0.0
       with:
-        versionSpec: '5.x'
+        versionSpec: '6.x'
 
     - name: Determine Version
       id:   gitversion
@@ -32,7 +32,7 @@ jobs:
     - name: Setup dotnet
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
 
     - name: Build Changelog
       id: github_release
@@ -44,19 +44,19 @@ jobs:
         GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
 
     - name: Pack romaklayt.DynamicFilter.Binder.Net
-      run: dotnet pack src/romaklayt.DynamicFilter.Binder.Net/romaklayt.DynamicFilter.Binder.Net.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
+      run: dotnet pack src/romaklayt.DynamicFilter.Binder.Net/romaklayt.DynamicFilter.Binder.Net.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} 
     
     - name: Pack romaklayt.DynamicFilter.Common
-      run: dotnet pack src/romaklayt.DynamicFilter.Common/romaklayt.DynamicFilter.Common.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
+      run: dotnet pack src/romaklayt.DynamicFilter.Common/romaklayt.DynamicFilter.Common.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} 
     
     - name: Pack romaklayt.DynamicFilter.Extensions.EntityFrameworkCore
-      run: dotnet pack src/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
+      run: dotnet pack src/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore/romaklayt.DynamicFilter.Extensions.EntityFrameworkCore.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} 
 
     - name: Pack romaklayt.DynamicFilter.Extensions.Async
-      run: dotnet pack src/romaklayt.DynamicFilter.Extensions.Async/romaklayt.DynamicFilter.Extensions.Async.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
+      run: dotnet pack src/romaklayt.DynamicFilter.Extensions.Async/romaklayt.DynamicFilter.Extensions.Async.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} 
     
     - name: Pack romaklayt.DynamicFilter.Parser
-      run: dotnet pack src/romaklayt.DynamicFilter.Parser/romaklayt.DynamicFilter.Parser.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} 
+      run: dotnet pack src/romaklayt.DynamicFilter.Parser/romaklayt.DynamicFilter.Parser.csproj --output nuget-packages --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} 
     
     - name: Push to nuget
       run: dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
