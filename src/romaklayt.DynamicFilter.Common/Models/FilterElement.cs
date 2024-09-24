@@ -34,12 +34,10 @@ internal class FilterElement
 
     private static MethodInfo GetEnumerableAnyMethod => typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == "Any" && m.GetParameters().Length == 2);
 
-    private MethodInfo GetEnumerableMethod(Type genericType)
-    {
-        return UseAllFilterTypeForList
+    private MethodInfo GetEnumerableMethod(Type genericType) =>
+        UseAllFilterTypeForList
             ? GetEnumerableAllMethod?.MakeGenericMethod(genericType.GetGenericArguments().First())
             : GetEnumerableAnyMethod?.MakeGenericMethod(genericType.GetGenericArguments().First());
-    }
 
     private Expression GetExpression(Expression parameter)
     {

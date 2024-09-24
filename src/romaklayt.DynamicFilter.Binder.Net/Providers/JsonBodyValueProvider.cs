@@ -14,6 +14,7 @@ namespace romaklayt.DynamicFilter.Binder.Net.Providers;
 public class JsonBodyValueProvider : IValueProvider
 {
     private readonly Dictionary<string, string> _dictionary;
+    private static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
 
     public JsonBodyValueProvider(ValueProviderFactoryContext actionContext)
     {
@@ -30,10 +31,7 @@ public class JsonBodyValueProvider : IValueProvider
         }
     }
 
-    public bool ContainsPrefix(string prefix)
-    {
-        return _dictionary.ContainsKey(prefix);
-    }
+    public bool ContainsPrefix(string prefix) => _dictionary.ContainsKey(prefix);
 
     public ValueProviderResult GetValue(string key)
     {
@@ -47,7 +45,7 @@ public class JsonBodyValueProvider : IValueProvider
     {
         try
         {
-            var obj = JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var obj = JsonSerializer.Deserialize<T>(json, Options);
             return obj;
         }
         catch (Exception)

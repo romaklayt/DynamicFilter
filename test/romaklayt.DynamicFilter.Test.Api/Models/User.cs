@@ -3,7 +3,18 @@ using System.Collections.Generic;
 
 namespace romaklayt.DynamicFilter.Test.Api.Models;
 
-public class User
+public class BaseEntity<TKey>
+{
+    public TKey Id { get; set; } = default!;
+}
+
+public class BaseEntityAudit<TKey> : BaseEntity<TKey>
+{
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
+}
+
+public class User : BaseEntityAudit<Guid>
 {
     public User()
     {
@@ -17,7 +28,6 @@ public class User
         LastName = lastName;
     }
 
-    public Guid Id { get; set; } = new();
     public string Name { get; set; }
     public string LastName { get; set; }
     public int Age { get; set; }

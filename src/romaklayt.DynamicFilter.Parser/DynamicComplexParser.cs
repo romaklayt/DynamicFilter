@@ -87,10 +87,7 @@ public static class DynamicComplexParser
         return Expression.Lambda<Func<TSource, TTarget>>(Expression.MemberInit(Expression.New(typeof(TTarget)), body), parameter);
     }
 
-    private static bool IsSimple(Type type)
-    {
-        return type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
-    }
+    private static bool IsSimple(Type type) => type != null && TypeDescriptor.GetConverter(type).CanConvertFrom(typeof(string));
 
     private static MemberInitExpression BuildSelectorExpression(Type targetType, Expression source, IEnumerable<IGrouping<string, string[]>> groups,
         out List<MemberBinding> bindings, int depth = 0)
@@ -144,7 +141,8 @@ public static class DynamicComplexParser
 
     private static List<string> GetTypeSimpleProperties(Type type)
     {
-        return type.GetProperties().Where(info => IsSimple(info.PropertyType) && (info.GetSetMethod(true)?.IsPublic ?? false))
+        return type.GetProperties()
+            .Where(info => IsSimple(info.PropertyType) && (info.GetSetMethod(true)?.IsPublic ?? false))
             .Select(info => info.Name)
             .ToList();
     }

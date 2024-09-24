@@ -10,7 +10,8 @@ public static class Extensions
 {
     private const string DefaultValue = @"\default";
 
-    internal static string GetOperator(this string filter, string firstElement, string secondElement) => RemoveSubstring(RemoveSubstring(filter, firstElement), secondElement, true);
+    internal static string GetOperator(this string filter, string firstElement, string secondElement) =>
+        RemoveSubstring(RemoveSubstring(filter, firstElement), secondElement, true);
 
     private static string RemoveSubstring(string sourceString, string removeString, bool reverse = false)
     {

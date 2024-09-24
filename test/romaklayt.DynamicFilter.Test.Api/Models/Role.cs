@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 
 namespace romaklayt.DynamicFilter.Test.Api.Models;
 
-public class Role
+public class Role : BaseEntityAudit<Guid>
 {
     public Role()
     {
@@ -11,10 +12,9 @@ public class Role
     public Role(string name, Address address)
     {
         Name = name;
-        Address = address;
+        Addresses.Add(address);
     }
 
-    public Guid Id { get; set; } = new();
     public string Name { get; set; }
-    public Address Address { get; set; }
+    public List<Address> Addresses { get; set; } = [];
 }
