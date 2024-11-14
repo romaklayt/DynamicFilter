@@ -19,7 +19,7 @@ public class Startup
         services.AddScoped<MyContext>();
         services.AddAutoMapper(typeof(UserMap));
         // Register the Swagger generator, defining 1 or more Swagger documents
-        services.AddOpenApiDocument();
+        services.AddOpenApi();
         services.AddControllers(options =>
         {
             options.Filters.Add(new PageInfoWriter());
@@ -32,11 +32,13 @@ public class Startup
     {
         if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
         AddTestData(context);
-        app.UseOpenApi();
-        app.UseSwaggerUi();
         app.UseRouting();
-
-        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        app.UseSwaggerUI(options => { options.SwaggerEndpoint("/openapi/v1.json", "v1"); });
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapOpenApi();
+        });
     }
 
     private void AddTestData(MyContext context)
