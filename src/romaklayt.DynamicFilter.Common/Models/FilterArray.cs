@@ -10,12 +10,12 @@ internal class FilterArray
     public FilterArray(string filterArray, Type type, Expression parameter)
     {
         var split = filterArray.Split(FilterArrayLogicOperators.GetOperators(), StringSplitOptions.RemoveEmptyEntries);
-        FilterElements = split.Select(s => new FilterElement(s.Trim('(', ')'), type, parameter)).ToList();
+        FilterElements = split.Select(s => new FilterSimpleQuery(s.Trim('(', ')'), type, parameter)).ToList();
         Operators = Extensions.ParseOperators(filterArray, split);
         Expression = GetExpression();
     }
 
-    private List<FilterElement> FilterElements { get; }
+    private List<FilterSimpleQuery> FilterElements { get; }
     private List<FilterArrayLogicOperatorEnum> Operators { get; }
     public Expression Expression { get; }
 
