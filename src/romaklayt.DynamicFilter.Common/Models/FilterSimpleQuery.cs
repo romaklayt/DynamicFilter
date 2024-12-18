@@ -179,8 +179,9 @@ internal partial class FilterSimpleQuery
         var enumerableLayers = new List<(MethodInfo, Expression, ParameterExpression)>();
         var body = parameter;
         var addSubParam = false;
+        var applyEnumerable = !SupportedEnumerableProperties.Get.Intersect(properties.Select(x => x.Name), StringComparer.OrdinalIgnoreCase).Any();
         foreach (var member in properties)
-            if (!SupportedEnumerableProperties.Get.Contains(member.Name, StringComparer.OrdinalIgnoreCase) && member.PropertyType.IsGenericType &&
+            if (applyEnumerable && member.PropertyType.IsGenericType &&
                 member.PropertyType.GetGenericTypeDefinition().GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IEnumerable<>))))
             {
                 if (addSubParam)
