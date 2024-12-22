@@ -89,7 +89,7 @@ internal partial class FilterSimpleQuery
         return null;
     }
 
-    [GeneratedRegex(@"^(?<path>[\w\.]+)(?<operator>==\*|_-=\*|_=\*|@=\*|_-=|_=|<=|>=|<|>|@=|==)(?<value>.+)$")]
+    [GeneratedRegex(@"^(?<path>.+)(?<operator>==\*|_-=\*|_=\*|@=\*|_-=|_=|<=|>=|<|>|@=|==)(?<value>.+)$")]
     private static partial Regex ParseElementRegex();
 
     [GeneratedRegex(@"^(?<path>[\w\.]+):(?<operator>\w+)\[(?<conditions>.+)\]$")]
